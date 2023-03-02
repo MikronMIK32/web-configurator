@@ -1,0 +1,48 @@
+import { ArgsTable, Meta, Props, Story } from '@storybook/addon-docs';
+import { useState } from 'react';
+import { scale } from '@scripts/gds';
+import Tags from '.';
+
+<Meta title="Controls / Future / Tags" component={Tags} />
+
+# Tags component
+
+<Story
+    name="Basic"
+    args={{
+        wrap: true,
+        disabled: false,
+    }}
+>
+    {args => {
+        const [arr, setArr] = useState(['Test', 'Another test', 'Aaand another long loooong test']);
+        return (
+            <Tags
+                {...args}
+                onDelete={idx => {
+                    setArr(oldArr => {
+                        const newArr = [...oldArr];
+                        newArr.splice(idx, 1);
+                        return newArr;
+                    });
+                }}
+            >
+                {arr.map(e => (
+                    <Tags.Tag key={e}>{e}</Tags.Tag>
+                ))}
+            </Tags>
+        );
+    }}
+</Story>
+
+Теги на основе [Альфа Банк Core components](https://core-ds.github.io/core-components/master/?path=/docs/)
+
+<ArgsTable
+    components={{
+        Tags: Tags,
+    }}
+/>
+
+## Props
+
+<Props of={Tags} />

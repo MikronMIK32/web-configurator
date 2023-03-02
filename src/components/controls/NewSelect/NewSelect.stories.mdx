@@ -1,0 +1,196 @@
+import { ArgsTable, Meta, Props, Story } from '@storybook/addon-docs';
+import { useState } from 'react';
+import Form from '@components/controls/Form';
+import { scale } from '@scripts/helpers';
+import Button from '@components/controls/Button';
+import FormikSelect, { SimpleSelect as NewSelect } from '.';
+import useClearableItems from './presets/useClearableItems';
+import useSelectClear from './presets/useSelectClear';
+
+<Meta title="Controls / NewSelect" component={NewSelect} />
+
+# NewSelect
+
+### Uncontrolled
+
+<Story
+  name="NewSelect"
+  args={{
+    isMobile: false,
+    closeOnClear: false,
+    multiple: false,
+    disabled: false,
+    circularNavigation: true,
+    closeOnSelect: true,
+    labelView: 'inner',
+    options: [
+      {
+        key: 'true',
+        content: 'True value',
+        value: true,
+      },
+      {
+        key: 'false',
+        content: 'False value',
+        value: false,
+      },
+      {
+        key: 'zero',
+        content: <i>Zero value</i>,
+        value: 0,
+      },
+      {
+        key: 'empty string value',
+        content: 'Empty string',
+        value: '',
+      },
+      {
+        key: 'tough content',
+        content: <strong>You can use bold</strong>,
+        value: 'bold',
+      },
+      {
+        key: '1',
+        content: '1',
+        value: '1',
+      },
+      {
+        key: '2',
+        content: '2',
+        value: '2',
+        disabled: true,
+      },
+      {
+        key: '3',
+        content: '3',
+        value: '3',
+      },
+      {
+        key: '4',
+        content: '4',
+        value: '4',
+      },
+    ],
+  }}
+  argTypes={{
+    labelView: {
+      options: ['inner', 'outer'],
+      control: { type: 'radio' },
+    },
+  }}
+>
+  {({ closeOnClear, ...args }) => {
+    const [value, setValue] = useState();
+    const [open, setOpen] = useState(false);
+    const clearSelectProps = useSelectClear({
+      closeOnClear,
+    });
+    const clearableItemsProps = useClearableItems({
+      Field: clearSelectProps.Field,
+    });
+    return (
+      <div style={{ width: 500 }}>
+        <p>
+          Выбрано значение:{' '}
+          <b>{value === undefined ? '(undefined)' : JSON.stringify(value)}</b>
+        </p>
+        <NewSelect
+          {...args}
+          onChange={(e) => {
+            if (!args.multiple) {
+              setValue(e.selected?.value);
+            } else {
+              setValue(e.selectedMultiple?.map((e) => e.value) || []);
+            }
+          }}
+          open={open}
+          onOpen={(payload) => {
+            setOpen(payload.open);
+          }}
+          allowUnselect
+          placeholder="Выберите"
+          {...clearSelectProps}
+          {...clearableItemsProps}
+        />
+        <Button css={{ marginTop: scale(1) }} onClick={() => setOpen(!open)}>
+          {!open ? 'Открыть' : 'Закрыть'} вручную
+        </Button>
+      </div>
+    );
+  }}
+</Story>
+
+Селект на основе [Альфа Банк Core components](https://core-ds.github.io/core-components/master/?path=/docs/%D0%BA%D0%BE%D0%BC%D0%BF%D0%BE%D0%BD%D0%B5%D0%BD%D1%82%D1%8B-select--select)
+
+<ArgsTable
+  components={{
+    Select: NewSelect,
+  }}
+/>
+
+### Пример с формой
+
+<Story
+  name="Inside Form"
+  args={{
+    isMobile: false,
+    multiple: false,
+    disabled: false,
+    labelView: 'inner',
+    options: [
+      {
+        key: '1',
+        content: '1',
+        value: '1',
+      },
+      {
+        key: '2',
+        content: '2',
+        value: '2',
+        disabled: true,
+      },
+      {
+        key: '3',
+        content: '3',
+        value: '3',
+      },
+      {
+        key: '4',
+        content: '4',
+        value: '4',
+      },
+    ],
+  }}
+  argTypes={{
+    labelView: {
+      options: ['inner', 'outer'],
+      control: { type: 'radio' },
+    },
+  }}
+>
+  {(args) => (
+    <Form
+      initialValues={{ selectValue: '', otherField: '' }}
+    >
+      {({ values }) => (
+        <>
+          <p>
+            Значение из формы: <b>{JSON.stringify(values)}</b>
+          </p>
+          <Form.Field name="selectValue" label="Я селект">
+            <FormikSelect {...args} css={{ minWidth: 200 }} />
+          </Form.Field>
+          <Form.Field name="otherField" placeholder="Я просто поле" size="md" />
+          <Button type="submit">Отправить</Button>
+          <Button type="reset" theme="secondary">
+            Сбросить
+          </Button>
+        </>
+      )}
+    </Form>
+  )}
+</Story>
+
+## Props
+
+<Props of={NewSelect} />

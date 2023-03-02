@@ -1,0 +1,27 @@
+import { useForm } from 'react-hook-form';
+import { Meta, Story, Source } from '@storybook/addon-docs';
+import Form from '@components/controls/Form';
+import Checkbox from './index';
+
+<Meta title="Controls / Checkbox" component={Checkbox} />
+
+# Компонент формы
+
+<Story name="Basic" args={{}}>
+  {(args) => {
+    const { watch, ...methods } = useForm({
+      defaultValues: { agreement: false },
+    });
+    const isChecked = watch('agreement');
+    return (
+      <Form methods={methods} onSubmit={(vals) => console.log(vals)}>
+        <Form.Field name="agreement" label="Agreement">
+          <Checkbox value="1">
+            Включить RTC
+          </Checkbox>
+        </Form.Field>
+        <button type="submit">Submit</button>
+      </Form>
+    );
+  }}
+</Story>

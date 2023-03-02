@@ -1,0 +1,16 @@
+import { Meta, Story } from "@storybook/addon-docs";
+import Sidebar from "./index";
+
+<Meta title="Components / Sidebar" component={Sidebar} />
+
+# Компонент сайдбара
+
+<Story name="Basic">
+  <Sidebar>
+    <Sidebar.Nav>
+      <Sidebar.Group id="0" title="Group 1">
+        Children
+      </Sidebar.Group>
+    </Sidebar.Nav>
+  </Sidebar>
+</Story>

@@ -1,0 +1,105 @@
+import { ArgsTable, Canvas, Meta, Story } from '@storybook/addon-docs/blocks';
+import Form from '@components/controls/Form';
+import FormikAutocomplete, { Autocomplete } from './index';
+
+<Meta title="Controls / Autocomplete" component={Autocomplete} />
+
+# Controls
+
+Селект с поиском
+
+<Story
+    name="Default"
+    args={{
+        multiple: false,
+    }}
+>
+    {args => {
+        const options = [
+            { key: 'Neptunium', value: '1' },
+            { key: 'Plutonium', value: '2' },
+            { key: 'Americium', value: '3' },
+            { key: 'Curium', value: '4' },
+            { key: 'Berkelium', value: 5 },
+        ];
+        const matchOption = (option, inputValue) => option.key.toLowerCase().includes((inputValue || '').toLowerCase());
+        const [value, setValue] = React.useState('');
+        const handleInput = event => {
+            setValue(event.target.value);
+        };
+        const handleChange = ({ selectedMultiple }) => {
+            const value = selectedMultiple.length ? selectedMultiple.map(option => option.key).join(', ') + ', ' : '';
+            setValue(value);
+        };
+        const inputValues = value
+            .split(',')
+            .map(v => v.trim())
+            .filter(v => v);
+        const selectedOptions = options.filter(option => inputValues.includes(option.key.trim()));
+        const selected = selectedOptions.map(option => option.key);
+        const filteredOptions =
+            inputValues.length === selected.length
+                ? options
+                : options.filter(option => {
+                      return (
+                          selectedOptions.includes(option) || matchOption(option, inputValues[inputValues.length - 1])
+                      );
+                  });
+        return (
+            <Autocomplete
+                options={filteredOptions}
+                selected={selected}
+                label="Элемент"
+                closeOnSelect={false}
+                value={value}
+                allowUnselect
+                onChange={handleChange}
+                onInput={handleInput}
+            />
+        );
+    }}
+</Story>
+
+<Story
+    name="With Formik"
+    args={{
+        isMobile: false,
+        multiple: false,
+        closeOnSelect: false,
+    }}
+>
+    {args => {
+        const options = [
+            { key: 'Neptunium', value: '1' },
+            { key: 'Plutonium', value: '2' },
+            { key: 'Americium', value: '3' },
+            { key: 'Curium', value: '4' },
+            { key: 'Berkelium', value: 5 },
+        ];
+        return (
+            <Form initialValues={{ autocomplete: null }}>
+                {({ values }) => (
+                    <>
+                        <h2>FormikAutocomplete:</h2>
+                        <p>Выбрано: {JSON.stringify(values.autocomplete)}</p>
+                        <Form.Field name="autocomplete" label="Автокомплит">
+                            <FormikAutocomplete
+                                {...args}
+                                options={options}
+                                allowUnselect
+                                placeholder="Выберите элемент"
+                                css={{ marginBottom: scale(2), maxWidth: `${scale(40)}px!important` }}
+                            />
+                        </Form.Field>
+                    </>
+                )}
+            </Form>
+        );
+    }}
+</Story>
+
+<br />
+
+## Args Table
+
+<ArgsTable story="Default" />

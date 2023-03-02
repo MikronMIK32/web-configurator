@@ -1,0 +1,110 @@
+import { ArgsTable, Meta, Story } from '@storybook/addon-docs/blocks';
+import { useForm } from 'react-hook-form';
+import Button from '@components/controls/Button';
+import Form from '@components/controls/Form';
+import { formControlThemes } from '@components/controls/FormControl/themes/index';
+import { FormControlSize } from '@components/controls/FormControl/types';
+import ChevronRight from '@icons/large/chevronRight.svg';
+import { ReactComponent as ProfileIcon } from '@icons/small/share.svg';
+import IntegerMaskedInput from '.';
+
+<Meta title="Controls / Form / IntegerMaskedInput" component={IntegerMaskedInput} />
+
+# IntegerMaskedInput
+
+Компонент текстового поля целых чисел в 2, 10, 16 - ричных форматах
+
+<Story
+  name="Basic"
+  args={{
+    block: false,
+    size: 'md',
+    variant: 'primary',
+    theme: 'basic',
+    disabled: false,
+    error: '',
+    success: '',
+    hint: '',
+    label: 'Адрес',
+    labelView: 'outer',
+    labelWrap: true,
+    readOnly: false,
+    placeholder: 'Адрес в памяти',
+  }}
+  argTypes={{
+    labelView: {
+      options: ['inner', 'outer'],
+      control: { type: 'radio' },
+    },
+    theme: {
+      options: Object.keys(formControlThemes),
+      control: { type: 'radio' },
+    },
+    size: {
+      options: Object.values(FormControlSize),
+      control: { type: 'radio' },
+    },
+  }}
+>
+  {args => <IntegerMaskedInput rightAddons={<ProfileIcon />} {...args} />}
+</Story>
+
+## Props
+
+<ArgsTable story="Basic" />
+
+<Story
+  name="With form"
+  args={{
+    block: false,
+    size: 'md',
+    variant: 'primary',
+    theme: 'basic',
+    disabled: false,
+    error: '',
+    success: '',
+    hint: '',
+    label: 'Адрес',
+    labelView: 'outer',
+    labelWrap: true,
+    readOnly: false,
+    placeholder: 'Адрес в памяти',
+  }}
+  argTypes={{
+    labelView: {
+      options: ['inner', 'outer'],
+      control: { type: 'radio' },
+    },
+    theme: {
+      options: Object.keys(formControlThemes),
+      control: { type: 'radio' },
+    },
+    size: {
+      options: Object.values(FormControlSize),
+      control: { type: 'radio' },
+    },
+  }}
+>
+  {args => {
+    const methods = useForm({
+      defaultValues: {
+        otherField: 123,
+      },
+    });
+    const values = methods.watch();
+    return (
+      <Form methods={methods}>
+        <p>
+          Значение из формы: <b>{JSON.stringify(values)}</b>
+        </p>
+        <Form.Field name="otherField" placeholder="Я просто поле" size="md">
+          <IntegerMaskedInput {...args} />
+        </Form.Field>
+        <Button type="submit">Отправить</Button>
+        <Button type="reset" theme="secondary">
+          Сбросить
+        </Button>
+      </Form>
+    );
+  }}
+</Story>

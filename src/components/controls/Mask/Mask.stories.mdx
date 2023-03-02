@@ -1,0 +1,44 @@
+import { action } from '@storybook/addon-actions';
+import { useState } from 'react';
+import { ArgsTable, Meta, Story } from '@storybook/addon-docs';
+import { useForm } from 'react-hook-form';
+import Form from '@components/controls/Form';
+import Mask from '.';
+
+<Meta title="Controls / Mask" component={Mask} />
+
+# Mask
+
+<Story name="Mask" args={{ mask: '{\\0x}########' }}>
+  {(args) => {
+    const form = useForm({
+      initialValues: {
+        masked: '0x12345678',
+      },
+    });
+    const values = form.watch();
+    return (
+      <Form methods={form} onSubmit={action('submit')}>
+        {JSON.stringify(values)}
+        <Form.Field label="Masked input" name="mask">
+          <Mask
+            {...args}
+            prepare={s => s.toUpperCase()}
+            onAccept={(e) => {
+              action('accept')(e);
+            }}
+            definitions={{
+              '#': /[0-9a-f]/i,
+            }}
+            lazy={false}
+          />
+        </Form.Field>
+        <button type="submit">submit</button>
+      </Form>
+    );
+  }}
+</Story>
+
+## Props
+
+<ArgsTable story="Mask" />

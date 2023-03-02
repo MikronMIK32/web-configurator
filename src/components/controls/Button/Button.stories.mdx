@@ -1,0 +1,41 @@
+import { Meta, Story, Source } from '@storybook/addon-docs';
+import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
+import { useForm } from 'react-hook-form';
+import Form from '@components/controls/Form';
+import { ButtonVariants, ButtonSize } from './types';
+import { buttonThemes } from './themes';
+import Button from './index';
+
+<Meta title="Controls / Button" component={Button} />
+
+# Компонент Button
+
+<Story
+  name="Basic"
+  args={{
+    variant: 'primary',
+    theme: 'basic',
+    size: 'md',
+    iconAfter: false,
+  }}
+  argTypes={{
+    theme: {
+      options: Object.keys(buttonThemes),
+      control: { type: 'radio' },
+    },
+    size: {
+      options: Object.keys(ButtonSize),
+      control: { type: 'radio' },
+    },
+    variant: {
+      options: Object.keys(ButtonVariants),
+      control: { type: 'radio' },
+    },
+  }}
+>
+  {({ theme, ...args }) => (
+    <Button type="button" rounded theme={themes[theme]} FaIcon={faChevronRight} {...args}>
+      Отправить
+    </Button>
+  )}
+</Story>

@@ -1,0 +1,191 @@
+import { ArgsTable, Meta, Props, Story } from '@storybook/addon-docs';
+import { useState, useMemo, useCallback } from 'react';
+import * as Yup from 'yup';
+import Form from '@controls/Form';
+import { Button, scale } from '@scripts/gds';
+import SelectWithTags, { SimpleSelectWithTags } from '.';
+
+<Meta title="Controls / Future / SelectWithTags" component={SimpleSelectWithTags} />
+
+# SelectWithTags
+
+<Story
+    name="Simple"
+    args={{
+        closeOnClear: false,
+        collapseTagList: true,
+        moveInputToNewLine: true,
+        block: true,
+        disabled: false,
+        circularNavigation: true,
+        options: [
+            {
+                key: 'true',
+                content: 'True value',
+                value: true,
+            },
+            {
+                key: 'false',
+                content: 'False value',
+                value: false,
+            },
+            {
+                key: 'zero',
+                content: <i>Zero value</i>,
+                value: 0,
+            },
+            {
+                key: 'empty string value',
+                content: 'Empty string',
+                value: '',
+            },
+            {
+                key: 'you can use bold',
+                content: <strong>You can use bold</strong>,
+                value: 'bold',
+            },
+            {
+                key: '1',
+                content: '1',
+                value: '1',
+            },
+            {
+                key: '3',
+                content: '3',
+                value: '3',
+            },
+            {
+                key: '4',
+                content: '4',
+                value: '4',
+            },
+            {
+                key: 'also may be a long string you decide what to do with it',
+                content: <><s>Also may be</s>&nbsp;a long string <b>you decide what to do with it</b></>,
+                value: '5',
+            },
+        ],
+        autocomplete: true,
+    }}
+>
+    {args => {
+        const [open, setOpen] = useState(false);
+        const [value, setValue] = useState('');
+        const [selected, setSelected] = useState([]);
+        const selectedValues = useMemo(() => selected.map(e => e.value), [selected]);
+        const handleInput = (event) => {
+            setValue(event.target.value);
+        };
+        const handleChange = useCallback(({ selectedMultiple }) => {
+            setSelected(selectedMultiple);
+        }, []);
+        const transformCollapsedTagText = (count) => {
+            return `+${count} элементов`;
+        };
+        return (
+            <div style={{ width: 500, minHeight: 800 }}>
+                <p>
+                    Выбраны значения: <b>{JSON.stringify(selectedValues)}</b>
+                </p>
+                <SimpleSelectWithTags
+                    {...args}
+                    name="name"
+                    selected={selected}
+                    open={open}
+                    onOpen={payload => {
+                        setOpen(payload.open);
+                    }}
+                    placeholder="Выберите"
+                    onInput={handleInput}
+                    transformCollapsedTagText={transformCollapsedTagText}
+                    value={value}
+                    onChange={handleChange}
+                    selected={selected}
+                    emptyListPlaceholder="Ничего не найдено."
+                />
+                <Button css={{ marginTop: scale(1) }} onClick={() => setOpen(!open)}>
+                    {!open ? 'Открыть' : 'Закрыть'} вручную
+                </Button>
+            </div>
+        );
+    }}
+</Story>
+
+Селект на основе [Альфа Банк Core components](https://core-ds.github.io/core-components/master/?path=/docs/%D0%BA%D0%BE%D0%BC%D0%BF%D0%BE%D0%BD%D0%B5%D0%BD%D1%82%D1%8B-select--select)
+
+<ArgsTable
+    components={{
+        Select: SimpleSelectWithTags,
+    }}
+/>
+
+### Пример с формой
+
+<Story
+    name="Inside Form"
+    args={{
+        disabled: false,
+        options: [
+            {
+                key: '1',
+                content: '1',
+                value: '1',
+            },
+            {
+                key: '3',
+                content: '3',
+                value: '3',
+            },
+            {
+                key: '4',
+                content: '4',
+                value: '4',
+            },
+            {
+                key: '5',
+                content: '5',
+                value: '5',
+            },
+            
+            {
+                key: '6',
+                content: '6',
+                value: '6',
+            },
+            {
+                key: '7',
+                content: '7',
+                value: '7',
+            },
+        ],
+    }}
+>
+    {args => (
+        <Form
+            initialValues={{ selectValue: [], }}
+            validationSchema={Yup.object().shape({
+                selectValue: Yup.array().of(Yup.string()).min(1, 'Обязательное поле'),
+            })}
+        >
+            {({ values }) => (
+                <>
+                    <p style={{marginBottom: 16}}>
+                        Значение из формы: <b>{JSON.stringify(values)}</b>
+                    </p>
+                    <Form.Field name="selectValue" label="Лейбл селекта с тегами">
+                        <SelectWithTags {...args} />
+                    </Form.Field>
+                    <br/>
+                    <Button type="submit">Отправить</Button>
+                    <Button type="reset" theme="secondary">
+                        Сбросить
+                    </Button>
+                </>
+            )}
+        </Form>
+    )}
+</Story>
+
+## Props
+
+<Props of={SimpleSelectWithTags} />

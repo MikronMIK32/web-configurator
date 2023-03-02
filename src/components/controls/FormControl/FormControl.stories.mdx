@@ -1,0 +1,85 @@
+import { action } from '@storybook/addon-actions';
+import { ArgsTable, Meta, Story } from '@storybook/addon-docs/blocks';
+import FormControl from '.';
+import { formControlThemes } from './themes/index';
+import { FormControlSize } from './types';
+
+<Meta title="Controls / Form / FormControl" component={FormControl} />
+
+# FormControl
+
+Базовый компонент для построения полей ввода - input, textarea, select и др.
+Принимает `ref`, который применяется к inner div-обертке. 
+
+```js
+import FormControl from '@components/controls/FormControl';
+```
+
+<Story
+    name="FormControl"
+    args={{
+        label: 'Пример текста',
+        labelView: 'outer',
+        theme: 'basic',
+        focused: false,
+        disabled: false,
+        readOnly: false,
+        filled: false,
+        error: 'Ошибка',
+        hint: 'Подсказка',
+        size: 'md',
+    }}
+    argTypes={{
+        labelView: {
+            options: ['inner', 'outer'],
+            control: { type: 'radio' },
+        },
+        theme: {
+            options: Object.keys(formControlThemes),
+            control: { type: 'radio' },
+        },
+        size: {
+            options: Object.values(FormControlSize),
+            control: { type: 'radio' },
+        },
+    }}
+>
+    {({ theme, ...args }) => (
+        <FormControl
+            theme={formControlThemes[theme]}
+            rightAddons={<p>R</p>}
+            bottomAddons={<p>Bottom addons</p>}
+            onClick={action('click on field')}
+            fieldCSS={{
+                ':hover': {
+                    opacity: 0.5,
+                }
+            }}
+            {...args}
+        >
+            <div className="control" css={{ height: '100%', color: 'green', alignSelf: 'center' }}>I'm a UI element</div>
+        </FormControl>
+    )}
+</Story>
+
+Проп `labelView` управляет положением label - внутри (`outer`) или снаружи (`inner`). Чтобы label уходил наверх в случае `inner`, нужно передавать проп `filled` при фокусе, наличии значения или placeholder
+
+```tsx
+<FormControl
+    theme={formControlThemes.basic}
+    rightAddons={<p>R</p>}
+    bottomAddons={<p>Bottom addons</p>}
+    onClick={action('click on field')}
+    fieldCSS={{
+        ':hover': {
+            opacity: 0.5,
+        }
+    }}
+>
+    <div className="control" css={{ height: '100%', color: 'green', alignSelf: 'center' }}>I'm a UI element</div>
+</FormControl>
+```
+
+## Props
+
+<ArgsTable story="FormControl" />

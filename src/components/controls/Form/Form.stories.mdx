@@ -1,0 +1,43 @@
+import { Meta, Story, Source } from '@storybook/addon-docs';
+import { useForm } from 'react-hook-form';
+import Select from '@components/controls/NewSelect';
+import Mask from '@components/controls/Mask';
+import Form from './index';
+
+<Meta title="Controls / Form" component={Form} />
+
+# Компонент формы
+
+<Story
+  name="Basic form"
+  args={{
+    mode: 'onSubmit',
+    reValidateMode: 'onChange',
+    defaultValues: { test: 'bla bla', select: null, masked: '0x1234' },
+  }}
+>
+  {(args) => {
+    const methods = useForm(args);
+    return (
+      <Form methods={methods} onSubmit={(vals) => console.log(vals)}>
+        <Form.Field name="masked" label="Mask field" css={{ marginBottom: 16 }}>
+          <Mask mask={'{\\0x}0000'} lazy={false} />
+        </Form.Field>
+        <Form.Field
+          name="select"
+          label="Select field"
+          css={{ marginBottom: 16 }}
+        >
+          <Select
+            options={[
+              { key: 'Option A', value: 1 },
+              { key: 'Option B', value: 2 },
+            ]}
+          />
+        </Form.Field>
+        <Form.Field name="test" label="Input field" />
+        <button type="submit">Submit</button>
+      </Form>
+    );
+  }}
+</Story>

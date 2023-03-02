@@ -1,0 +1,17 @@
+import { action } from '@storybook/addon-actions';
+import { useState } from 'react';
+import { Meta, Story } from '@storybook/addon-docs';
+import ByteTable from './index';
+
+<Meta title="Components / ByteTable" component={ByteTable} />
+
+# ByteTable необходим для задания пользовательских значений регистрам
+
+<Story name="Basic" args={{}}>
+  {() => {
+    const [data, setData] = useState(() => {
+      return [...Array(10).keys()].map(() => 0);
+    });
+    return <ByteTable value={data} onChange={action('change')} />;
+  }}
+</Story>

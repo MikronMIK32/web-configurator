@@ -1,0 +1,57 @@
+import { ArgsTable, Meta, Story } from '@storybook/addon-docs/blocks';
+import { formControlThemes } from '@components/controls/FormControl/themes/index';
+import { FormControlSize } from '@components/controls/FormControl/types';
+import ChevronRight from '@icons/large/chevronRight.svg';
+import { ReactComponent as ProfileIcon } from '@icons/large/profile.svg';
+import Input from '.';
+
+<Meta title="Controls / Form / Input" component={Input} />
+
+# Input
+
+Компонент текстового поля ввода
+
+<Story
+    name="Input"
+    args={{
+        type: 'text',
+        block: false,
+        size: 'md',
+        variant: 'primary',
+        theme: 'basic',
+        clear: false,
+        disabled: false,
+        error: '',
+        success: '',
+        hint: '',
+        label: 'Гость №1',
+        labelView: 'outer',
+        labelWrap: true,
+        defaultValue: 'изначальный текст',
+        readOnly: false,
+        placeholder: 'Введите ФИО',
+    }}
+    argTypes={{
+        labelView: {
+            options: ['inner', 'outer'],
+            control: { type: 'radio' },
+        },
+        theme: {
+            options: Object.keys(formControlThemes),
+            control: { type: 'radio' },
+        },
+        size: {
+            options: Object.values(FormControlSize),
+            control: { type: 'radio' },
+        },
+    }}
+>
+    {args => <Input id="example-input" rightAddons={<ProfileIcon />} onAnimationStart={console.log} {...args} />}
+</Story>
+
+Может работать в `controlled` и `uncontrolled` режимах. Переключение осуществляется передачей `value`. Принимает `ref`, который применяется к `input`.
+Может иметь крестик для очистки ввода, включается флагом `clear`. Крестик станет доступен при наличии значения и отсутствии `disabled`
+
+## Props
+
+<ArgsTable story="Input" />

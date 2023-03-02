@@ -1,0 +1,296 @@
+import { Meta, Story, ArgsTable, Canvas } from '@storybook/addon-docs';
+import { action } from '@storybook/addon-actions';
+import { scale } from '@scripts/helpers';
+import Button from '@components/controls/Button';
+import BasicField from '@components/controls/Form/BasicField';
+import { getSelectColumn } from './columns';
+import Table, { TableHeader, TableFooter, TableEmpty } from './index';
+import { Cell } from './Cell';
+
+<Meta
+  title="Components / Table"
+  component={Table}
+  parameters={{
+    backgrounds: { default: 'grey200' },
+    paddings: { default: 'Nonne' },
+  }}
+/>
+
+<Story
+    name="Table"
+    args={{
+        allowRowSelect: true,
+        expandable: false,
+        disableSortBy: false,
+        className: '',
+        maxRowSelect: 0,
+        tooltipContent: [
+            {
+                type: 'edit',
+                text: 'Задать признаки',
+                action: row => alert(JSON.stringify(row.id)),
+            },
+            {
+                type: 'edit',
+                text: 'Отправить на модерацию',
+                action: row => alert(JSON.stringify(row.id)),
+            },
+        ],
+        onRowClick: action('onRowClick'),
+        onRowContextMenu: action('onRowContextMenu'),
+        onDoubleClick: action('onDoubleClick'),
+        onSortingChange: action('onSortingChange'),
+        data: [
+            {
+                id: 1,
+                photo: 'https://spoonacular.com/cdn/ingredients_100x100/apple.jpg',
+                titleAndCode: 'Бургер из свинины и говядины «ПРОМАГРО», охлажденный, 200 г',
+                brand: 'мИРАТорг',
+                category: 'Полуфабрикаты',
+                created: new Date(),
+                price: 1000.89,
+                count: 13,
+                status: 'Согласовано',
+                archive: 'да',
+            },
+            {
+                id: 2,
+                photo: 'https://spoonacular.com/cdn/ingredients_100x100/orange.jpg',
+                titleAndCode: 'Бургер из свинины и говядины «ПРОМАГРО», охлажденный, 200 г',
+                brand: 'мИРАТорг',
+                category: 'Полуфабрикаты',
+                created: new Date(),
+                price: 1000.89,
+                count: 13,
+                status: 'Согласовано',
+                archive: 'да',
+            },
+        ],
+        columns: [
+            getSelectColumn(),
+            {
+                Header: 'ID',
+                accessorKey: 'id',
+            },
+            {
+                Header: '',
+                accessorKey: 'photo',
+                cell: props => <Cell type="photo" value={props.getValue()} />,
+                disableSortBy: true,
+            },
+            {
+                Header: 'Название, артикул',
+                accessorKey: 'titleAndCode',
+            },
+            {
+                Header: 'Бренд',
+                accessorKey: 'brand',
+            },
+            {
+                Header: 'Категория',
+                accessorKey: 'category',
+            },
+            {
+                Header: 'Создано',
+                accessorKey: 'created',
+            },
+            {
+                Header: 'Цена, ₽',
+                accessorKey: 'price',
+            },
+            {
+                Header: 'Кол-во',
+                accessorKey: 'count',
+            },
+            {
+                Header: 'Статус',
+                accessorKey: 'status',
+            },
+            {
+                Header: 'В архиве',
+                accessorKey: 'archive',
+            },
+        ],
+        renderHeader: selectedRows => (
+            <TableHeader>
+                Шапка таблицы {selectedRows.length > 0 && <>Выбрано {selectedRows.length} рядов</>}
+            </TableHeader>
+        ),
+    }}
+    argTypes={{
+        maxRowSelect: {
+            description:
+                'Максимальное количество рядов для выбора. Необходимо прокинуть одноименный аргумент в ф-цию getSelectColumn',
+        },
+        allowRowSelect: 'Позволять выбор рядов. Если нет, то нельзя добавлять ряд с чекбоксами через getSelectColumn',
+    }}
+>
+    {args => <Table {...args} />}
+</Story>
+
+## Props
+
+<ArgsTable story="NewTable" />
+
+## Description
+
+Компонент таблицы реализован на [react-query](https://react-query.tanstack.com/). Для лучшего понимания принципов работы ознакомьтесь с официальной документации.
+
+Наиболее часто встречающиеся яйчейки таблицы описаны в компоненте `Cell`. Вы можете расширять компонент, в случае необходимости. В нем не должно содержаться никакой бизнес-логики типа определения цвета поля статуса, исходя из значения статуса.
+Так как компонент таблицы построен по принципу dependency injection, то всю подобную логику нужно описывать в поле `Cell` в объекте с настройками столбца.
+
+В проп `columns` таблицы обязательно прокидывается мемоизированный массив столбцов. В самом простом виде объект столбца содержит поля accessor и Header, например:
+`{accessor: 'title', Header: 'Название'}`,
+Для большей гибкости в `Header` и `Cell` можно указывать полноценный реакт-компонент, который в качестве пропсов получает почти все данные таблицы. Например:
+
+```typescript
+Cell: ({ value }: { value: string[] }) =>
+value.map(item => (
+    <p css={{ color: 'lightgrey' }} key={item}>
+        {item}
+    </p>
+)),
+```
+
+Встречающиеся почти во всех таблицах столбцы с чекбоксами и настройками вынесены в отдельные геттеры `getSettingsColumn` и `getSelectColumn`.
+
+### Особенности работы таблицы:
+
+При клике левой кнопкой мыши по строке проваливаемся на детальную страницу, соответствующую элементу ряда. В аргумент передается `originalRow`. Это сделано для более гибкого формирования URL или же для задания какого-то другого поведения, например, вызова попапа.
+
+Каждый ряд обернут в компонент Tooltip, что позволяет вызывать контекстное меню (Dropdown) при клике правой кнопкой. Для этого должен быть передан проп `tooltipContent`, содержащий массив пунктов дропдауна. Строго говоря, есть возможность прокидывать в дропдаун вообще любой jsx, но я отказался от этой идеи в пользу того, чтобы дропдаун был единым в каждой таблице.
+
+#### Сортировка
+
+По умолчанию возможность кликнуть на заголовок таблицы для сортировки включена для каждого столбца. Если требуется выключить сортировку, то в настройки соответствующего столбца прописать `disableSortBy: true`. Для того, чтобы получить id (accessor) активного поля, нужно использовать связку `useState` и проп-колбэк таблицы `onSortingChange`, где изменять стейт useState. Обратите внимание, что значение передаваемое в колбэк в случае выбора сортировки по убыванию будет с ведущим знаком минус. Например, сортируем по убыванию id. Вернется строка `-id`, в случае сортировки по возрастанию вернется просто `id`. Именно так передается указание на направление сортировки в наш бэкенд.
+
+```typescript
+const [sort, setSort] = useState(null);
+const {data} = useFetchData({sort})
+
+return <Table onSortingChange={setSort} data={data}... />
+```
+
+#### Разворачивающиеся строки
+
+Для включения режима разворачивающихся строк добавить проп `expandable`.
+В настройки столбца, в котором будет кнопка для разворота добавить настройку яйчейки, например:
+
+```typescript
+Cell: ({ value, row }: { value: string; row: ExtendedRow }) => (
+    <p css={{ paddingLeft: (row?.depth || 0) * scale(4) + (row?.canExpand ? 0 : scale(4)) }}>
+        {row?.canExpand && (
+            <Button
+                theme="ghost"
+                Icon={ChevronDownIcon}
+                {...(row?.getToggleRowExpandedProps && row.getToggleRowExpandedProps())}
+                hidden
+                css={{
+                    ':hover': {
+                        background: 'transparent !important',
+                    },
+                    svg: {
+                        transition: 'transform 0.2s ease',
+                        ...(row?.isExpanded && { transform: 'rotate(-180deg)' }),
+                    },
+                }}
+            >
+                Развернуть/свернуть ряд
+            </Button>
+        )}
+        {value}
+    </p>
+),
+```
+
+#### Прятанье колонок
+
+Реализовано по-умолчанию в случае добавления столбца из геттера `getSettingsColumn`. Влияет только на отображение. Пока что никак и нигде не сохраняется, посколько неясно, где это сохранять.
+
+#### Выбор рядов
+
+По-умолчанию включено, но нужно добавить колонку через геттер `getSelectColumn`. Можно отключить через проп `allowRowSelect`
+
+### Умышленно нереализованные подходы
+
+- **Перетаскивание рядов**
+  Вызывает много боли и страданий, как с точки зрения разработки, так и с точки зрения дизайна. Решено было отказаться.
+
+- **Ряды-строки**
+  Ряд из одной яйчейки на всю ширину таблицы. В случае необходимости реализации подобного, лучше сделать 2 разные таблицы.
+
+- **Ссылки в яйчейках**
+  Убрано в целях повышения удобства использования таблицы. Достаточно двойного нажатия на ряд, для того, чтобы провалиться на детальную страницу
+
+- **Произвольный компонент в разворачивающемся ряду**
+  Неясно, для чего с точки зрения UX. Можно вызвать попап, например.
+
+## Дополнительные компоненты
+
+### TableHeader
+
+<Canvas>
+  <Story name="TableHeader">
+    <TableHeader>
+      <span css={{ flexShrink: 0 }}>Товаров 23</span>
+      <BasicField
+        placeholder="Поиск по названию, артикулу или штрихкоду"
+        css={{ width: scale(42), marginLeft: scale(2) }}
+      />
+      <Button
+        theme="secondary"
+        css={{ marginLeft: scale(2) }}
+        onClick={action('onFiltersClick')}
+      >
+        Фильтры
+      </Button>
+      <Button
+        theme="fill"
+        css={{ marginLeft: scale(2) }}
+        onClick={action('onResetClick')}
+      >
+        Сбросить
+      </Button>
+      <Button theme="secondary" css={{ marginLeft: 'auto' }}>
+        Экспорт товаров
+      </Button>
+    </TableHeader>
+  </Story>
+</Canvas>
+
+Компонент задает общую стилизацию для шапки таблицы. Представляет из себя флексбокс. Прокидывается в проп renderHeader таблицы.
+
+### TableFooter
+
+<Canvas>
+  <Story name="TableFooter">
+    <TableFooter
+      pages={7}
+      itemsPerPageCount={10}
+      setItemsPerPageCount={action('onSetItemsPerPageCount')}
+    />
+  </Story>
+</Canvas>
+
+Компонент подвала таблицы. Стилизован. Содержит пагинацию и селект для выбора количества отображаемых элементов. Допустимое количество отображаемых элементов захардкожено в самом компоненте. Стейт, содержащий количество, и функция для его изменения прокидываются извне.
+
+### TableEmpty
+
+<Canvas>
+  <Story
+    name="TableEmpty"
+    args={{
+      filtersActive: false,
+      titleWithFilters: 'Товары не найдены',
+      titleWithoutFilters: 'Товаров нет',
+      addItems: action('onAddItemsClick'),
+      addItemsText: 'Добавьте товары',
+    }}
+  >
+    {(args) => <TableEmpty {...args} />}
+  </Story>
+</Canvas>
+
+<ArgsTable story="TableEmpty" />
+
+Компонент, который нужно показывать, когда данных в таблице нет.
