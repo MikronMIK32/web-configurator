@@ -1,0 +1,7 @@
+.ci
+.git
+.idea
+.helm
+.next
+.vscode
+node_modules
