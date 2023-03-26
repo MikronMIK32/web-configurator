@@ -44,9 +44,9 @@ jobs:
           cd /var/www/apps/prod-apps/configurator/front
           echo "Performing a rolling update of production service configurator..."
           chmod +x ./rolling-update.sh
-          echo "$(cat rolling-update.sh)"
-          cat rolling-update.sh | awk '{ sub("\\r$", ""); print }' > ./rolling-update.sh
-          echo "$(cat rolling-update.sh)"
+          echo "OLD FILE: $(cat rolling-update.sh)"
+          sed -i 's/\\r// rolling-update.sh
+          echo "NEW FILE: $(cat rolling-update.sh)"
           sh ./rolling-update.sh
           echo "done"
       - name: Deploy stage
