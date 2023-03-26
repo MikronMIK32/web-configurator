@@ -39,6 +39,7 @@ jobs:
           COMMIT_ID: ${{ github.sha }}
         if: env.BRANCH == 'main'
         run: |
+          rm -rf /var/www/apps/prod-apps/configurator/front/src
           cp -r ./ /var/www/apps/prod-apps/configurator/front
           cd /var/www/apps/prod-apps/configurator/front
           echo "Performing a rolling update of production service configurator..."

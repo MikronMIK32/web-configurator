@@ -14,10 +14,10 @@ COPY --from=deps /var/www/node_modules ./node_modules
 RUN yarn build
 # && yarn install --production --ignore-scripts --prefer-offline
 
-FROM jwilder/nginx-proxy
+FROM nginx:latest
 
 COPY --from=builder /var/www/public /usr/share/nginx/html/public
 COPY --from=builder /var/www/dist/ /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY nginx.conf /etc/nginx
 
 EXPOSE 3000
