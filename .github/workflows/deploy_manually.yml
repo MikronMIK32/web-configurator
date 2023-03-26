@@ -10,6 +10,8 @@ jobs:
   deploy:
     runs-on: [self-hosted, prod]
     steps:
+      - name: Set env.BRANCH
+        run: echo "BRANCH=$(echo $GITHUB_REF | cut -d'/' -f 3)" >> $GITHUB_ENV
       - name: Checkout
         uses: actions/checkout@v2
         with:
@@ -29,7 +31,7 @@ jobs:
           cat .env newline.txt __devops/apps/configurator/front/.env > .env
       - name: Create image
         env:
-          BRANCH_NAME: ${{ github.ref##*/ }}
+          REF: ${{ github.ref }}
           COMMIT_ID: ${{ github.sha }}
         run: |
-          echo "TODO: create docker image build! Branch name is ${BRANCH_NAME}, sha is $COMMIT_ID"
+          echo "TODO: create docker image build! Branch name is ${{ env.BRANCH }}, sha is $COMMIT_ID"
