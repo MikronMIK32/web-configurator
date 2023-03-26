@@ -33,7 +33,7 @@ jobs:
           echo "COMMIT_ID=${{ github.sha }}" >> .env
           rm -rf ./devops-extracted
           rm newline.txt
-      - name: Pre-Deploy PRODUCTION
+      - name: Deploy PRODUCTION
         env:
           REF: ${{ github.ref }}
           COMMIT_ID: ${{ github.sha }}
@@ -44,12 +44,8 @@ jobs:
           cd /var/www/apps/prod-apps/configurator/front
           echo "Performing a rolling update of production service configurator..."
           chmod +x ./rolling-update.sh
-      - name: Deploy PRODUCTION
-        env:
-          REF: ${{ github.ref }}
-          COMMIT_ID: ${{ github.sha }}
-        if: env.BRANCH == 'main'
-        run: ./rolling-update.sh
+          content=$(cat ./rolling-update.sh)
+          /bin/bash -e $content
       - name: Deploy stage
         env:
           REF: ${{ github.ref }}
