@@ -43,8 +43,9 @@ jobs:
           cp -r ./ /var/www/apps/prod-apps/configurator/front
           cd /var/www/apps/prod-apps/configurator/front
           echo "Performing a rolling update of production service configurator..."
-          sh ./rolling-update.sh
-          echo "TODO: create docker image build! Branch name is ${{ env.BRANCH }}, sha is $COMMIT_ID"
+          chmod +x ./rolling-update.sh
+          ./rolling-update.sh
+        shell: bash
       - name: Deploy stage
         env:
           REF: ${{ github.ref }}
