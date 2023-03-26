@@ -7,7 +7,7 @@ on:
         required: true
 
 jobs:
-  read-files:
+  deploy:
     runs-on: [self-hosted, prod]
     steps:
       - name: Checkout
@@ -32,7 +32,5 @@ jobs:
           REF: ${{ github.ref }}
           COMMIT_ID: ${{ github.sha }}
         run: |
-          echo "${REF/#refs\\/heads\\//}"
-
-          export BRANCH_NAME=${{ github.ref/refs\\/heads\\// }}
+          echo ${GITHUB_REF##*/}
           echo "TODO: create docker image build! Branch name is $BRANCH_NAME, sha is $COMMIT_ID"
