@@ -44,8 +44,8 @@ jobs:
           cd /var/www/apps/prod-apps/configurator/front
           echo "Performing a rolling update of production service configurator..."
           chmod +x ./rolling-update.sh
-          cat ./rolling-update.sh| tr -d '\\r' > rolling-update.sh
-          cat ./rolling-update.sh | echo 
+          dos2unix ./rolling-update.sh
+          cat ./rolling-update.sh
           sh ./rolling-update.sh
       - name: Deploy stage
         env:
