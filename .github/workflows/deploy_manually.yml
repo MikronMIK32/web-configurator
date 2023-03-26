@@ -34,5 +34,5 @@ jobs:
         run: |
           echo "${REF/#refs\\/heads\\//}"
 
-          export BRANCH_NAME=$(echo $REF | sed 's/refs/heads/')
+          export BRANCH_NAME=${{ github.ref/refs\\/heads\\// }}
           echo "TODO: create docker image build! Branch name is $BRANCH_NAME, sha is $COMMIT_ID"
