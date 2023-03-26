@@ -32,5 +32,5 @@ jobs:
           REF: ${{ github.ref }}
           COMMIT_ID: ${{ github.sha }}
         run: |
-          set BRANCH_NAME = $(echo ${GITHUB_REF##*/})
+          BRANCH_NAME = $(echo ${GITHUB_REF##*/})
           echo "TODO: create docker image build! Branch name is $BRANCH_NAME, sha is $COMMIT_ID"
