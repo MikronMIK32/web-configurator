@@ -20,4 +20,4 @@ COPY --from=builder /var/www/public /usr/share/nginx/html/public
 COPY --from=builder /var/www/dist/ /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-EXPOSE 
+EXPOSE 3000
