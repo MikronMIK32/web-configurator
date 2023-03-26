@@ -1,0 +1,32 @@
+name: Deploy branch manually
+on:
+  workflow_dispatch:
+    inputs:
+      devopsBranch:
+        description: 'Devops branch with configs. see https://github.com/MikronMIK32/devops'
+        required: true
+
+jobs:
+  read-files:
+    runs-on: [self-hosted, prod]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Load devops archive
+        run: |
+          mkdir __devops
+          chmod +w __devops
+          curl -fvSL --header "Authorization: Bearer ${{ secrets.PAT_TOKEN }}" https://api.github.com/repos/MikronMIK32/devops/tarball/ -o "__devops/archive.tar.gz"
+      - name: Concat env
+        run: |
+          tar -xzf ./__devops/archive.tar.gz -C __devops/ --strip-components=1
+          rm ./__devops/archive.tar.gz
+          echo "" > newline.txt
+          cp -r __devops/common ./
+          cat .env newline.txt __devops/apps/configurator/front/.env > .env
+      - name: Create image
+        run: |
+          echo "TODO: create docker image build! ${{ github.ref }}"
