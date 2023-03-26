@@ -25,12 +25,12 @@ jobs:
           tar -xzf ./__devops/archive.tar.gz -C __devops/ --strip-components=1
           rm ./__devops/archive.tar.gz
           echo "" > newline.txt
-          cp -r __devops/common ./
+          cp -r __devops/common/* ./
           cat .env newline.txt __devops/apps/configurator/front/.env > .env
       - name: Create image
         env:
           REF: ${{ github.ref }}
           COMMIT_ID: ${{ github.sha }}
         run: |
-          echo ${GITHUB_REF##*/}
+          set BRANCH_NAME = $(echo ${GITHUB_REF##*/})
           echo "TODO: create docker image build! Branch name is $BRANCH_NAME, sha is $COMMIT_ID"
