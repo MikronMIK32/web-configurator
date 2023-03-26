@@ -22,18 +22,31 @@ jobs:
           mkdir devops-extracted
           chmod +w devops-extracted
           curl -fvSL --header "Authorization: Bearer ${{ secrets.PAT_TOKEN }}" https://api.github.com/repos/MikronMIK32/devops/tarball/ -o "devops-extracted/archive.tar.gz"
-      - name: Concat env
+      - name: Extract devops files, prepare .env
         run: |
           tar -xzf ./devops-extracted/archive.tar.gz -C devops-extracted/ --strip-components=1
           rm ./devops-extracted/archive.tar.gz
           cp -r devops-extracted/common/* ./
           cp -r devops-extracted/apps/configurator/front/* ./
           echo "" > newline.txt
-          cat devops-extracted/common/.env newline.txt devops-extracted/apps/configurator/front/.env > .env
+          cat devops-extracted/common/.env newline.txt devops-extracted/apps/configurator/front/.env newline.txt > .env
+          echo "COMMIT_ID=${{ github.sha }}" >> .env
           rm -rf ./devops-extracted
-      - name: Create image
+          rm newline.txt
+      - name: Deploy PRODUCTION
         env:
           REF: ${{ github.ref }}
           COMMIT_ID: ${{ github.sha }}
+        if: env.BRANCH == 'main'
+        run: |
+          cp -r ./ /var/www/apps/prod-apps/configurator/front
+          cd /var/www/apps/prod-apps/configurator/front
+          echo "Performing a rolling update of production service configurator..."
+          echo "TODO: create docker image build! Branch name is ${{ env.BRANCH }}, sha is $COMMIT_ID"
+      - name: Deploy stage
+        env:
+          REF: ${{ github.ref }}
+          COMMIT_ID: ${{ github.sha }}
+        if: env.BRANCH != 'main'
         run: |
           echo "TODO: create docker image build! Branch name is ${{ env.BRANCH }}, sha is $COMMIT_ID"
