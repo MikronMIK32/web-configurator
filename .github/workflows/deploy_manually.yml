@@ -29,11 +29,7 @@ jobs:
           cat .env newline.txt __devops/apps/configurator/front/.env > .env
       - name: Create image
         env:
-          REF: ${{ github.ref }}
+          BRANCH_NAME: ${GITHUB_REF##*/}
           COMMIT_ID: ${{ github.sha }}
         run: |
-          set BRANCH_NAME = $(echo ${GITHUB_REF##*/})
-          echo $BRANCH_NAME
-          echo "$BRANCH_NAME"
-          echo BRANCH_NAME
-          echo "TODO: create docker image build! Branch name is $BRANCH_NAME, sha is $COMMIT_ID"
+          echo "TODO: create docker image build! Branch name is ${BRANCH_NAME}, sha is $COMMIT_ID"
