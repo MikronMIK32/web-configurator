@@ -26,8 +26,7 @@ jobs:
           rm ./__devops/archive.tar.gz
           echo "" > newline.txt
           cp -r __devops/common/* ./
-          mv .env .common.env
-          cat .common.env newline.txt __devops/apps/configurator/front/.env > .env
+          cat .env newline.txt __devops/apps/configurator/front/.env > .env
       - name: Create image
         env:
           REF: ${{ github.ref }}
