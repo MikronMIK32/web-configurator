@@ -19,16 +19,18 @@ jobs:
 
       - name: Load devops archive
         run: |
-          mkdir __devops
-          chmod +w __devops
-          curl -fvSL --header "Authorization: Bearer ${{ secrets.PAT_TOKEN }}" https://api.github.com/repos/MikronMIK32/devops/tarball/ -o "__devops/archive.tar.gz"
+          mkdir devops-extracted
+          chmod +w devops-extracted
+          curl -fvSL --header "Authorization: Bearer ${{ secrets.PAT_TOKEN }}" https://api.github.com/repos/MikronMIK32/devops/tarball/ -o "devops-extracted/archive.tar.gz"
       - name: Concat env
         run: |
-          tar -xzf ./__devops/archive.tar.gz -C __devops/ --strip-components=1
-          rm ./__devops/archive.tar.gz
+          tar -xzf ./devops-extracted/archive.tar.gz -C devops-extracted/ --strip-components=1
+          rm ./devops-extracted/archive.tar.gz
+          cp -r devops-extracted/common/* ./
+          cp -r devops-extracted/apps/configurator/front/* ./
           echo "" > newline.txt
-          cp -r __devops/common/* ./
-          cat .env newline.txt __devops/apps/configurator/front/.env > .env
+          cat devops-extracted/common/.env newline.txt devops-extracted/apps/configurator/front/.env > .env
+          rm -rf ./devops-extracted
       - name: Create image
         env:
           REF: ${{ github.ref }}
