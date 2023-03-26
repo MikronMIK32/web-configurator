@@ -47,6 +47,8 @@ jobs:
           # echo "OLD FILE: $(cat rolling-update.sh)"
           # sed -i 's/\\r// rolling-update.sh
           #  echo "NEW FILE: $(cat rolling-update.sh)"
+          apt install dos2unix
+          dos2unix rolling-update.sh
           ./rolling-update.sh
           echo "done"
       - name: Deploy stage
