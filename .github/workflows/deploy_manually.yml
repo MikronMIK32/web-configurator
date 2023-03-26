@@ -34,9 +34,6 @@ jobs:
           rm -rf ./devops-extracted
           rm newline.txt
       - name: Pre-Deploy PRODUCTION
-        env:
-          REF: ${{ github.ref }}
-          COMMIT_ID: ${{ github.sha }}
         if: env.BRANCH == 'main'
         run: |
           rm -rf /var/www/apps/prod-apps/configurator/front/src
@@ -50,7 +47,6 @@ jobs:
           COMMIT_ID: ${{ github.sha }}
         if: env.BRANCH == 'main'
         run: ./rolling-update.sh
-        shell: bash
       - name: Deploy stage
         env:
           REF: ${{ github.ref }}
