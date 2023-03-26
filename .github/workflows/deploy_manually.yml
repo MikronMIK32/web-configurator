@@ -29,4 +29,5 @@ jobs:
           cat .env newline.txt __devops/apps/configurator/front/.env > .env
       - name: Create image
         run: |
-          echo "TODO: create docker image build! ${{ github.ref }}"
+          export BRANCH_NAME = ${GITHUB_REF#refs/heads/}
+          echo "TODO: create docker image build! $BRANCH_NAME"
