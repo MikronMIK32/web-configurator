@@ -1,6 +1,6 @@
 # react-configurator
 MIK32 configurator
 
-Demo: https://iamcsharper.github.io/react-configurator/dist/
+Demo: https://configurator.mik32.ru/
 
-Backend: https://github.com/sh-sergey/mik32-configurator-codegen
+Backend: https://github.com/MikronMIK32/configurator-codegen
