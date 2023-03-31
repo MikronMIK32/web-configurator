@@ -78,3 +78,14 @@ declare module "react-split-pane" {
 
   export { Pane };
 }
+
+
+declare namespace NodeJS {
+  export interface ProcessEnv {
+    APP_ENV: string;
+    ASSET_URL: string;
+    BASE_URL: string;
+    USE_LOCAL_STORAGE: string;
+    API_HOST: string;
+  }
+}

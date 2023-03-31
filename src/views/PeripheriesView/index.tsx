@@ -1,16 +1,19 @@
-import { colors } from '@scripts/colors';
 import { Allotment } from 'allotment';
 import 'allotment/dist/style.css';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import Sidebar from '@containers/utility/Periphery/Sidebar';
+
 import Microchip from '@components/Microchip';
-import PeripheryPage from './[Periphery]';
+
+import { colors } from '@scripts/colors';
+
+import PeripheryPage from '../[Periphery]';
+import Sidebar from './Sidebar';
 
 const isDark = true;
 
 const basename = process.env.BASE_URL;
 
-const Periphery = () => (
+const PeripheriesView = () => (
   <BrowserRouter basename={basename}>
     <Allotment proportionalLayout={false}>
       <Allotment.Pane maxSize={300} minSize={200}>
@@ -40,4 +43,4 @@ const Periphery = () => (
   </BrowserRouter>
 );
 
-export default Periphery;
+export default PeripheriesView;

@@ -21,7 +21,7 @@ jobs:
         run: |
           mkdir devops-extracted
           chmod +w devops-extracted
-          curl -fvSL --header "Authorization: Bearer ${{ secrets.PAT_TOKEN }}" https://api.github.com/repos/MikronMIK32/devops/tarball/ -o "devops-extracted/archive.tar.gz"
+          curl -fSL --header "Authorization: Bearer ${{ secrets.PAT_TOKEN }}" https://api.github.com/repos/MikronMIK32/devops/tarball/${{ inputs.devopsBranch }} -o "devops-extracted/archive.tar.gz"
       - name: Extract devops files, prepare .env
         run: |
           tar -xzf ./devops-extracted/archive.tar.gz -C devops-extracted/ --strip-components=1
@@ -44,9 +44,6 @@ jobs:
           cd /var/www/apps/prod-apps/configurator/front
           echo "Performing a rolling update of production service configurator..."
           chmod +x ./rolling-update.sh
-          # echo "OLD FILE: $(cat rolling-update.sh)"
-          # sed -i 's/\\r// rolling-update.sh
-          #  echo "NEW FILE: $(cat rolling-update.sh)"
           apt install dos2unix
           dos2unix rolling-update.sh
           ./rolling-update.sh

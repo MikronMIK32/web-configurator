@@ -6,10 +6,10 @@ import { DetailsProvider, useDetails } from '@context/details';
 
 import SpinnerSuspense from '@components/SpinnerSuspense';
 
-const Analog = lazy(() => import('@containers/utility/Periphery/Analog'));
-const Crypto = lazy(() => import('@containers/utility/Periphery/Crypto'));
-const Timers = lazy(() => import('@containers/utility/Periphery/Timers'));
-const Interface = lazy(() => import('@containers/utility/Periphery/Interface'));
+const Analog = lazy(() => import('./Analog'));
+const Crypto = lazy(() => import('./Crypto'));
+const Timers = lazy(() => import('./Timers'));
+const Interface = lazy(() => import('./Interface'));
 
 const SplitPanes = () => {
   const props = useParams();
