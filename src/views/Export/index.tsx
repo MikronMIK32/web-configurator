@@ -75,7 +75,12 @@ const ExportView = () => {
         disabled={data.isLoaded}
         onClick={async () => {
           try {
-            await generateProject.mutateAsync(store.getState());
+            const result = await generateProject.mutateAsync(store.getState());
+
+            setData({
+              isLoaded: true,
+              link: result.data.link,
+            });
           } catch (err: any) {
             console.error(err);
             setData({
