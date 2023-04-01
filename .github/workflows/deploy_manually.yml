@@ -47,6 +47,7 @@ jobs:
           # apt install dos2unix
           # dos2unix rolling-update.sh
           # ./rolling-update.sh
+          docker compose build
           (docker compose down && docker compose up -d) || exit 1
           echo "done"
       - name: Deploy stage
