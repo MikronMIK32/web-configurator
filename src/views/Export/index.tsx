@@ -64,7 +64,7 @@ const ExportView = () => {
           ) : (
             <p>
               Ваша ссылка на скачивание:
-              <Button as="a" href={data.link} download>
+              <Button as="a" href={data.link?.replace('https', 'http')} download>
                 скачать
               </Button>
             </p>
