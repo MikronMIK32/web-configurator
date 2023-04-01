@@ -55,7 +55,7 @@ const ExportView = () => {
                 }
               : {
                   background: colors.success,
-                  color: colors.white,
+                  color: colors.black,
                 }),
           }}
         >
