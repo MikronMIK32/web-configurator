@@ -15,7 +15,7 @@ export const tickPhaseOptions: OptionShape[] = [
     value: TickPhase.ACTIVE_OUTSIDE,
   },
   {
-    key: 'Тактовая частота НЕактивна вне слова',
+    key: 'Тактовая частота неактивна вне слова',
     value: TickPhase.INACTIVE_OUTSIDE,
   },
 ];
@@ -130,91 +130,68 @@ export const modeOptions: OptionShape[] = [
   },
 ];
 
-export const spiStateSchema = z
-  .object({
-    // Common
-    mode: z.nativeEnum(Mode, { required_error: 'Обязательное поле' }),
-    divider: z.number({ required_error: 'Обязательное поле' }),
-    tickPhase: z.nativeEnum(TickPhase, { required_error: 'Обязательное поле' }),
-    tickPolarity: z.nativeEnum(TickPolarity, { required_error: 'Обязательное поле' }),
-    packageSize: z.number({ required_error: 'Обязательное поле' }),
+const modeEnum = z.nativeEnum(Mode, { required_error: 'Обязательное поле' });
 
-    // Master
-    peripheralDecoder: z.nativeEnum(PeripheralDecoder, { required_error: 'Обязательное поле' }).optional(),
-    slaveSignalControl: z.nativeEnum(SlaveSignalControl, { required_error: 'Обязательное поле' }).optional(),
-    slave: z.nativeEnum(Slave, { required_error: 'Обязательное поле' }).optional(),
-  })
-  .refine(
-    val => {
-      const isMaster = val.mode === Mode.MASTER;
-      if (!isMaster) return true;
+const commonSchema = z.object({
+  tickPhase: z.nativeEnum(TickPhase, { required_error: 'Обязательное поле' }),
+  tickPolarity: z.nativeEnum(TickPolarity, { required_error: 'Обязательное поле' }),
+  packageSize: z.number({ required_error: 'Обязательное поле' }),
+});
 
-      const isAutoSignal = val.slaveSignalControl === SlaveSignalControl.AUTO;
-      if (!isAutoSignal) return true;
+const disabledSchema = commonSchema.extend({
+  mode: z.literal(modeEnum.enum.DISABLED),
+});
 
-      return val.slave !== undefined;
-    },
-    {
-      message: 'Обязательное поле',
-      path: ['slave'],
-    }
-  )
-  .refine(
-    val => {
-      const isMaster = val.mode === Mode.MASTER;
-      if (!isMaster) {
-        return true;
-      }
+const masterSchema = commonSchema.extend({
+  mode: z.literal(modeEnum.enum.MASTER),
+  divider: z.number({ required_error: 'Обязательное поле' }),
 
-      if ([val.peripheralDecoder, val.slaveSignalControl].some(e => e === undefined)) return false;
+  peripheralDecoder: z.nativeEnum(PeripheralDecoder, { required_error: 'Обязательное поле' }).optional(),
+  slaveSignalControl: z.nativeEnum(SlaveSignalControl, { required_error: 'Обязательное поле' }).optional(),
+  slave: z.nativeEnum(Slave, { required_error: 'Обязательное поле' }).optional(),
+});
 
-      return true;
-    },
-    {
-      message: 'Обязательное поле',
-      path: ['peripheralDecoder'],
-    }
-  );
+const slaveSchema = commonSchema.extend({
+  mode: z.literal(modeEnum.enum.SLAVE),
+});
 
-export type SpiState = z.infer<typeof spiStateSchema>;
+const union = z.union([disabledSchema, masterSchema, slaveSchema]);
+
+export const spiStateSchema = z.discriminatedUnion('mode', [disabledSchema, masterSchema, slaveSchema]);
+
+export type SpiState = z.infer<typeof union>;
 
 export const spiInitialState: SpiState = {
   mode: Mode.DISABLED,
-
-  // Common
-  divider: 4,
   tickPhase: TickPhase.ACTIVE_OUTSIDE,
   tickPolarity: TickPolarity.LOW,
   packageSize: 8,
-
-  // Master
-  peripheralDecoder: PeripheralDecoder.ONE_OF_FOUR,
-  slaveSignalControl: SlaveSignalControl.AUTO,
-  slave: Slave.NONE,
 };
 
-export const spiInitialStateMaster: Pick<SpiState, 'peripheralDecoder' | 'slaveSignalControl' | 'slave'> = {
+export const spiInitialStateMaster: Omit<z.infer<typeof masterSchema>, keyof z.infer<typeof commonSchema>> = {
+  mode: Mode.MASTER,
   peripheralDecoder: PeripheralDecoder.ONE_OF_FOUR,
   slaveSignalControl: SlaveSignalControl.AUTO,
   slave: Slave.NONE,
+  divider: 4,
 };
 
 export const spiSlice = createSlice({
   name: 'spi',
-  initialState: spiInitialState,
+  initialState: {
+    spi0: { ...(spiInitialState as SpiState) },
+    spi1: { ...(spiInitialState as SpiState) },
+  },
   reducers: {
-    setSpi: (_, action: PayloadAction<SpiState>) => ({
-      ...action.payload,
-      ...(action.payload.slaveSignalControl === SlaveSignalControl.MANUAL && {
-        slave: Slave.NONE,
-      }),
-      ...(action.payload.mode !== Mode.MASTER && {
-        peripheralDecoder: undefined,
-        slaveSignalControl: undefined,
-        slave: undefined,
-      }),
+    setSpi0: (old, action: PayloadAction<SpiState>) => ({
+      ...old,
+      spi0: action.payload,
+    }),
+    setSpi1: (old, action: PayloadAction<SpiState>) => ({
+      ...old,
+      spi1: action.payload,
     }),
   },
 });
 
-export const { setSpi } = spiSlice.actions;
+export const { setSpi0, setSpi1 } = spiSlice.actions;

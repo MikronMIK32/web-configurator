@@ -6,6 +6,14 @@ import { Schema } from 'zod';
 export type MergeElementProps<T extends ElementType, P extends object = {}> = Omit<ComponentPropsWithRef<T>, keyof P> &
   P;
 
+export type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends (k: infer I) => void ? I : never;
+
+export type Optionalize<T> = {
+  [K in keyof T]?: T[K];
+};
+
+export type UnionToOptionalIntersection<U> = Optionalize<UnionToIntersection<U>>;
+
 export const scale = (n: number, isMinor?: boolean) => {
   const prime = isMinor ? 4 : 8;
   return n * prime;

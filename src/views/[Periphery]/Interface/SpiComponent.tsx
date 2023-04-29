@@ -1,7 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ReactNode, useEffect } from 'react';
 import { useForm, useFormContext, useWatch } from 'react-hook-form';
-import { useDispatch, useSelector, useStore } from 'react-redux';
 
 import { FormSticky } from '@components/FormSticky';
 import LabelWithInfo from '@components/LabelWithInfo';
@@ -11,7 +10,6 @@ import Form from '@components/controls/Form';
 import Select from '@components/controls/NewSelect';
 import Tabs from '@components/controls/Tabs';
 
-import { RootState } from '@store/index';
 import {
   Mode,
   SlaveSignalControl,
@@ -20,7 +18,6 @@ import {
   modeOptions,
   packageSizeOptions,
   peripheralDecoderOptions,
-  setSpi,
   slaveOptions,
   slaveSignalControlOptions,
   spiInitialState,
@@ -61,16 +58,18 @@ const SpiSettings = () => {
 
   return (
     <>
-      <Form.Field name="divider" css={{ marginBottom: scale(2) }}>
-        <Select
-          label={
-            <LabelWithInfo title="TODO" description="TODO">
-              Делитель частоты
-            </LabelWithInfo>
-          }
-          options={dividerOptions}
-        />
-      </Form.Field>
+      {mode === Mode.MASTER && (
+        <Form.Field name="divider" css={{ marginBottom: scale(2) }}>
+          <Select
+            label={
+              <LabelWithInfo title="TODO" description="TODO">
+                Делитель частоты
+              </LabelWithInfo>
+            }
+            options={dividerOptions}
+          />
+        </Form.Field>
+      )}
       <Form.Field name="tickPhase" css={{ marginBottom: scale(2) }}>
         <Select
           label={
@@ -165,12 +164,17 @@ const CommonSettings = () => (
   </div>
 );
 
-const SpiForm = ({ children }: { children: ReactNode }) => {
-  const dispatch = useDispatch();
-  const store = useStore<RootState>();
-  const spi = useSelector<RootState, SpiState>(state => state.interface.spi);
+const SpiForm = ({
+  children,
+  initialValues,
+  onSubmit,
+}: {
+  children: ReactNode;
+  initialValues: SpiState;
+  onSubmit: (values: SpiState) => void;
+}) => {
   const form = useForm<SpiState>({
-    defaultValues: spi,
+    defaultValues: initialValues,
     mode: 'all',
     resolver: zodResolver(spiStateSchema),
   });
@@ -185,14 +189,13 @@ const SpiForm = ({ children }: { children: ReactNode }) => {
       <Form
         methods={form}
         onSubmit={vals => {
-          dispatch(setSpi(vals));
-          const newVals = store.getState().interface.spi;
-          form.reset(newVals);
+          onSubmit(vals);
+          form.reset(vals);
         }}
         onReset={(_, keepStateOptions) => {
           if (!keepStateOptions?.keepIsSubmitted) return;
 
-          dispatch(setSpi(form.getValues()));
+          onSubmit(initialValues);
           form.reset();
         }}
         css={{
@@ -208,20 +211,17 @@ const SpiForm = ({ children }: { children: ReactNode }) => {
   );
 };
 
-const SpiInner = () => {
+const SpiInner = ({ onSubmit, initialValues }: { initialValues: SpiState; onSubmit: (values: SpiState) => void }) => {
   const formContext = useFormContext();
-  const spi = useSelector<RootState, SpiState>(state => state.interface.spi);
-
-  const dispatch = useDispatch();
 
   return (
     <FormSticky
       onDefaultReset={() => {
-        dispatch(setSpi(spiInitialState));
+        onSubmit(spiInitialState);
         formContext.reset(spiInitialState);
       }}
       onReset={() => {
-        formContext.reset(spi);
+        formContext.reset(initialValues);
       }}
       css={{
         padding: scale(2),
@@ -231,9 +231,17 @@ const SpiInner = () => {
   );
 };
 
-const Spi = () => (
-  <SpiForm>
-    <PeripheryWrapper title="Настройки spi">
+const SpiComponent = ({
+  name,
+  initialValues,
+  onSubmit,
+}: {
+  name: string;
+  initialValues: SpiState;
+  onSubmit: (values: SpiState) => void;
+}) => (
+  <SpiForm initialValues={initialValues} onSubmit={onSubmit}>
+    <PeripheryWrapper title={`Настройки ${name}`}>
       <CommonSettings />
       <Tabs css={{ marginTop: scale(2) }} forceRenderTabPanel>
         <Tabs.List>
@@ -248,8 +256,8 @@ const Spi = () => (
         <Tabs.Panel>В работе</Tabs.Panel>
       </Tabs>
     </PeripheryWrapper>
-    <SpiInner />
+    <SpiInner initialValues={initialValues} onSubmit={onSubmit} />
   </SpiForm>
 );
 
-export default Spi;
+export default SpiComponent;

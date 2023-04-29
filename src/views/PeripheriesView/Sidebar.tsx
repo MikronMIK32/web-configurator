@@ -1,10 +1,12 @@
-import NavLink from '@components/NavLink';
-import Sidebar from '@components/Sidebar';
-import { scale } from '@scripts/helpers';
-import { useFieldCSS } from '@scripts/hooks/useFieldCSS';
 import { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { useLocation } from 'react-router-dom';
+
+import NavLink from '@components/NavLink';
+import Sidebar from '@components/Sidebar';
+
+import { scale } from '@scripts/helpers';
+import { useFieldCSS } from '@scripts/hooks/useFieldCSS';
 
 interface LinkData {
   label: string;
@@ -96,8 +98,12 @@ const items: LinkGroup[] = [
         to: '/periphery/interface/i2c',
       },
       {
-        label: 'SPI',
-        to: '/periphery/interface/spi',
+        label: 'SPI0',
+        to: '/periphery/interface/spi0',
+      },
+      {
+        label: 'SPI1',
+        to: '/periphery/interface/spi1',
       },
       {
         label: 'SPIFI',
@@ -154,13 +160,7 @@ const items: LinkGroup[] = [
 //   );
 // };
 
-const SidebarContainer = ({
-  isDark,
-  className,
-}: {
-  isDark: boolean;
-  className?: string;
-}) => {
+const SidebarContainer = ({ isDark, className }: { isDark: boolean; className?: string }) => {
   const { pathname } = useLocation();
 
   const activeGroupId = useMemo<string>(() => {
@@ -169,7 +169,7 @@ const SidebarContainer = ({
     for (let i = 0; i < items.length; i += 1) {
       const groupItems = items[i].links;
 
-      if (groupItems.map((e) => e.to).includes(pathname)) {
+      if (groupItems.map(e => e.to).includes(pathname)) {
         groupIndex = i;
         break;
       }
@@ -187,17 +187,17 @@ const SidebarContainer = ({
   const search = watch('search');
   const filteredItems = useMemo(
     () =>
-      items.filter((el) => {
+      items.filter(el => {
         const term = search.toLowerCase();
         if (el.label.toLowerCase().includes(term)) return true;
 
         const concat = el.links
-          .map((e) => e.label)
+          .map(e => e.label)
           .join(',')
           .toLowerCase();
         return concat.includes(term);
       }),
-    [search],
+    [search]
   );
 
   const preExpanded = useMemo<string[]>(() => {
@@ -233,11 +233,7 @@ const SidebarContainer = ({
                 }}
               >
                 {group.links.map(({ to, label }, index) => (
-                  <NavLink
-                    variant={isDark ? 'dark' : 'primary'}
-                    key={index}
-                    to={to}
-                  >
+                  <NavLink variant={isDark ? 'dark' : 'primary'} key={index} to={to}>
                     {label}
                   </NavLink>
                 ))}
