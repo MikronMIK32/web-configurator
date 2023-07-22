@@ -1,19 +1,29 @@
+import { useMemo, useRef, useState } from 'react';
+
 import { colors } from '@scripts/colors';
 import { scale } from '@scripts/helpers';
-import { useMemo, useRef, useState } from 'react';
-import Droppanel, {
-  DroppanelMode,
-  DroppanelPivot,
-  DroppanelOption,
-} from './Droppanel';
+
+import Droppanel, { DroppanelMode, DroppanelOption, DroppanelPivot } from './Droppanel';
 import Pin from './Pin';
 import PinColumn, { PinColumnProps } from './PinColumn';
 
 // TODO
 
-const SIZE = scale(32);
+const createRange = (from: number, to: number) => {
+  const range = new Array(to - from + 1);
+
+  // eslint-disable-next-line no-plusplus
+  for (let i = from; i < to; i++) {
+    range.push(i);
+  }
+
+  return range;
+};
+
+const PIN_HEIGHT = scale(3);
+const COLUMN_PINS_COUNT = 16;
+const SIZE = (COLUMN_PINS_COUNT + 1) * PIN_HEIGHT;
 const COL_WIDTH = scale(10);
-const COLUMN_PINS_COUNT = 8;
 
 const Microchip = () => {
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -43,59 +53,6 @@ const Microchip = () => {
 
   const options = useMemo<DroppanelOption<string>[]>(() => [], []);
 
-  const cols = useMemo(() => {
-    const result: (PinColumnProps & {
-      pins: { name: string; id: number }[];
-    })[] = [
-      // левая
-      {
-        left: -COL_WIDTH,
-        top: scale(3),
-        pins: [],
-        rotation: 0,
-      },
-      // нижняя
-      {
-        left: (scale(3) * (COLUMN_PINS_COUNT * 3 - 2)) / 6,
-        top: SIZE - COL_WIDTH / 2 - scale(3),
-        pins: [],
-        rotation: -90,
-      },
-      // правая
-      {
-        left: SIZE,
-        top: scale(3),
-        pins: [],
-        rotation: 0,
-        reverse: true,
-      },
-      // верхняя
-      {
-        left: (scale(3) * (COLUMN_PINS_COUNT * 3 - 2)) / 6,
-        top: -SIZE / 2 - (scale(2) - 2),
-        pins: [],
-        rotation: -90,
-        reverse: true,
-      },
-    ];
-
-    for (let j = 0; j < 4; j += 1) {
-      const arr: { name: string; id: number }[] = [];
-      for (let i = 0; i < COLUMN_PINS_COUNT; i += 1) {
-        const id = i + j * COLUMN_PINS_COUNT;
-
-        arr.push({
-          id,
-          name: `Pin${id + 1}`,
-        });
-      }
-
-      result[j].pins = arr;
-    }
-
-    return result;
-  }, []);
-
   return (
     <div
       ref={wrapperRef}
@@ -112,7 +69,7 @@ const Microchip = () => {
         mode={DroppanelMode.Fixed}
         pivot={pivot}
         options={options}
-        onSelect={(e) => {
+        onSelect={e => {
           console.log(e);
         }}
       />
@@ -120,6 +77,8 @@ const Microchip = () => {
       <div
         css={{
           position: 'relative',
+          width: SIZE,
+          height: SIZE,
         }}
         // style={{
         //   transform,
@@ -133,29 +92,88 @@ const Microchip = () => {
             justifyContent: 'center',
             background: colors.grey200,
             userSelect: 'none',
-
-            width: SIZE,
-            height: SIZE,
+            width: '100%',
+            height: '100%',
           }}
         >
-          MIK32 (QFPN32)
+          MIK32 (QFPN64)
         </div>
-        {cols.map((col, i) => (
-          <PinColumn key={i} width={COL_WIDTH} {...col}>
-            {col.pins.map((pin, p_i) => (
-              <Pin
-                key={p_i}
-                name={pin.name}
-                isActive={false}
-                onClick={() => {
-                  console.log('pin clicked:', pin.id);
-                }}
-              >
-                {/* <span>Бейджики</span> */}
-              </Pin>
-            ))}
-          </PinColumn>
-        ))}
+        <PinColumn
+          width={COL_WIDTH}
+          parentSize={SIZE}
+          rotation={0}
+          left={`calc(50% - ${COL_WIDTH}px)`}
+          top="calc(50% - 2px)"
+        >
+          {createRange(1, 1 + 16).map(pin => (
+            <Pin
+              key={pin}
+              name={`Pin #${pin}`}
+              isActive={false}
+              onClick={() => {
+                console.log('pin clicked:', pin);
+              }}
+            >
+              {/* <span>Бейджики</span> */}
+            </Pin>
+          ))}
+        </PinColumn>
+        <PinColumn
+          reverse
+          width={COL_WIDTH}
+          parentSize={SIZE}
+          rotation={90}
+          left={-COL_WIDTH / 2}
+          top={`calc(100% + ${COL_WIDTH / 2}px)`}
+        >
+          {createRange(1 + 16, 1 + 32).map(pin => (
+            <Pin
+              key={pin}
+              name={`Pin #${pin}`}
+              isActive={false}
+              onClick={() => {
+                console.log('pin clicked:', pin);
+              }}
+            >
+              {/* <span>Бейджики</span> */}
+            </Pin>
+          ))}
+        </PinColumn>
+        <PinColumn reverse width={COL_WIDTH} parentSize={SIZE} rotation={0} left="150%" top="calc(50% - 2px)">
+          {createRange(1 + 32, 1 + 48).map(pin => (
+            <Pin
+              key={pin}
+              name={`Pin #${pin}`}
+              isActive={false}
+              onClick={() => {
+                console.log('pin clicked:', pin);
+              }}
+            >
+              {/* <span>Бейджики</span> */}
+            </Pin>
+          ))}
+        </PinColumn>
+        <PinColumn
+          reverse
+          width={COL_WIDTH}
+          parentSize={SIZE}
+          rotation={-90}
+          left={`calc(100% - ${COL_WIDTH / 2}px)`}
+          top={`calc(-100% - ${COL_WIDTH / 2}px)`}
+        >
+          {createRange(1 + 48, 1 + 64).map(pin => (
+            <Pin
+              key={pin}
+              name={`Pin #${pin}`}
+              isActive={false}
+              onClick={() => {
+                console.log('pin clicked:', pin);
+              }}
+            >
+              {/* <span>Бейджики</span> */}
+            </Pin>
+          ))}
+        </PinColumn>
       </div>
     </div>
   );

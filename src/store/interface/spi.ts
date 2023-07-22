@@ -41,6 +41,32 @@ export enum PeripheralDecoder {
   EXTERNAL = 'external',
 }
 
+enum InternalDevice {
+  ONE,
+  TWO,
+  THREE,
+  FOUR,
+}
+
+export const internalDecoderDeviceOptions: OptionShape[] = [
+  {
+    key: 'Устройство №1',
+    value: InternalDevice.ONE,
+  },
+  {
+    key: 'Устройство №2',
+    value: InternalDevice.TWO,
+  },
+  {
+    key: 'Устройство №3',
+    value: InternalDevice.THREE,
+  },
+  {
+    key: 'Устройство №4',
+    value: InternalDevice.FOUR,
+  },
+];
+
 export const peripheralDecoderOptions: OptionShape[] = [
   {
     key: 'Выбор 1 из 4 устройств',
@@ -73,8 +99,8 @@ export const dividerOptions: OptionShape[] = [4, 8, 16, 32, 64, 128, 256].map(e 
   value: e,
 }));
 
-export const packageSizeOptions: OptionShape[] = [8, 16, 24, 32].map(e => ({
-  key: `${e} бит`,
+export const txThresholdOptions: OptionShape[] = [1, 2, 3, 4, 5, 6, 7, 8].map(e => ({
+  key: `${e}`,
   value: e,
 }));
 
@@ -135,12 +161,31 @@ const modeEnum = z.nativeEnum(Mode, { required_error: 'Обязательное 
 const commonSchema = z.object({
   tickPhase: z.nativeEnum(TickPhase, { required_error: 'Обязательное поле' }),
   tickPolarity: z.nativeEnum(TickPolarity, { required_error: 'Обязательное поле' }),
-  packageSize: z.number({ required_error: 'Обязательное поле' }),
+  txThreshold: z.number({ required_error: 'Обязательное поле' }),
 });
 
 const disabledSchema = commonSchema.extend({
   mode: z.literal(modeEnum.enum.DISABLED),
 });
+
+const externalDecoderSchema = z.object({
+  peripheralDecoder: z.literal(PeripheralDecoder.EXTERNAL),
+  externalDecoderValue: z
+    .number({ required_error: 'Обязательное поле' })
+    .min(0, {
+      message: 'Введите число',
+    })
+    .max(15, {
+      message: 'Число должно быть менее 16 (4-битное)',
+    }),
+});
+
+const internalDecoderSchema = z.object({
+  peripheralDecoder: z.literal(PeripheralDecoder.ONE_OF_FOUR),
+  internalDecoderDevice: z.nativeEnum(InternalDevice, { required_error: 'Обязательное поле' }),
+});
+
+const decoderUnion = z.discriminatedUnion('peripheralDecoder', [externalDecoderSchema, internalDecoderSchema]);
 
 const masterSchema = commonSchema.extend({
   mode: z.literal(modeEnum.enum.MASTER),
@@ -157,7 +202,9 @@ const slaveSchema = commonSchema.extend({
 
 const union = z.union([disabledSchema, masterSchema, slaveSchema]);
 
-export const spiStateSchema = z.discriminatedUnion('mode', [disabledSchema, masterSchema, slaveSchema]);
+export const spiStateSchema = z
+  .discriminatedUnion('mode', [disabledSchema, masterSchema, slaveSchema])
+  .and(decoderUnion);
 
 export type SpiState = z.infer<typeof union>;
 
@@ -165,7 +212,7 @@ export const spiInitialState: SpiState = {
   mode: Mode.DISABLED,
   tickPhase: TickPhase.ACTIVE_OUTSIDE,
   tickPolarity: TickPolarity.LOW,
-  packageSize: 8,
+  txThreshold: 1,
 };
 
 export const spiInitialStateMaster: Omit<z.infer<typeof masterSchema>, keyof z.infer<typeof commonSchema>> = {

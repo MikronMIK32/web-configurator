@@ -2,28 +2,31 @@ import { ReactNode } from 'react';
 
 export interface PinColumnProps {
   children?: ReactNode | ReactNode[];
-  left: number;
-  top: number;
   rotation: number;
   width?: number;
   reverse?: boolean;
+  parentSize: number;
+  left: string | number;
+  top: string | number;
 }
 
 const PinColumn = ({
-  top,
-  left,
   width,
   rotation,
   children,
   reverse,
+  parentSize,
+  left,
+  top,
 }: PinColumnProps) => (
   <div
     css={{
       position: 'absolute',
+      width,
       top,
       left,
-      width,
-      transform: `rotate(${rotation}deg)`,
+      transform: `rotate(${rotation}deg) translate(-${parentSize/2}px, -${parentSize/2}px)`,
+      transformOrigin: 'center'
     }}
   >
     <div

@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ReactNode, useEffect } from 'react';
+import { ReactNode, useEffect, useRef } from 'react';
 import { useForm, useFormContext, useWatch } from 'react-hook-form';
 
 import { FormSticky } from '@components/FormSticky';
@@ -7,16 +7,19 @@ import LabelWithInfo from '@components/LabelWithInfo';
 import { PeripheryWrapper } from '@components/PeripheryWrapper';
 import FormUnsavedPrompt from '@components/UnsavedPrompt';
 import Form from '@components/controls/Form';
+import IntegerMaskedInput from '@components/controls/IntegerMaskedInput';
+import { IntegerFormat } from '@components/controls/IntegerMaskedInput/types';
 import Select from '@components/controls/NewSelect';
 import Tabs from '@components/controls/Tabs';
 
 import {
   Mode,
+  PeripheralDecoder,
   SlaveSignalControl,
   SpiState,
   dividerOptions,
+  internalDecoderDeviceOptions,
   modeOptions,
-  packageSizeOptions,
   peripheralDecoderOptions,
   slaveOptions,
   slaveSignalControlOptions,
@@ -25,6 +28,7 @@ import {
   spiStateSchema,
   tickPhaseOptions,
   tickPolarityOptions,
+  txThresholdOptions,
 } from '@store/interface/spi';
 
 import { scale } from '@scripts/helpers';
@@ -32,9 +36,25 @@ import { usePrevious } from '@scripts/hooks/usePrevious';
 
 const SpiSettings = () => {
   const { setValue, trigger } = useFormContext<SpiState>();
-  const [mode, slaveSignalControl] = useWatch<SpiState>({
-    name: ['mode', 'slaveSignalControl'] as const,
+  const [mode, slaveSignalControl, peripheralDecoder] = useWatch<SpiState>({
+    name: ['mode', 'slaveSignalControl', 'peripheralDecoder'] as const,
   });
+
+  const currentMode = useRef(mode);
+  currentMode.current = mode;
+
+  useEffect(() => {
+    if (currentMode.current !== Mode.MASTER) return;
+
+    const keys = ['internalDecoderDevice', 'externalDecoderDevice'];
+    (keys as (keyof typeof spiInitialStateMaster)[]).forEach(key => {
+      setValue(key, spiInitialStateMaster[key], {
+        shouldValidate: false,
+        shouldDirty: false,
+        shouldTouch: false,
+      });
+    });
+  }, [peripheralDecoder, setValue]);
 
   const prevMode = usePrevious(mode);
 
@@ -58,18 +78,6 @@ const SpiSettings = () => {
 
   return (
     <>
-      {mode === Mode.MASTER && (
-        <Form.Field name="divider" css={{ marginBottom: scale(2) }}>
-          <Select
-            label={
-              <LabelWithInfo title="TODO" description="TODO">
-                Делитель частоты
-              </LabelWithInfo>
-            }
-            options={dividerOptions}
-          />
-        </Form.Field>
-      )}
       <Form.Field name="tickPhase" css={{ marginBottom: scale(2) }}>
         <Select
           label={
@@ -90,16 +98,28 @@ const SpiSettings = () => {
           options={tickPolarityOptions}
         />
       </Form.Field>
-      <Form.Field name="packageSize" css={{ marginBottom: scale(2) }}>
+      <Form.Field name="txThreshold" css={{ marginBottom: scale(2) }}>
         <Select
           label={
             <LabelWithInfo title="TODO" description="TODO">
-              Длина передаваемой посылки
+              Пороговое значение TX
             </LabelWithInfo>
           }
-          options={packageSizeOptions}
+          options={txThresholdOptions}
         />
       </Form.Field>
+      {mode === Mode.MASTER && (
+        <Form.Field name="divider" css={{ marginBottom: scale(2) }}>
+          <Select
+            label={
+              <LabelWithInfo title="TODO" description="TODO">
+                Делитель частоты
+              </LabelWithInfo>
+            }
+            options={dividerOptions}
+          />
+        </Form.Field>
+      )}
       {mode === Mode.MASTER && (
         <>
           <Form.Field name="peripheralDecoder" css={{ marginBottom: scale(2) }}>
@@ -112,6 +132,15 @@ const SpiSettings = () => {
               options={peripheralDecoderOptions}
             />
           </Form.Field>
+          {peripheralDecoder === PeripheralDecoder.ONE_OF_FOUR ? (
+            <Form.Field name="internalDecoderDevice" label="Устройство декодера" css={{ marginBottom: scale(2) }}>
+              <Select options={internalDecoderDeviceOptions} />
+            </Form.Field>
+          ) : (
+            <Form.Field name="externalDecoderValue" label="Значение внешнего декодера" css={{ marginBottom: scale(2) }}>
+              <IntegerMaskedInput format={IntegerFormat.BIN} />
+            </Form.Field>
+          )}
           <Form.Field name="slaveSignalControl" css={{ marginBottom: scale(2) }}>
             <Select
               label={

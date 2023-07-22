@@ -28,7 +28,7 @@
     "@tanstack/react-query": "^4.28.0",
     "@tanstack/react-table": "^8.5.15",
     "@tippyjs/react": "^4.2.6",
-    "allotment": "^1.17.0",
+    "allotment": "^1.19.2",
     "antd": "^4.23.4",
     "classnames": "^2.3.1",
     "cron-parser": "^4.7.0",
