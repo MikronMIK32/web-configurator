@@ -1,0 +1,50 @@
+import { action } from '@storybook/addon-actions';
+import { ArgsTable, Meta, Story } from '@storybook/addon-docs';
+import { useState } from 'react';
+import { Button } from '@scripts/gds';
+import BaseModal from '.';
+
+<Meta title="Controls / Future / BaseModal" component={BaseModal} />
+
+# BaseModal
+
+Базовый компонент для модальных окон
+
+```js
+import BaseModal from '@controls/future/BaseModal';
+
+const [isOpen, setOpen] = useState(false);
+const handleModalOpen = () => setOpen(!open);
+return (
+    <BaseModal open={isOpen} onClose={handleModalOpen}>
+        <div style={{ padding: '100px' }}>BaseModal content!</div>
+    </BaseModal>
+);
+```
+
+<Story
+    name="Basic"
+    args={{
+        backdropProps: {
+            invisible: false,
+        },
+        timeout: 2000,
+    }}
+>
+    {args => {
+        const [isOpen, setOpen] = useState(false);
+        const handleModalOpen = e => setOpen(!isOpen);
+        return (
+            <div style={{ zIndex: 1, position: 'relative' }}>
+                <Button onClick={handleModalOpen}>{isOpen ? 'Close' : 'Open'} me</Button>
+                <BaseModal {...args} open={isOpen} onClose={e => setOpen(false)}>
+                    <div style={{ padding: '100px', background: '#fafafa' }}>BaseModal content!</div>
+                </BaseModal>
+            </div>
+        );
+    }}
+</Story>
+
+## Props
+
+<ArgsTable story="Basic" />

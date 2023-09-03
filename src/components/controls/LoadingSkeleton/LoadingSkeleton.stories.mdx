@@ -1,0 +1,25 @@
+import { Meta, Story, ArgsTable } from '@storybook/addon-docs/blocks';
+import LoadingSkeleton from '.';
+
+<Meta title="Controls / LoadingSkeleton" component={LoadingSkeleton} />
+
+# LoadingSkeleton
+
+<Story
+    name="LoadingSkeleton"
+    args={{
+        height: 40,
+        width: 250,
+        count: 1,
+        duration: 1,
+        circle: false,
+    }}
+>
+    {args => <LoadingSkeleton {...args} />}
+</Story>
+
+Использует плагин: [react-loading-skeleton](https://github.com/dvtng/react-loading-skeleton#readme)
+
+## Props
+
+<ArgsTable story="LoadingSkeleton" />

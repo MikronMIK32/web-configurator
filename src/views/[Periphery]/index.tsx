@@ -1,10 +1,12 @@
 import { Allotment, AllotmentHandle } from 'allotment';
-import { lazy, useEffect, useRef } from 'react';
+import { Suspense, lazy, useEffect, useRef } from 'react';
 import { Route, Routes, useParams } from 'react-router-dom';
 
 import { DetailsProvider, useDetails } from '@context/details';
 
-import SpinnerSuspense from '@components/SpinnerSuspense';
+import { PeripheryWrapper } from '@components/PeripheryWrapper';
+
+import { scale } from '@scripts/helpers';
 
 const Analog = lazy(() => import('./Analog'));
 const Crypto = lazy(() => import('./Crypto'));
@@ -45,18 +47,25 @@ const SplitPanes = () => {
             height: '100%',
             overflow: 'hidden',
             overflowY: 'scroll',
-            // paddingBottom: scale(40),
+            position: 'relative',
           }}
         >
-          <SpinnerSuspense>
-            <Routes>
-              <Route path="interface/*" element={<Interface />} />
-              <Route path="crypto/*" element={<Crypto />} />
-              <Route path="analog/*" element={<Analog />} />
-              <Route path="timers/*" element={<Timers />} />
-              <Route path="*" element={<p>Work in progress</p>} />
-            </Routes>
-          </SpinnerSuspense>
+          <div
+            css={{
+              padding: scale(2),
+              height: '100%',
+            }}
+          >
+            <Suspense fallback={<PeripheryWrapper isLoading />}>
+              <Routes>
+                <Route path="interface/*" element={<Interface />} />
+                <Route path="crypto/*" element={<Crypto />} />
+                <Route path="analog/*" element={<Analog />} />
+                <Route path="timers/*" element={<Timers />} />
+                <Route path="*" element={<p>Work in progress</p>} />
+              </Routes>
+            </Suspense>
+          </div>
         </div>
       </Allotment.Pane>
       {/* <Allotment.Pane maxSize={150} snap>

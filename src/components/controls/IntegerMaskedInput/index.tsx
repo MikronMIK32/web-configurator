@@ -29,8 +29,6 @@ const IntegerMaskedInput = forwardRef<HTMLInputElement, IntegerMaskedInputProps>
       onChangeFormat,
     });
 
-    console.log('IntegerMaskedInput value=', value);
-
     if (value !== undefined && !onChange)
       console.warn('[IntegerMaskedInput] controlled value doesnt listen to onChange.');
     if (propsFormat !== undefined && !onChangeFormat)
@@ -60,7 +58,6 @@ const IntegerMaskedInput = forwardRef<HTMLInputElement, IntegerMaskedInputProps>
               isFilled={!!maskValue.length}
               disabled={restProps.disabled}
               onChange={fmt => {
-                console.log('fmt changed to', fmt);
                 formatChangeRef.current = true;
                 setFormat(fmt);
                 setMaskValue(formatNumber(decValue, fmt) || '');
@@ -68,12 +65,12 @@ const IntegerMaskedInput = forwardRef<HTMLInputElement, IntegerMaskedInputProps>
             />
           }
           onAccept={newVal => {
+            if (newVal === maskValue) return;
+
             if (formatChangeRef.current) {
               formatChangeRef.current = false;
               return;
             }
-
-            console.log('[IntegerMaskedInput] onAccept setMaskValue=', { newVal });
 
             setMaskValue(newVal);
 
@@ -91,8 +88,6 @@ const IntegerMaskedInput = forwardRef<HTMLInputElement, IntegerMaskedInputProps>
             }
             const { value } = dynamicMasked;
             const newVal = value + appended;
-
-            console.warn('DISPATCH! newVal:', newVal, 'dynamicMasked.compiledMasks=', dynamicMasked.compiledMasks);
 
             if (newVal.substring(0, BIN_PREFIX.length) === BIN_PREFIX) {
               if (!ignore && newVal.length > BIN_PREFIX.length) setFormat(IntegerFormat.BIN);

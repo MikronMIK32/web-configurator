@@ -1,17 +1,18 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ReactNode } from 'react';
+import { useRef } from 'react';
 import { useForm, useFormContext, useWatch } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
+
+import Checkbox from '@controls/Checkbox';
+import Form from '@controls/Form';
+import IntegerMaskedInput from '@controls/IntegerMaskedInput';
+import Select from '@controls/NewSelect';
+import Tabs from '@controls/Tabs';
 
 import { DetailsTrigger } from '@components/DetailsTrigger';
 import { FormSticky } from '@components/FormSticky';
 import { PeripheryWrapper } from '@components/PeripheryWrapper';
 import FormUnsavedPrompt from '@components/UnsavedPrompt';
-import Checkbox from '@components/controls/Checkbox';
-import Form from '@components/controls/Form';
-import IntegerMaskedInput from '@components/controls/IntegerMaskedInput';
-import Select from '@components/controls/NewSelect';
-import Tabs from '@components/controls/Tabs';
 
 import { DacChannel, DacState, VRef, dacInitialState, dacStateSchema, setDac } from '@store/analog/dac';
 import { RootState } from '@store/index';
@@ -97,7 +98,44 @@ const CommonSettings = () => (
   </div>
 );
 
-const DacForm = ({ children }: { children: ReactNode }) => {
+const DacInner = () => {
+  const formContext = useFormContext();
+  const dac = useSelector<RootState, DacState>(state => state.analog.dac);
+  const dispatch = useDispatch();
+
+  return (
+    <>
+      <PeripheryWrapper title="Настройки DAC">
+        <CommonSettings />
+        <Tabs css={{ marginTop: scale(2) }} keepMounted>
+          <Tabs.Tab title="Настройки" id="0">
+            <DacSettings />
+          </Tabs.Tab>
+          <Tabs.Tab title="Прерывания" id="1">
+            Interrupts
+          </Tabs.Tab>
+        </Tabs>
+      </PeripheryWrapper>
+      <FormSticky
+        onDefaultReset={() => {
+          dispatch(setDac(dacInitialState));
+          formContext.reset(dacInitialState);
+        }}
+        onReset={() => {
+          formContext.reset(dac);
+        }}
+        css={{
+          justifyContent: 'end',
+          marginBottom: -scale(2),
+          marginLeft: -scale(2),
+          marginRight: -scale(2),
+        }}
+      />
+    </>
+  );
+};
+
+const Dac = () => {
   const dispatch = useDispatch();
   const dac = useSelector<RootState, DacState>(state => state.analog.dac);
   const form = useForm<DacState>({
@@ -106,6 +144,8 @@ const DacForm = ({ children }: { children: ReactNode }) => {
     resolver: zodResolver(dacStateSchema),
     shouldFocusError: false,
   });
+
+  const onResetRef = useRef<() => void>(null);
 
   return (
     <div
@@ -123,6 +163,8 @@ const DacForm = ({ children }: { children: ReactNode }) => {
         onReset={() => {
           dispatch(setDac(form.getValues()));
           form.reset();
+
+          onResetRef.current?.();
         }}
         css={{
           height: '100%',
@@ -131,51 +173,10 @@ const DacForm = ({ children }: { children: ReactNode }) => {
           justifyContent: 'space-between',
         }}
       >
-        {children}
+        <DacInner />
       </Form>
     </div>
   );
 };
-
-const DacInner = () => {
-  const formContext = useFormContext();
-  const dac = useSelector<RootState, DacState>(state => state.analog.dac);
-
-  const dispatch = useDispatch();
-  return (
-    <FormSticky
-      onDefaultReset={() => {
-        dispatch(setDac(dacInitialState));
-        formContext.reset(dacInitialState);
-      }}
-      onReset={() => {
-        formContext.reset(dac);
-      }}
-      css={{
-        padding: scale(2),
-        justifyContent: 'end',
-      }}
-    />
-  );
-};
-
-const Dac = () => (
-  <DacForm>
-    <PeripheryWrapper title="Настройки DAC">
-      <CommonSettings />
-      <Tabs css={{ marginTop: scale(2) }} forceRenderTabPanel>
-        <Tabs.List>
-          <Tabs.Tab>Настройки</Tabs.Tab>
-          <Tabs.Tab>Прерывания</Tabs.Tab>
-        </Tabs.List>
-        <Tabs.Panel>
-          <DacSettings />
-        </Tabs.Panel>
-        <Tabs.Panel>Interrupts</Tabs.Panel>
-      </Tabs>
-    </PeripheryWrapper>
-    <DacInner />
-  </DacForm>
-);
 
 export default Dac;

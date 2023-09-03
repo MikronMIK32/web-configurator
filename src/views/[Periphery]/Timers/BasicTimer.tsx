@@ -15,7 +15,6 @@ const BasicTimer = ({ timerName }: { timerName: string }) => {
         display: 'grid',
         gridTemplateColumns: '1fr',
         gap: scale(1),
-        padding: scale(2),
       }}
     >
       <h4>Таймер {timerName}</h4>

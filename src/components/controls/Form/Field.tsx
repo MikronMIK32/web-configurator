@@ -1,4 +1,4 @@
-import { Children, cloneElement, forwardRef, isValidElement } from 'react';
+import { ChangeEvent, Children, cloneElement, forwardRef, isValidElement } from 'react';
 import { useController, useFormContext } from 'react-hook-form';
 
 import Input from '../Input';
@@ -6,7 +6,7 @@ import { FormFieldProps } from './types';
 
 const FormField = forwardRef<HTMLInputElement, FormFieldProps>(
   ({ name, children, size = 'md', className, wrapperCSS, block = true, ...props }, ref) => {
-    const { control, setValue } = useFormContext(); // retrieve all hook methods
+    const { control, setValue, trigger } = useFormContext(); // retrieve all hook methods
 
     // const isCheckbox =
     //   isValidElement(children) && (children?.type as FC)?.name === 'Checkbox';
@@ -45,11 +45,13 @@ const FormField = forwardRef<HTMLInputElement, FormFieldProps>(
                   ...child.props,
                   field,
                   fieldState,
-                  onChange(...args: any[]) {
+                  onChange(e: ChangeEvent<any>, ...args: any[]) {
                     if (typeof (child?.props as any)?.onChange === 'function') {
-                      (child.props as any).onChange(...args);
+                      (child.props as any).onChange(e, ...args);
                     }
-                    field.onChange(...args);
+
+                    field.onChange(e, ...args);
+                    trigger();
                   },
                 });
               }

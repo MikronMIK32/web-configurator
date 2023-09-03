@@ -15,6 +15,8 @@ export const FormSticky = ({ onDefaultReset, onReset, className }: FormStickyPro
   const { isDirty: isAnyDirty, isValid, dirtyFields } = useFormState();
   const isDirty = isAnyDirty && Object.keys(dirtyFields).length > 0;
 
+  if (!isDirty) return null;
+
   return (
     <div
       css={{
@@ -31,14 +33,14 @@ export const FormSticky = ({ onDefaultReset, onReset, className }: FormStickyPro
       className={className}
     >
       {isDirty && !isValid && (
-        <span
+        <p
           css={{
             ...typography('labelSmall'),
             color: colors?.errorDark,
           }}
         >
           Исправьте ошибки для сохранения
-        </span>
+        </p>
       )}
 
       {isDirty && (

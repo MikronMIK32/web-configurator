@@ -1,23 +1,8 @@
 import { CSSObject } from '@emotion/react';
 import { ResizeObserver as ResizeObserverPolyfill } from '@juggle/resize-observer';
-import {
-  BasePlacement,
-  ModifierArguments,
-  Obj,
-  VariationPlacement,
-} from '@popperjs/core';
+import { BasePlacement, ModifierArguments, Obj, VariationPlacement } from '@popperjs/core';
 import maxSize from 'popper-max-size-modifier';
-import {
-  CSSProperties,
-  MutableRefObject,
-  ReactNode,
-  forwardRef,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import { CSSProperties, MutableRefObject, ReactNode, forwardRef, useEffect, useMemo, useRef, useState } from 'react';
 import { mergeRefs } from 'react-merge-refs';
 import { usePopper } from 'react-popper';
 import { CSSTransition } from 'react-transition-group';
@@ -184,10 +169,9 @@ export const Popover = forwardRef<HTMLDivElement, PopoverProps>(
       preventOverflow = true,
       availableHeight = false,
     },
-    ref,
+    ref
   ) => {
-    const [referenceElement, setReferenceElement] =
-      useState<RefElement>(anchorElement);
+    const [referenceElement, setReferenceElement] = useState<RefElement>(anchorElement);
     const [popperElement, setPopperElement] = useState<RefElement>(null);
     const [arrowElement, setArrowElement] = useState<RefElement>(null);
     const [arrowShift, setArrowShift] = useState(false);
@@ -210,9 +194,7 @@ export const Popover = forwardRef<HTMLDivElement, PopoverProps>(
         }: ModifierArguments<Obj>) {
           const { height } = modifiersData.maxSize;
 
-          const content = popper.querySelector(
-            '.scrollable-content',
-          ) as HTMLElement;
+          const content = popper.querySelector('.scrollable-content') as HTMLElement;
           // const content = availableHeightContainer.current;
 
           if (content && !content.style.maxHeight) {
@@ -220,39 +202,37 @@ export const Popover = forwardRef<HTMLDivElement, PopoverProps>(
           }
         },
       }),
-      [],
+      []
     );
 
-    const getModifiers = useCallback(() => {
-      const modifiers: PopperModifier[] = [
-        { name: 'offset', options: { offset } },
-      ];
+    const modifiers = useMemo(() => {
+      const result: PopperModifier[] = [{ name: 'offset', options: { offset } }];
 
       if (withArrow) {
-        modifiers.push({ name: 'arrow', options: { element: arrowElement } });
+        result.push({ name: 'arrow', options: { element: arrowElement } });
       }
 
       if (preventFlip) {
-        modifiers.push({ name: 'flip', options: { fallbackPlacements: [] } });
+        result.push({ name: 'flip', options: { fallbackPlacements: [] } });
       }
 
       if (fallbackPlacements) {
-        modifiers.push({ name: 'flip', options: { fallbackPlacements } });
+        result.push({ name: 'flip', options: { fallbackPlacements } });
       }
 
       if (preventOverflow) {
-        modifiers.push({
+        result.push({
           name: 'preventOverflow',
           options: { mainAxis: false },
         });
       }
 
       if (availableHeight) {
-        modifiers.push({ ...maxSize, options: {} });
-        modifiers.push({ ...availableHieghtModifier, options: {} });
+        result.push({ ...maxSize, options: {} });
+        result.push({ ...availableHieghtModifier, options: {} });
       }
 
-      return modifiers;
+      return result;
     }, [
       offset,
       withArrow,
@@ -270,18 +250,12 @@ export const Popover = forwardRef<HTMLDivElement, PopoverProps>(
       update: updatePopper,
     } = usePopper(referenceElement, popperElement, {
       placement: position,
-      modifiers: getModifiers(),
+      modifiers,
     });
 
     if (updatePopper) {
       updatePopperRef.current = updatePopper;
     }
-
-    const updatePopoverWidth = useCallback(() => {
-      if (useAnchorWidth && updatePopperRef.current) {
-        updatePopperRef.current();
-      }
-    }, [useAnchorWidth]);
 
     useEffect(() => {
       setReferenceElement(anchorElement);
@@ -293,45 +267,45 @@ export const Popover = forwardRef<HTMLDivElement, PopoverProps>(
       }
     }, [updatePopper, arrowElement, children]);
 
-    useEffect(() => {
-      if (update && !update.current && updatePopper) {
-        // eslint-disable-next-line no-param-reassign
-        update.current = updatePopper;
-      }
-    });
+    if (update && !update.current && updatePopper) {
+      // eslint-disable-next-line no-param-reassign
+      update.current = updatePopper;
+    }
 
     useEffect(() => {
-      if (useAnchorWidth) {
-        const ResizeObserver = window.ResizeObserver || ResizeObserverPolyfill;
-        const observer = new ResizeObserver(updatePopoverWidth);
+      // Dirty hack to force popover to fit the anchor position
+      const ResizeObserver = window.ResizeObserver || ResizeObserverPolyfill;
+      const observer = new ResizeObserver(() => {
+        const event = new MouseEvent('mouseover', {
+          bubbles: true,
+          cancelable: false,
+          view: window,
+        });
 
-        if (anchorElement) {
-          observer.observe(anchorElement);
-        }
+        anchorElement?.dispatchEvent(event);
+        updatePopperRef.current?.();
+      });
 
-        return () => {
-          observer.disconnect();
-        };
+      if (anchorElement) {
+        observer.observe(anchorElement);
       }
 
-      return () => ({});
-    }, [anchorElement, updatePopoverWidth, useAnchorWidth]);
+      return () => {
+        observer.disconnect();
+      };
+    }, [anchorElement]);
 
     /**
      * По дизайну, если у тултипа позиционирование -start/-end, то стрелочка немного сдвигается вбок.
      * Но если anchorElement слишком маленький, то стрелочка сдвигаться не должна.
      */
     useEffect(() => {
-      const shiftedPosition =
-        position.includes('-start') || position.includes('-end');
+      const shiftedPosition = position.includes('-start') || position.includes('-end');
 
       if (shiftedPosition && referenceElement) {
         const { width, height } = referenceElement.getBoundingClientRect();
 
-        const size =
-          position.includes('left') || position.includes('right')
-            ? height
-            : width;
+        const size = position.includes('left') || position.includes('right') ? height : width;
 
         if (size >= MIN_ARROW_SHIFT_SIZE) {
           setArrowShift(true);
@@ -393,7 +367,7 @@ export const Popover = forwardRef<HTMLDivElement, PopoverProps>(
                   position: 'absolute',
                   width: 12,
                   height: 12,
-                  border: `1px solid ${colors.backgroundPrimary}`,
+                  border: `1px solid ${colors.primary}`,
                   transform: 'rotate(45deg)',
                 },
                 '[data-popper-placement="left"] &, [data-popper-placement="left-start"] &, [data-popper-placement="left-end"] &':
@@ -449,7 +423,7 @@ export const Popover = forwardRef<HTMLDivElement, PopoverProps>(
 
     return (
       <Stack value={zIndex}>
-        {(computedZIndex) => (
+        {computedZIndex => (
           <Portal getPortalContainer={getPortalContainer}>
             {withTransition ? (
               <CSSTransition
@@ -487,7 +461,7 @@ export const Popover = forwardRef<HTMLDivElement, PopoverProps>(
         )}
       </Stack>
     );
-  },
+  }
 );
 
 export default Popover;

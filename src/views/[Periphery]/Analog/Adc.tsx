@@ -139,8 +139,10 @@ const AdcInner = () => {
         formContext.reset(adc);
       }}
       css={{
-        padding: scale(2),
         justifyContent: 'end',
+        marginBottom: -scale(2),
+        marginLeft: -scale(2),
+        marginRight: -scale(2),
       }}
     />
   );
@@ -148,17 +150,15 @@ const AdcInner = () => {
 
 const Adc = () => (
   <AdcForm>
-    <PeripheryWrapper title="Настройки ADC">
+    <PeripheryWrapper title="Настройки ADC" css={{ marginBottom: scale(4) }}>
       <CommonSettings />
-      <Tabs css={{ marginTop: scale(2) }} forceRenderTabPanel>
-        <Tabs.List>
-          <Tabs.Tab>Настройки</Tabs.Tab>
-          <Tabs.Tab>Прерывания</Tabs.Tab>
-        </Tabs.List>
-        <Tabs.Panel>
+      <Tabs css={{ marginTop: scale(2) }} keepMounted>
+        <Tabs.Tab title="Настройки" id="0">
           <AdcSettings />
-        </Tabs.Panel>
-        <Tabs.Panel>Interrupts</Tabs.Panel>
+        </Tabs.Tab>
+        <Tabs.Tab title="Прерывания" id="1">
+          Interrupts
+        </Tabs.Tab>
       </Tabs>
     </PeripheryWrapper>
     <AdcInner />

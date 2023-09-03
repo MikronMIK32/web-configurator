@@ -105,8 +105,6 @@ export const useIntegerFormats = ({
   useEffect(() => {
     setDecValue(safeInitialValue);
     setMaskValue(formatNumber(safeInitialValue, format) || '');
-
-    console.log('useEffect.', { format, safeInitialValue }, formatNumber(safeInitialValue, format) || '');
   }, [format, safeInitialValue]);
 
   const setValue = useCallback(
@@ -125,7 +123,7 @@ export const useIntegerFormats = ({
         return result;
       });
 
-      onChange?.(result);
+      // onChange?.(result);
 
       return result;
     },

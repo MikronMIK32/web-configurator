@@ -213,8 +213,10 @@ const AdcInner = () => {
         formContext.reset(crc);
       }}
       css={{
-        padding: scale(2),
         justifyContent: 'end',
+        marginBottom: -scale(2),
+        marginLeft: -scale(2),
+        marginRight: -scale(2),
       }}
     />
   );

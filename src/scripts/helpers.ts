@@ -137,3 +137,24 @@ export const parseSafeInt = (value: any) => {
 
   return val;
 };
+
+type DotNotatedPath<T> = [string, T];
+
+export const objectDotEntries = <T extends Record<string, any>>(root: T): DotNotatedPath<T[keyof T]>[] => {
+  const result: any[] = [];
+
+  function traverse(obj: any, path = '') {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const key in obj) {
+      if (typeof obj[key] === 'object') {
+        traverse(obj[key], `${path + key}.`);
+      } else {
+        result.push([path + key, obj[key]]);
+      }
+    }
+  }
+
+  traverse(root);
+
+  return result;
+};

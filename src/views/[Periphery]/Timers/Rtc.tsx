@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ReactNode, lazy, useCallback, useMemo } from 'react';
+import { ReactNode, Suspense, lazy, useCallback, useMemo } from 'react';
 import {
   Controller,
   ControllerFieldState,
@@ -14,13 +14,13 @@ import { DetailsTrigger } from '@components/DetailsTrigger';
 import { FormSticky } from '@components/FormSticky';
 import PageAccordion from '@components/PageAccordion';
 import { PeripheryWrapper } from '@components/PeripheryWrapper';
-import SpinnerSuspense from '@components/SpinnerSuspense';
 import FormUnsavedPrompt from '@components/UnsavedPrompt';
 import Checkbox from '@components/controls/Checkbox';
 import CronDateForm from '@components/controls/CronDateForm';
 import DateForm from '@components/controls/DateTimeForm';
 import Form from '@components/controls/Form';
 import FormControl from '@components/controls/FormControl';
+import LoadingSkeleton from '@components/controls/LoadingSkeleton';
 import Select from '@components/controls/NewSelect';
 import Tabs from '@components/controls/Tabs';
 
@@ -107,9 +107,9 @@ const RtcSettings = () => {
               <DateForm name="rtcDateTime" />
             </PageAccordion.Item>
             <PageAccordion.Item uuid="rtcRegisters" title="Регистры RTC">
-              <SpinnerSuspense>
+              <Suspense fallback={<LoadingSkeleton height={scale(20)} css={{ width: '100%' }} />}>
                 <RegisterByteTable />
-              </SpinnerSuspense>
+              </Suspense>
             </PageAccordion.Item>
           </>
         )}
@@ -224,8 +224,10 @@ const RtcInner = () => {
         formContext.reset(rtc);
       }}
       css={{
-        padding: scale(2),
         justifyContent: 'end',
+        marginBottom: -scale(2),
+        marginLeft: -scale(2),
+        marginRight: -scale(2),
       }}
     />
   );
@@ -235,15 +237,13 @@ const Rtc = () => (
   <RtcForm>
     <PeripheryWrapper title="Настройки RTC">
       <CommonSettings />
-      <Tabs css={{ marginTop: scale(2) }} forceRenderTabPanel>
-        <Tabs.List>
-          <Tabs.Tab>Настройки</Tabs.Tab>
-          <Tabs.Tab>Прерывания</Tabs.Tab>
-        </Tabs.List>
-        <Tabs.Panel>
+      <Tabs css={{ marginTop: scale(2) }} keepMounted>
+        <Tabs.Tab title="Настройки" id="0">
           <RtcSettings />
-        </Tabs.Panel>
-        <Tabs.Panel>Interrupts</Tabs.Panel>
+        </Tabs.Tab>
+        <Tabs.Tab title="Прерывания" id="2">
+          Прерывания в разработке
+        </Tabs.Tab>
       </Tabs>
     </PeripheryWrapper>
     <RtcInner />

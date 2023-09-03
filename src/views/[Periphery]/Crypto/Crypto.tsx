@@ -167,8 +167,10 @@ const CryptoInner = () => {
         formContext.reset(crypto);
       }}
       css={{
-        padding: scale(2),
         justifyContent: 'end',
+        marginBottom: -scale(2),
+        marginLeft: -scale(2),
+        marginRight: -scale(2),
       }}
     />
   );
@@ -178,15 +180,13 @@ const Crypto = () => (
   <CryptoForm>
     <PeripheryWrapper title="Настройки crypto">
       <CommonSettings />
-      <Tabs css={{ marginTop: scale(2) }} forceRenderTabPanel>
-        <Tabs.List>
-          <Tabs.Tab>Настройки</Tabs.Tab>
-          <Tabs.Tab>DMA</Tabs.Tab>
-        </Tabs.List>
-        <Tabs.Panel>
+      <Tabs css={{ marginTop: scale(2) }} keepMounted>
+        <Tabs.Tab title="Настройки" id="0">
           <CryptoSettings />
-        </Tabs.Panel>
-        <Tabs.Panel>В работе</Tabs.Panel>
+        </Tabs.Tab>
+        <Tabs.Tab title="DMA" id="1">
+          DMA
+        </Tabs.Tab>
       </Tabs>
     </PeripheryWrapper>
     <CryptoInner />

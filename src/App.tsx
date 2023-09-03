@@ -9,7 +9,7 @@ import PeripheriesView from '@views/PeripheriesView';
 import GlobalStyles from '@components/GlobalStyles';
 import Tabs from '@components/controls/Tabs';
 
-import { ReactComponent as ClockIcon } from '@icons/large/clock.svg';
+// import { ReactComponent as ClockIcon } from '@icons/large/clock.svg';
 import { ReactComponent as GraphIcon } from '@icons/large/graph.svg';
 
 import { RootState } from './store';
@@ -30,7 +30,7 @@ const ErrorFallback = ({ error, resetErrorBoundary }: any) => (
 );
 
 function App() {
-  const [tab, setTab] = useState(0);
+  const [tab, setTab] = useState('peripheral');
 
   const rootState = useSelector<RootState>(state => state);
 
@@ -44,23 +44,29 @@ function App() {
     >
       <GlobalStyles />
       <Tabs
-        selectedIndex={tab}
-        onSelect={index => setTab(index)}
-        css={{ height: '100%', display: 'flex', flexDirection: 'column' }}
-        panelCSS={{ paddingTop: 0 }}
-        panelFillsHeight
+        selectedId={tab}
+        onChange={(_, { selectedId }) => {
+          setTab(selectedId);
+        }}
+        css={{
+          height: 'calc(100% - 48px)',
+        }}
+        keepMounted
       >
-        <Tabs.List horizontalScroll>
-          <Tabs.Tab Icon={GraphIcon}>Периферия</Tabs.Tab>
-          <Tabs.Tab Icon={ClockIcon}>Clock</Tabs.Tab>
-          <Tabs.Tab>[Dev]</Tabs.Tab>
-          <Tabs.Tab>Экспорт</Tabs.Tab>
-        </Tabs.List>
-        <Tabs.Panel>
+        <Tabs.Tab
+          id="peripheral"
+          title="Перифирия"
+          rightAddons={<GraphIcon />}
+          css={{
+            height: '100%',
+          }}
+        >
           <PeripheriesView />
-        </Tabs.Panel>
-        <Tabs.Panel>Clock TODO</Tabs.Panel>
-        <Tabs.Panel>
+        </Tabs.Tab>
+        {/* <Tabs.Tab title="Clock" rightAddons={<ClockIcon />}>
+          TODO
+        </Tabs.Tab> */}
+        <Tabs.Tab id="debug" title="Отладочная структура проекта">
           <div css={{ position: 'relative' }}>
             <pre
               css={{
@@ -71,10 +77,10 @@ function App() {
               }}
             />
           </div>
-        </Tabs.Panel>
-        <Tabs.Panel>
+        </Tabs.Tab>
+        <Tabs.Tab id="export" title="Экспорт">
           <ExportView />
-        </Tabs.Panel>
+        </Tabs.Tab>
       </Tabs>
     </ErrorBoundary>
   );
