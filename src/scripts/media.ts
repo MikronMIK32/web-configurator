@@ -8,7 +8,7 @@ export type Breakpoint = keyof typeof breakpoints;
 
 export const BREAKPOINTS_NAMES = Object.keys(breakpoints) as Breakpoint[];
 
-type dataProps = Record<Breakpoint, string>;
+type dataProps = Record<Breakpoint | `${Breakpoint}Min`, string>;
 
 const MEDIA_QUERIES = Object.entries(breakpoints).reduce(
   (acc, [name, value]) => ({
