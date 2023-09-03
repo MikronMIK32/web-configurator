@@ -20,7 +20,7 @@ export const Footer: FC<FooterProps> = ({ children, className, ...props }) => {
       className={className}
       css={getCSS('footer', { highlighted: footerHighlighted }) as CSSObject}
       {...props}
-      {...(props.type !== 'flex' &&
+      {...((props.type as any) !== 'flex' &&
         !props.cols &&
         ({
           cols: 2,
