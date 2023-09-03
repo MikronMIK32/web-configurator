@@ -1,4 +1,4 @@
-import { CSSObject } from '@emotion/core';
+import { CSSObject } from '@emotion/react';
 import computeScrollIntoView from 'compute-scroll-into-view';
 import { ReactNode, useEffect, useRef } from 'react';
 
