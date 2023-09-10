@@ -68,19 +68,14 @@ const commonSchema = z.object({
   digitalFilter: zodStringToNumber(z.number({ required_error: 'Обязательное поле' }).min(0).max(15)),
   analogFilter: z.boolean({ required_error: 'Обязательное поле' }),
   frequency: commonFreqSchema,
-
-  extraAddress: zodStringToNumber(z.number().optional().nullable()),
-  extraAddressMask: z.nativeEnum(ExtraAddressMask).optional().nullable(),
 });
 
 const disabledSchema = commonSchema.extend({
   mode: z.literal(modeEnum.enum.DISABLED),
-  extraAddressEnabled: z.boolean(),
 });
 
 const masterSchema = commonSchema.extend({
   mode: z.literal(modeEnum.enum.MASTER),
-  extraAddressEnabled: z.boolean(),
   autoEnd: z.boolean({ required_error: 'Обязательное поле' }),
   frequency: commonFreqSchema.extend({
     sclHoldOneDuration: zodStringToNumber(z.number({ required_error: 'Обязательное поле' }).min(0).max(255)),
@@ -90,32 +85,58 @@ const masterSchema = commonSchema.extend({
 
 const slaveSchema = z.object({
   mode: z.literal(modeEnum.enum.SLAVE),
-  extraAddressEnabled: z.boolean(),
-  stretchClockSingal: z.boolean({ required_error: 'Обязательное поле ' }),
-  mainAddress: zodStringToNumber(z.number({ required_error: 'Обязательное поле' }).min(0).max(1023)),
+  stretchClockSingal: z.boolean({ required_error: 'Обязательное поле ' }).nullable(),
   allowSharedAddress: z.boolean({ required_error: 'Обязательное поле' }),
   controlAck: z.boolean({ required_error: 'Обязательное поле' }),
   frequency: commonFreqSchema,
+  extraAddressEnabled: z.boolean(),
+  mainAddress: zodStringToNumber(z.number({ required_error: 'Обязательное поле' }).min(0).max(1023)),
+  extraAddress: zodStringToNumber(z.number({ required_error: 'Обязательное поле' }).min(0)).nullable(),
+  extraAddressMask: z
+    .nativeEnum(ExtraAddressMask, {
+      invalid_type_error: 'Обязательное поле',
+    })
+    .nullable(),
 });
 
-const slaveExtraAddressUnion = z
-  .discriminatedUnion('extraAddressEnabled', [
-    z.object({
-      extraAddressEnabled: z.literal(false),
-    }),
-    z.object({
-      extraAddressEnabled: z.literal(true),
-      extraAddress: zodStringToNumber(z.number({ required_error: 'Обязательное поле' }).min(0).max(127)),
-      extraAddressMask: z.nativeEnum(ExtraAddressMask, {
-        invalid_type_error: 'Обязательное поле',
-      }),
-    }),
-  ])
+const union = z.union([disabledSchema, masterSchema, slaveSchema]);
+
+export const i2cStateSchema = z
+  .discriminatedUnion('mode', [disabledSchema, masterSchema, slaveSchema])
   .refine(
     val => {
+      if (val.mode !== Mode.SLAVE) return true;
+      if (!val.extraAddressEnabled) return true;
+
+      return val.extraAddress !== null && val.extraAddress !== undefined;
+    },
+    {
+      path: ['extraAddress'],
+      message: 'Обязательное поле',
+    }
+  )
+  .refine(
+    val => {
+      if (val.mode !== Mode.SLAVE) return true;
+
+      const hasExtra = val.extraAddressEnabled;
+      if (!hasExtra) return true;
+
+      return val.mainAddress <= 127;
+    },
+    {
+      path: ['mainAddress'],
+      message: 'Основной адрес не может быть числом больше 127 при наличии дополнительного адреса',
+    }
+  )
+  .refine(
+    val => {
+      if (val.mode !== Mode.SLAVE) return true;
+
       if (!val.extraAddressEnabled) return true;
       if (val.extraAddressMask === ExtraAddressMask.NO_MASK) return true;
-      if (Number.isNaN(val.extraAddress)) return true;
+
+      if (val.extraAddress === null) return false;
 
       return val.extraAddress >= 7 && val.extraAddress <= 120;
     },
@@ -125,19 +146,12 @@ const slaveExtraAddressUnion = z
     }
   );
 
-const union = z.union([disabledSchema, masterSchema, slaveSchema]);
-
-export const i2cStateSchema = z
-  .discriminatedUnion('mode', [disabledSchema, masterSchema, slaveSchema])
-  .and(slaveExtraAddressUnion);
-
 export type I2CState = z.infer<typeof union>;
 
 export const initialState: I2CState = {
   mode: Mode.DISABLED,
   analogFilter: false,
   digitalFilter: 0,
-  extraAddressEnabled: false,
   frequency: {
     preliminaryDivider: 0,
     sdadelDuration: 0,
@@ -149,7 +163,6 @@ export const masterInitialState: I2CState = {
   mode: Mode.MASTER,
   analogFilter: false,
   digitalFilter: 0,
-  extraAddressEnabled: false,
   autoEnd: false,
   frequency: {
     preliminaryDivider: 0,
@@ -167,6 +180,8 @@ export const slaveInitialState: I2CState = {
   extraAddressEnabled: false,
   mainAddress: 0,
   stretchClockSingal: false,
+  extraAddress: 0,
+  extraAddressMask: ExtraAddressMask.NO_MASK,
   frequency: {
     preliminaryDivider: 0,
     sdadelDuration: 0,

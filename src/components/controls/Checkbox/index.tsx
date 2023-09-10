@@ -1,10 +1,12 @@
-import { HTMLProps, useMemo, forwardRef, useRef, useEffect } from 'react';
-import { ReactComponent as CheckIcon } from '@icons/small/check.svg';
-import cn from 'classnames';
-import { scale } from '@scripts/helpers';
-import { colors } from '@scripts/colors';
 import { CSSObject } from '@emotion/react';
+import cn from 'classnames';
+import { HTMLProps, forwardRef, useEffect, useMemo, useRef } from 'react';
 import { ControllerFieldState, ControllerRenderProps } from 'react-hook-form';
+
+import { colors } from '@scripts/colors';
+import { scale } from '@scripts/helpers';
+
+import { ReactComponent as CheckIcon } from '@icons/small/check.svg';
 
 export interface CheckboxProps extends HTMLProps<HTMLInputElement> {
   /** Active state indeterminate */
@@ -41,7 +43,7 @@ const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
       checked: checkedFromProps,
       ...props
     },
-    ref,
+    ref
   ) => {
     const innerRef = useRef<HTMLInputElement>(null);
     const actualRef = ref || innerRef;
@@ -117,7 +119,7 @@ const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
           color: colors.grey600,
         },
       }),
-      [],
+      []
     );
 
     const iconCSS = useMemo<CSSObject>(
@@ -141,7 +143,7 @@ const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
           transform: 'translate(-50%, -50%) scale(1)',
         },
       }),
-      [],
+      []
     );
 
     return (
@@ -171,7 +173,7 @@ const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
         {/* </Legend> */}
       </div>
     );
-  },
+  }
 );
 
 Checkbox.displayName = 'Checkbox';

@@ -12,7 +12,7 @@ export type FormStickyProps = {
 } & Pick<FormResetTooltipProps, 'onDefaultReset' | 'onReset'>;
 
 export const FormSticky = ({ onDefaultReset, onReset, className }: FormStickyProps) => {
-  const { isDirty: isAnyDirty, isValid, dirtyFields } = useFormState();
+  const { isDirty: isAnyDirty, isValid, dirtyFields, errors } = useFormState();
   const isDirty = isAnyDirty && Object.keys(dirtyFields).length > 0;
 
   if (!isDirty) return null;
@@ -38,6 +38,7 @@ export const FormSticky = ({ onDefaultReset, onReset, className }: FormStickyPro
             ...typography('labelSmall'),
             color: colors?.errorDark,
           }}
+          title={JSON.stringify(errors, null, 1)}
         >
           Исправьте ошибки для сохранения
         </p>

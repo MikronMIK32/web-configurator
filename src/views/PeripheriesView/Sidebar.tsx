@@ -94,8 +94,12 @@ const items: LinkGroup[] = [
     label: 'Интерфейсы',
     links: [
       {
-        label: 'I2C',
-        to: '/periphery/interface/i2c',
+        label: 'I2C0',
+        to: '/periphery/interface/i2c0',
+      },
+      {
+        label: 'I2C1',
+        to: '/periphery/interface/i2c1',
       },
       {
         label: 'SPI0',

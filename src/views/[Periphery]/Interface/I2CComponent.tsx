@@ -27,11 +27,10 @@ import {
 
 import { colors } from '@scripts/colors';
 import { objectDotEntries, scale } from '@scripts/helpers';
-import { usePrevious } from '@scripts/hooks/usePrevious';
 import typography from '@scripts/typography';
 
 const I2CSettings = () => {
-  const { setValue, trigger } = useFormContext<I2CState>();
+  const { setValue } = useFormContext<I2CState>();
   const [mode, extraAddressEnabled, stretchClockSingal] = useWatch({
     name: ['mode', 'extraAddressEnabled', 'stretchClockSingal'] as const,
   }) as [Mode, boolean, boolean];
@@ -44,39 +43,13 @@ const I2CSettings = () => {
 
     const dependandKeys = ['extraAddress', 'extraAddressMask', 'stretchClockSingal'];
     dependandKeys.forEach(key => {
-      setValue(key as any, null as any, {
+      setValue(key as any, slaveInitialState[key as keyof typeof slaveInitialState], {
         shouldValidate: true,
         shouldDirty: false,
         shouldTouch: false,
       });
     });
-  }, [setValue]);
-
-  const prevMode = usePrevious(mode);
-
-  useEffect(() => {
-    if (!prevMode || !mode) return;
-    if (prevMode === mode) return;
-
-    const modesToValues = {
-      disabled: initialState,
-      master: masterInitialState,
-      slave: slaveInitialState,
-    } as const;
-
-    const entries = objectDotEntries(modesToValues[mode]);
-
-    entries.forEach(entry => {
-      const [key, value] = entry;
-      setValue(key as any, value, {
-        shouldValidate: false,
-        shouldDirty: false,
-        shouldTouch: false,
-      });
-    });
-
-    trigger();
-  }, [mode, prevMode, setValue, trigger]);
+  }, [setValue, extraAddressEnabled]);
 
   const extraAddressRef = useRef<HTMLDivElement>(null);
 
@@ -85,16 +58,95 @@ const I2CSettings = () => {
   return (
     <>
       <Layout cols={1} css={{ marginTop: scale(2) }}>
-        <Form.Field name="digitalFilter" label="Цифровой фильтр">
+        <Form.Field name="digitalFilter" label="Цифровой фильтр, в тактах">
           <IntegerMaskedInput />
         </Form.Field>
         <Form.Field name="analogFilter">
           <Checkbox>Аналоговый фильтр</Checkbox>
         </Form.Field>
-        <Form.Field name="autoEnd">
-          <Checkbox>Автоматическое окончание</Checkbox>
-        </Form.Field>
+        {mode === Mode.MASTER && (
+          <Form.Field name="autoEnd">
+            <Checkbox>Автоматическое окончание</Checkbox>
+          </Form.Field>
+        )}
       </Layout>
+      {mode === Mode.SLAVE && (
+        <Layout cols={2}>
+          <Layout.Item col={2}>
+            <Form.Field name="mainAddress" label="Основной собственный адрес" hint="фывфывфыв">
+              <IntegerMaskedInput />
+            </Form.Field>
+          </Layout.Item>
+          <Layout.Item col={2}>
+            <Form.Field name="extraAddressEnabled">
+              <Checkbox
+                onChange={e => {
+                  if (e.currentTarget.checked) {
+                    setTimeout(() => {
+                      extraAddressRef.current?.scrollIntoView({
+                        behavior: 'smooth',
+                      });
+                    }, 0);
+                  }
+                }}
+              >
+                Включить дополнительный адрес
+              </Checkbox>
+            </Form.Field>
+          </Layout.Item>
+          <Layout.Item
+            col={1}
+            ref={extraAddressRef}
+            css={{
+              ...(!extraAddressEnabled && {
+                display: 'none',
+              }),
+            }}
+          >
+            <Form.Field name="extraAddress" label="Дополнительный собственный адрес">
+              <IntegerMaskedInput />
+            </Form.Field>
+          </Layout.Item>
+          <Layout.Item
+            col={1}
+            css={{
+              ...(!extraAddressEnabled && {
+                display: 'none',
+              }),
+            }}
+          >
+            <Form.Field name="extraAddressMask" label="Маска дополнительного адреса">
+              <Select options={EXTRA_ADDRESS_MASK_OPTIONS} />
+            </Form.Field>
+          </Layout.Item>
+          <Layout.Item col={2}>
+            <Form.Field name="allowSharedAddress">
+              <Checkbox>Общий адрес</Checkbox>
+            </Form.Field>
+          </Layout.Item>
+
+          <Layout.Item col={2}>
+            <Form.Field name="stretchClockSingal">
+              <Checkbox
+                onChange={e => {
+                  const isStretching = e.currentTarget.checked;
+
+                  if (isStretching) setValue('controlAck', false);
+                }}
+              >
+                Растягивание тактового сигнала
+              </Checkbox>
+            </Form.Field>
+          </Layout.Item>
+          {!stretchClockSingal && (
+            <Layout.Item col={2}>
+              <Form.Field name="controlAck">
+                <Checkbox>Контроль бита ACK во время приема</Checkbox>
+              </Form.Field>
+            </Layout.Item>
+          )}
+        </Layout>
+      )}
       <p css={{ marginTop: scale(4), marginBottom: scale(2), ...typography('labelMedium'), color: colors.link }}>
         Настройки частоты
       </p>
@@ -113,84 +165,15 @@ const I2CSettings = () => {
             <Layout.Item col={1}>
               <Form.Field
                 name="frequency.sclHoldOneDuration"
-                label={`Длительность удержания SCL в состоянии логической "1"`}
+                label={`Длительность удержания SCL в состоянии логической "1", в тактах`}
               />
             </Layout.Item>
             <Layout.Item col={1}>
               <Form.Field
                 name="frequency.sclHoldZeroDuration"
-                label={`Длительность удержания SCL в состоянии логического "0"`}
+                label={`Длительность удержания SCL в состоянии логического "0", в тактах`}
               />
             </Layout.Item>
-          </>
-        )}
-        {mode === Mode.SLAVE && (
-          <>
-            <Layout.Item col={2}>
-              <Form.Field name="mainAddress" label="Основной собственный адрес">
-                <IntegerMaskedInput />
-              </Form.Field>
-            </Layout.Item>
-            <Layout.Item col={2}>
-              <Form.Field name="extraAddressEnabled">
-                <Checkbox
-                  onChange={e => {
-                    if (e.currentTarget.checked) {
-                      setTimeout(() => {
-                        extraAddressRef.current?.scrollIntoView({
-                          behavior: 'smooth',
-                        });
-                      }, 0);
-                    }
-                  }}
-                >
-                  Включить дополнительный адрес
-                </Checkbox>
-              </Form.Field>
-            </Layout.Item>
-            <Layout.Item
-              col={1}
-              ref={extraAddressRef}
-              css={{
-                ...(!extraAddressEnabled && {
-                  display: 'none',
-                }),
-              }}
-            >
-              <Form.Field name="extraAddress" label="Дополнительный собственный адрес">
-                <IntegerMaskedInput />
-              </Form.Field>
-            </Layout.Item>
-            <Layout.Item
-              col={1}
-              css={{
-                ...(!extraAddressEnabled && {
-                  display: 'none',
-                }),
-              }}
-            >
-              <Form.Field name="extraAddressMask" label="Маска дополнительного адреса">
-                <Select options={EXTRA_ADDRESS_MASK_OPTIONS} />
-              </Form.Field>
-            </Layout.Item>
-            <Layout.Item col={2}>
-              <Form.Field name="allowSharedAddress">
-                <Checkbox>Общий адрес</Checkbox>
-              </Form.Field>
-            </Layout.Item>
-
-            <Layout.Item col={2}>
-              <Form.Field name="stretchClockSingal">
-                <Checkbox>Растягивание тактового сигнала</Checkbox>
-              </Form.Field>
-            </Layout.Item>
-            {stretchClockSingal && (
-              <Layout.Item col={2}>
-                <Form.Field name="controlAck">
-                  <Checkbox>Контроль бита ACK во время приема</Checkbox>
-                </Form.Field>
-              </Layout.Item>
-            )}
           </>
         )}
       </Layout>
@@ -200,27 +183,52 @@ const I2CSettings = () => {
   );
 };
 
-const CommonSettings = () => (
-  <div
-    css={{
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      marginBottom: scale(1),
-    }}
-  >
-    <Form.Field
-      name="mode"
-      label={
-        <LabelWithInfo title="I2C" description="Информация об I2c">
-          Режим работы
-        </LabelWithInfo>
-      }
+const CommonSettings = () => {
+  const { setValue, trigger } = useFormContext<I2CState>();
+
+  const onModeChange = (mode: Mode) => {
+    const modesToValues = {
+      disabled: initialState,
+      master: masterInitialState,
+      slave: slaveInitialState,
+    } as const;
+
+    const entries = objectDotEntries(modesToValues[mode]);
+
+    entries.forEach(entry => {
+      const [key, value] = entry;
+      setValue(key as any, value, {
+        shouldValidate: false,
+        shouldDirty: false,
+        shouldTouch: false,
+      });
+    });
+
+    trigger();
+  };
+
+  return (
+    <div
+      css={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: scale(1),
+      }}
     >
-      <Select options={modeOptions} />
-    </Form.Field>
-  </div>
-);
+      <Form.Field
+        name="mode"
+        label={
+          <LabelWithInfo title="I2C" description="Информация об I2c">
+            Режим работы
+          </LabelWithInfo>
+        }
+      >
+        <Select options={modeOptions} onChange={e => onModeChange(e as Mode)} />
+      </Form.Field>
+    </div>
+  );
+};
 
 const I2CForm = ({
   children,
