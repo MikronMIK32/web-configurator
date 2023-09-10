@@ -1,7 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ReactNode, useEffect, useRef } from 'react';
 import { useForm, useFormContext, useWatch } from 'react-hook-form';
-import { useDispatch, useSelector } from 'react-redux';
 
 import Form from '@controls/Form';
 import IntegerMaskedInput from '@controls/IntegerMaskedInput';
@@ -15,7 +14,6 @@ import { PeripheryWrapper } from '@components/PeripheryWrapper';
 import FormUnsavedPrompt from '@components/UnsavedPrompt';
 import Checkbox from '@components/controls/Checkbox';
 
-import { RootState } from '@store/index';
 import {
   EXTRA_ADDRESS_MASK_OPTIONS,
   I2CState,
@@ -24,7 +22,6 @@ import {
   initialState,
   masterInitialState,
   modeOptions,
-  setI2C0,
   slaveInitialState,
 } from '@store/interface/i2c';
 
@@ -294,33 +291,32 @@ const I2CInner = ({ onSubmit, initialValues }: { initialValues: I2CState; onSubm
   );
 };
 
-const I2C = () => {
-  const dispatch = useDispatch();
-  const initialValues = useSelector<RootState, I2CState>(state => state.interface.i2c.i2c0);
-
-  const onSubmit = (vals: any) => {
-    dispatch(setI2C0(vals));
-  };
-
-  return (
-    <I2CForm initialValues={initialValues} onSubmit={onSubmit}>
-      <PeripheryWrapper title="Настройки I2C" css={{ marginBottom: scale(4) }}>
-        <CommonSettings />
-        <Tabs css={{ marginTop: scale(2) }} keepMounted>
-          <Tabs.Tab title="Настройки" id="0">
-            <I2CSettings />
-          </Tabs.Tab>
-          <Tabs.Tab title="DMA" id="1">
-            DMA в разработке
-          </Tabs.Tab>
-          <Tabs.Tab title="Прерывания" id="2">
-            Прерывания в разработке
-          </Tabs.Tab>
-        </Tabs>
-      </PeripheryWrapper>
-      <I2CInner initialValues={initialValues} onSubmit={onSubmit} />
-    </I2CForm>
-  );
-};
+const I2C = ({
+  name,
+  initialValues,
+  onSubmit,
+}: {
+  name: string;
+  initialValues: I2CState;
+  onSubmit: (values: I2CState) => void;
+}) => (
+  <I2CForm initialValues={initialValues} onSubmit={onSubmit}>
+    <PeripheryWrapper title={`Настройки ${name}`} css={{ marginBottom: scale(4) }}>
+      <CommonSettings />
+      <Tabs css={{ marginTop: scale(2) }} keepMounted>
+        <Tabs.Tab title="Настройки" id="0">
+          <I2CSettings />
+        </Tabs.Tab>
+        <Tabs.Tab title="DMA" id="1">
+          DMA в разработке
+        </Tabs.Tab>
+        <Tabs.Tab title="Прерывания" id="2">
+          Прерывания в разработке
+        </Tabs.Tab>
+      </Tabs>
+    </PeripheryWrapper>
+    <I2CInner initialValues={initialValues} onSubmit={onSubmit} />
+  </I2CForm>
+);
 
 export default I2C;

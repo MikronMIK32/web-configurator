@@ -2,7 +2,7 @@ import { Route, Routes } from 'react-router-dom';
 
 import Spi0 from './Spi0';
 import Spi1 from './Spi1';
-import I2C from './I2C';
+import I2C from './I2CComponent';
 
 const Interface = () => (
   <Routes>

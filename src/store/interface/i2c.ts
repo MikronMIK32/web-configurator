@@ -178,13 +178,18 @@ export const i2cSlice = createSlice({
   name: 'i2c',
   initialState: {
     i2c0: { ...(initialState as I2CState) },
+    i2c1: { ...(initialState as I2CState) },
   },
   reducers: {
     setI2C0: (old, action: PayloadAction<I2CState>) => ({
       ...old,
       i2c0: action.payload,
     }),
+    setI2C1: (old, action: PayloadAction<I2CState>) => ({
+      ...old,
+      i2c1: action.payload,
+    }),
   },
 });
 
-export const { setI2C0 } = i2cSlice.actions;
+export const { setI2C0, setI2C1 } = i2cSlice.actions;
