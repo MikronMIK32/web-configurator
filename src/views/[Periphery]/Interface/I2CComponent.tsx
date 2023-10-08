@@ -138,7 +138,7 @@ const I2CSettings = () => {
               </Checkbox>
             </Form.Field>
           </Layout.Item>
-          {!stretchClockSingal && (
+          {stretchClockSingal && (
             <Layout.Item col={2}>
               <Form.Field name="controlAck">
                 <Checkbox>Контроль бита ACK во время приема</Checkbox>

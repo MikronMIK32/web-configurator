@@ -81,13 +81,21 @@ const items: LinkGroup[] = [
         to: '/periphery/timers/rtc',
       },
       {
-        label: 'TIMER32',
-        to: '/periphery/timers/timer32',
+        label: 'TIMER16_0',
+        to: '/periphery/timers/timer16_0',
       },
       {
-        label: 'TIMER16',
-        to: '/periphery/timers/timer16',
+        label: 'TIMER16_1',
+        to: '/periphery/timers/timer16_1',
       },
+      {
+        label: 'TIMER16_2',
+        to: '/periphery/timers/timer16_2',
+      },
+      // {
+      //   label: 'TIMER32',
+      //   to: '/periphery/timers/timer32',
+      // },
     ],
   },
   {

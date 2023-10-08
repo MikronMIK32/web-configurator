@@ -1,12 +1,17 @@
 import { Route, Routes } from 'react-router-dom';
-import BasicTimer from './BasicTimer';
+
 import Rtc from './Rtc';
+import TIMER16_0 from './TIMER16_0';
+import TIMER16_1 from './TIMER16_1';
+import TIMER16_2 from './TIMER16_2';
 
 const Timers = () => (
   <Routes>
-    <Route path="timer32" element={<BasicTimer timerName="timer32" />} />
-    <Route path="timer16" element={<BasicTimer timerName="timer16" />} />
+    <Route path="timer16_0" element={<TIMER16_0 />} />
+    <Route path="timer16_1" element={<TIMER16_1 />} />
+    <Route path="timer16_2" element={<TIMER16_2 />} />
     <Route path="rtc" element={<Rtc />} />
+    <Route path="*" element={<p>Work in progress</p>} />
   </Routes>
 );
 
