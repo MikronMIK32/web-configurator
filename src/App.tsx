@@ -55,7 +55,7 @@ function App() {
       >
         <Tabs.Tab
           id="peripheral"
-          title="Перифирия"
+          title="Периферия"
           rightAddons={<GraphIcon />}
           css={{
             height: '100%',

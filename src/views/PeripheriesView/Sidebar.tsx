@@ -219,7 +219,7 @@ const SidebarContainer = ({ isDark, className }: { isDark: boolean; className?: 
   }, [activeGroupId, filteredItems]);
 
   return (
-    <Sidebar title="Список перифирий" className={className}>
+    <Sidebar title="Список периферий" className={className}>
       <input
         css={[basicFieldCSS, { marginBottom: scale(2) }]}
         placeholder="Поиск"
