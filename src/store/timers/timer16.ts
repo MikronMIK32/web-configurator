@@ -66,7 +66,7 @@ export const timerTriggerPolarityTranslations: Record<Timer16Polarity, string> =
   both: 'Оба фронта',
 };
 
-export const timerDigitalFilterOptions = Object.keys(timerDigitalFilterTranslations).map(value => ({
+export const timerDigitalFilterOptions = Object.keys(timerTriggerPolarityTranslations).map(value => ({
   value,
   key: timerTriggerPolarityTranslations[value as Timer16Polarity],
 }));
