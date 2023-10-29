@@ -1,9 +1,9 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ReactNode } from 'react';
+import { ChangeEvent, ReactNode, useMemo } from 'react';
 import { useForm, useFormContext, useWatch } from 'react-hook-form';
 
 import Form from '@controls/Form';
-import Select from '@controls/NewSelect';
+import Select, { OptionShape } from '@controls/NewSelect';
 import Tabs from '@controls/Tabs';
 
 import { FormSticky } from '@components/FormSticky';
@@ -21,6 +21,7 @@ import {
   getTriggerSourceOptions,
   timer16InitialState,
   timer16StateSchema,
+  timerDigitalFilterOptions,
   timerModeOptions,
   timerPolarityOptions,
   updateModeOptions,
@@ -31,7 +32,7 @@ import { colors } from '@scripts/colors';
 import { objectDotEntries, scale } from '@scripts/helpers';
 import typography from '@scripts/typography';
 
-const Timer16Settings = ({ timerNumber }: { timerNumber: 0 | 1 | 2 }) => {
+const Timer16Settings = ({ triggerSourceOptions }: { triggerSourceOptions: OptionShape[] }) => {
   const [mode, externalTrigger, generateWaveForm] = useWatch<Timer16State>({
     name: ['mode', 'externalTrigger', 'generateWaveForm'] as const,
   }) as never as [Timer16Mode, boolean, boolean];
@@ -40,7 +41,7 @@ const Timer16Settings = ({ timerNumber }: { timerNumber: 0 | 1 | 2 }) => {
 
   return (
     <>
-      <p css={{ marginTop: scale(4), marginBottom: scale(2), ...typography('labelMedium'), color: colors.link }}>
+      <p css={{ marginTop: scale(1), marginBottom: scale(2), ...typography('labelMedium'), color: colors.link }}>
         Настройки частоты
       </p>
       <Layout cols={2}>
@@ -66,18 +67,24 @@ const Timer16Settings = ({ timerNumber }: { timerNumber: 0 | 1 | 2 }) => {
         <Select options={updateModeOptions} />
       </Form.Field>
 
+      <p css={{ marginTop: scale(4), marginBottom: scale(2), ...typography('labelMedium'), color: colors.link }}>
+        Триггер
+      </p>
+      <Form.Field
+        name="triggerSource"
+        label="Источник триггера"
+        css={{ marginBottom: scale(2) }}
+        disabled={!externalTrigger}
+      >
+        <Select options={triggerSourceOptions} />
+      </Form.Field>
+      <Form.Field name="triggerDigitalFilter" label="Цифровой фильтр для триггера">
+        <Select options={timerDigitalFilterOptions} />
+      </Form.Field>
       {externalTrigger && (
-        <>
-          <p css={{ marginTop: scale(4), marginBottom: scale(2), ...typography('labelMedium'), color: colors.link }}>
-            Триггер
-          </p>
-          <Form.Field name="triggerSource" label="Источник триггера">
-            <Select options={getTriggerSourceOptions(timerNumber)} />
-          </Form.Field>
-          <Form.Field name="activeFront" label="Активный фронт">
-            <Select options={activeFrontOptions} />
-          </Form.Field>
-        </>
+        <Form.Field name="activeFront" label="Активный фронт">
+          <Select options={activeFrontOptions} />
+        </Form.Field>
       )}
       {generateWaveForm && (
         <>
@@ -94,10 +101,12 @@ const Timer16Settings = ({ timerNumber }: { timerNumber: 0 | 1 | 2 }) => {
   );
 };
 
-const CommonSettings = () => {
-  const { setValue, trigger } = useFormContext<Timer16State>();
+const CommonSettings = ({ triggerSourceOptions }: { triggerSourceOptions: OptionShape[] }) => {
+  const { watch, setValue, trigger, getValues } = useFormContext<Timer16State>();
 
-  const onModeChange = () => {
+  const mode = watch('mode');
+
+  const onModeChange = (newMode: Timer16Mode) => {
     const entries = objectDotEntries(timer16InitialState);
 
     entries.forEach(entry => {
@@ -109,7 +118,21 @@ const CommonSettings = () => {
       });
     });
 
+    if (newMode === Timer16Mode.DISABLED) {
+      setValue('externalTrigger', false);
+      setValue('generateWaveForm', false);
+    }
+
     trigger();
+  };
+
+  const onExternalTriggerChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (!e.currentTarget.checked) {
+      setValue('triggerSource', 'software_trigger');
+      return;
+    }
+
+    if (!getValues().triggerSource) setValue('triggerSource', triggerSourceOptions[0].value!);
   };
 
   return (
@@ -130,15 +153,19 @@ const CommonSettings = () => {
             </LabelWithInfo>
           }
         >
-          <Select options={timerModeOptions} onChange={() => onModeChange()} />
+          <Select options={timerModeOptions} onChange={val => onModeChange(val as never as Timer16Mode)} />
         </Form.Field>
       </div>
-      <Form.Field name="externalTrigger">
-        <Checkbox>Внешний триггер</Checkbox>
-      </Form.Field>
-      <Form.Field name="generateWaveForm">
-        <Checkbox>Генерация волновой формы</Checkbox>
-      </Form.Field>
+      {mode !== Timer16Mode.DISABLED && (
+        <>
+          <Form.Field name="externalTrigger">
+            <Checkbox onChange={onExternalTriggerChange}>Внешний триггер</Checkbox>
+          </Form.Field>
+          <Form.Field name="generateWaveForm">
+            <Checkbox>Генерация волновой формы</Checkbox>
+          </Form.Field>
+        </>
+      )}
     </Layout>
   );
 };
@@ -218,6 +245,31 @@ const Timer16Inner = ({
   );
 };
 
+const Timer16FormInner = ({ name, timerNumber }: { name: string; timerNumber: 0 | 1 | 2 }) => {
+  const externalTrigger = useWatch<Timer16State>({
+    name: 'externalTrigger',
+  }) as boolean;
+
+  const triggerSourceOptions = useMemo(
+    () => getTriggerSourceOptions(timerNumber, !externalTrigger),
+    [timerNumber, externalTrigger]
+  );
+
+  return (
+    <PeripheryWrapper title={`Настройки ${name}`} css={{ marginBottom: scale(4) }}>
+      <CommonSettings triggerSourceOptions={triggerSourceOptions} />
+      <Tabs css={{ marginTop: scale(2) }} keepMounted>
+        <Tabs.Tab title="Настройки" id="0">
+          <Timer16Settings triggerSourceOptions={triggerSourceOptions} />
+        </Tabs.Tab>
+        <Tabs.Tab title="Прерывания" id="1">
+          Прерывания в разработке
+        </Tabs.Tab>
+      </Tabs>
+    </PeripheryWrapper>
+  );
+};
+
 const Timer16 = ({
   name,
   initialValues,
@@ -230,17 +282,7 @@ const Timer16 = ({
   onSubmit: (values: Timer16State) => void;
 }) => (
   <Timer16Form initialValues={initialValues} onSubmit={onSubmit}>
-    <PeripheryWrapper title={`Настройки ${name}`} css={{ marginBottom: scale(4) }}>
-      <CommonSettings />
-      <Tabs css={{ marginTop: scale(2) }} keepMounted>
-        <Tabs.Tab title="Настройки" id="0">
-          <Timer16Settings timerNumber={timerNumber} />
-        </Tabs.Tab>
-        <Tabs.Tab title="Прерывания" id="1">
-          Прерывания в разработке
-        </Tabs.Tab>
-      </Tabs>
-    </PeripheryWrapper>
+    <Timer16FormInner name={name} timerNumber={timerNumber} />
     <Timer16Inner initialValues={initialValues} onSubmit={onSubmit} />
   </Timer16Form>
 );

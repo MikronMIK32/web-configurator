@@ -8,6 +8,7 @@ export enum Timer16Mode {
   INTERNAL_CLOCK = 'internal_clock',
   EXTERNAL_CLOCK_SYNC = 'external_clock_sync',
   EXTERNAL_CLOCK = 'external_clock',
+  ENCODER = 'encoder',
 }
 
 export enum Timer16Polarity {
@@ -37,10 +38,25 @@ export enum Timer16WavePolarity {
   INVERTED = 'inverted',
 }
 
+export enum Timer16DigitalFilter {
+  DISABLED = 'disabled',
+  STABLE_TWO_CYCLES = 'stable_two_cycles',
+  STABLE_FOUR_CYCLES = 'stable_four_cycles',
+  STABLE_EIGHT_CYCLES = 'stable_eight_cycles',
+}
+
+export const timerDigitalFilterTranslations: Record<Timer16DigitalFilter, string> = {
+  disabled: 'Выключено',
+  stable_two_cycles: 'Активный уровень стабилен 2 такта',
+  stable_four_cycles: 'Активный уровень стабилен 4 такта',
+  stable_eight_cycles: 'Активный уровень стабилен 8 такта',
+};
+
 export const timerModeTranslations: Record<Timer16Mode, string> = {
   disabled: 'Выключено',
   internal_clock: 'Счет от внутреннего источника',
   external_clock_sync: 'Счёт от внешнего источника с внутренней синхронизацией',
+  encoder: 'Режим энкодера',
   external_clock: 'Счёт от внешнего источника',
 };
 
@@ -49,6 +65,11 @@ export const timerTriggerPolarityTranslations: Record<Timer16Polarity, string> =
   fall: 'Нисходящий фронт',
   both: 'Оба фронта',
 };
+
+export const timerDigitalFilterOptions = Object.keys(timerDigitalFilterTranslations).map(value => ({
+  value,
+  key: timerTriggerPolarityTranslations[value as Timer16Polarity],
+}));
 
 export const activeFrontOptions = Object.keys(timerTriggerPolarityTranslations).map(value => ({
   value,
@@ -93,7 +114,7 @@ timerSpecifics.set(0, ['GPIO0_7', 'GPIO0_4', 'GPIO0_15', 'GPIO0_14']);
 timerSpecifics.set(1, ['GPIO1_9', 'GPIO1_8', 'GPIO1_7', 'GPIO1_6']);
 timerSpecifics.set(2, ['GPIO2_3', 'GPIO2_8', 'GPIO2_1', 'GPIO2_0']);
 
-export const getTriggerSourceOptions = (timerNumber: 0 | 1 | 2): OptionShape[] => {
+export const getTriggerSourceOptions = (timerNumber: 0 | 1 | 2, isSoftwareDisabled: boolean): OptionShape[] => {
   const timerSpecific = timerSpecifics.get(timerNumber);
   if (!timerSpecific) {
     throw new Error(`Unresolved timer number ${timerNumber}`);
@@ -106,6 +127,14 @@ export const getTriggerSourceOptions = (timerNumber: 0 | 1 | 2): OptionShape[] =
 
   return [
     ...specificOptions,
+    ...(isSoftwareDisabled
+      ? []
+      : [
+          {
+            key: 'Программный',
+            value: 'software_trigger',
+          },
+        ]),
     {
       key: 'Окончание преобразования термосенсора',
       value: 'thermo_end',
@@ -138,6 +167,8 @@ export const timer16StateSchema = z.object({
   triggerSource: z.string(),
   activeFront: z.nativeEnum(Timer16Polarity),
   wavePolarity: z.nativeEnum(Timer16WavePolarity),
+
+  triggerDigitalFilter: z.nativeEnum(Timer16DigitalFilter),
 });
 
 export type Timer16State = z.infer<typeof timer16StateSchema>;
@@ -146,6 +177,7 @@ export const timer16InitialState: Timer16State = {
   mode: Timer16Mode.DISABLED,
   externalTrigger: false,
   generateWaveForm: false,
+  triggerDigitalFilter: Timer16DigitalFilter.DISABLED,
 
   frequency: {
     divider: 1,
