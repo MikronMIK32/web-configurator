@@ -45,6 +45,14 @@ export enum Timer16DigitalFilter {
   STABLE_EIGHT_CYCLES = 'stable_eight_cycles',
 }
 
+export enum TriggerSource {
+  SOFTWARE_TRIGGER = 'software_trigger',
+  THERMO_END = 'thermo_end',
+  ADC_END = 'adc_end',
+  RTC = 'rtc',
+  ALARM = 'alarm',
+}
+
 export const timerDigitalFilterTranslations: Record<Timer16DigitalFilter, string> = {
   disabled: 'Выключено',
   stable_two_cycles: 'Активный уровень стабилен 2 такта',
@@ -66,9 +74,9 @@ export const timerTriggerPolarityTranslations: Record<Timer16Polarity, string> =
   both: 'Оба фронта',
 };
 
-export const timerDigitalFilterOptions = Object.keys(timerTriggerPolarityTranslations).map(value => ({
+export const timerDigitalFilterOptions = Object.keys(timerDigitalFilterTranslations).map(value => ({
   value,
-  key: timerTriggerPolarityTranslations[value as Timer16Polarity],
+  key: timerDigitalFilterTranslations[value as Timer16DigitalFilter],
 }));
 
 export const activeFrontOptions = Object.keys(timerTriggerPolarityTranslations).map(value => ({
@@ -164,7 +172,7 @@ export const timer16StateSchema = z.object({
     polarity: z.nativeEnum(Timer16Polarity),
   }),
   updateMode: z.nativeEnum(Timer16UpdateMode),
-  triggerSource: z.string(),
+  triggerSource: z.nativeEnum(TriggerSource),
   activeFront: z.nativeEnum(Timer16Polarity),
   wavePolarity: z.nativeEnum(Timer16WavePolarity),
 
@@ -185,7 +193,7 @@ export const timer16InitialState: Timer16State = {
   },
 
   updateMode: Timer16UpdateMode.IMMEDIATE,
-  triggerSource: '',
+  triggerSource: TriggerSource.SOFTWARE_TRIGGER,
   activeFront: Timer16Polarity.RISE,
   wavePolarity: Timer16WavePolarity.FORWARD,
 };

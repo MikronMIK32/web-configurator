@@ -16,6 +16,7 @@ import Checkbox from '@components/controls/Checkbox';
 import {
   Timer16Mode,
   Timer16State,
+  TriggerSource,
   activeFrontOptions,
   dividerOptions,
   getTriggerSourceOptions,
@@ -45,7 +46,7 @@ const Timer16Settings = ({ triggerSourceOptions }: { triggerSourceOptions: Optio
         Настройки частоты
       </p>
       <Layout cols={2}>
-        {mode !== Timer16Mode.EXTERNAL_CLOCK_SYNC && (
+        {mode !== Timer16Mode.EXTERNAL_CLOCK_SYNC && mode !== Timer16Mode.ENCODER && (
           <Layout.Item col={2}>
             <Form.Field name="frequency.divider" label="Делитель частоты">
               <Select options={dividerOptions} />
@@ -78,9 +79,11 @@ const Timer16Settings = ({ triggerSourceOptions }: { triggerSourceOptions: Optio
       >
         <Select options={triggerSourceOptions} />
       </Form.Field>
-      <Form.Field name="triggerDigitalFilter" label="Цифровой фильтр для триггера">
-        <Select options={timerDigitalFilterOptions} />
-      </Form.Field>
+      {externalTrigger && (
+        <Form.Field name="triggerDigitalFilter" label="Цифровой фильтр для триггера">
+          <Select options={timerDigitalFilterOptions} />
+        </Form.Field>
+      )}
       {externalTrigger && (
         <Form.Field name="activeFront" label="Активный фронт">
           <Select options={activeFrontOptions} />
@@ -128,7 +131,7 @@ const CommonSettings = ({ triggerSourceOptions }: { triggerSourceOptions: Option
 
   const onExternalTriggerChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (!e.currentTarget.checked) {
-      setValue('triggerSource', 'software_trigger');
+      setValue('triggerSource', TriggerSource.SOFTWARE_TRIGGER);
       return;
     }
 
