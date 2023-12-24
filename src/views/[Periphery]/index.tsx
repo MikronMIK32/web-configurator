@@ -9,6 +9,7 @@ import { PeripheryWrapper } from '@components/PeripheryWrapper';
 import { scale } from '@scripts/helpers';
 
 const Analog = lazy(() => import('./Analog'));
+const System = lazy(() => import('./System'));
 const Crypto = lazy(() => import('./Crypto'));
 const Timers = lazy(() => import('./Timers'));
 const Interface = lazy(() => import('./Interface'));
@@ -62,6 +63,7 @@ const SplitPanes = () => {
                 <Route path="crypto/*" element={<Crypto />} />
                 <Route path="analog/*" element={<Analog />} />
                 <Route path="timers/*" element={<Timers />} />
+                <Route path="system/*" element={<System />} />
                 <Route path="*" element={<p>Work in progress</p>} />
               </Routes>
             </Suspense>

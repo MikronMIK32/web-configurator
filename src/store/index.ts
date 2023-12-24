@@ -9,6 +9,7 @@ import analogReducer from './analog';
 import apiStorage from './apiStorage';
 import cryptoReducer from './crypto';
 import interfaceReducer from './interface';
+import systemReducer from './system';
 import timersReducer from './timers';
 
 const rootReducer = combineReducers({
@@ -16,6 +17,7 @@ const rootReducer = combineReducers({
   analog: analogReducer,
   crypto: cryptoReducer,
   interface: interfaceReducer,
+  system: systemReducer,
 });
 
 export type RootReducer = ReturnType<typeof rootReducer>;

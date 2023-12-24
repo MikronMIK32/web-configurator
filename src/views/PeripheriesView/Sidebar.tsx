@@ -27,8 +27,8 @@ const items: LinkGroup[] = [
         to: '/periphery/system/vcc-monitor',
       },
       {
-        label: 'Монитор тактирования',
-        to: '/periphery/system/cycle-monitor',
+        label: 'PCC',
+        to: '/periphery/system/pcc',
       },
       {
         label: 'ПДП',
@@ -54,6 +54,10 @@ const items: LinkGroup[] = [
         label: "Bus' WDT",
         to: '/periphery/system/bus-wdt',
       },
+      {
+        label: 'OTP',
+        to: '/periphery/system/otp',
+      }
     ],
   },
   {
@@ -224,6 +228,7 @@ const SidebarContainer = ({ isDark, className }: { isDark: boolean; className?: 
         css={[basicFieldCSS, { marginBottom: scale(2) }]}
         placeholder="Поиск"
         autoComplete="off"
+        type="search"
         {...register('search')}
       />
       <Sidebar.Nav
