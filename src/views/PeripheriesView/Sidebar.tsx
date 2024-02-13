@@ -34,14 +34,10 @@ const items: LinkGroup[] = [
         label: 'ПДП',
         to: '/periphery/system/pdp',
       },
-      {
-        label: 'Тактирование',
-        to: '/periphery/system/cycle',
-      },
-      {
-        label: 'Прерывания',
-        to: '/periphery/system/interrupts',
-      },
+      // {
+      //   label: 'Прерывания',
+      //   to: '/periphery/system/interrupts',
+      // },
       {
         label: 'GPIO',
         to: '/periphery/system/gpio',
@@ -51,7 +47,7 @@ const items: LinkGroup[] = [
         to: '/periphery/system/wdt',
       },
       {
-        label: "Bus' WDT",
+        label: "Bus WDT",
         to: '/periphery/system/bus-wdt',
       },
       {
@@ -145,36 +141,6 @@ const items: LinkGroup[] = [
     ],
   },
 ];
-
-// const NavLink = ({ link, label }: LinkData) => {
-//   const match = useMatch(`${link}/*`);
-
-//   return (
-//     <Link
-//       to={link}
-//       css={{
-//         color: colors.link,
-//         textDecoration: 'none',
-//         padding: `${scale(1)}px ${scale(2)}px`,
-//         borderRadius: scale(3, true),
-//         border: `1px solid ${colors.grey200}`,
-//         ...(match && {
-//           borderColor: colors.link,
-//           background: colors.link,
-//           color: colors.white,
-//           cursor: 'default',
-//         }),
-//         ...(!match && {
-//           ':hover': {
-//             border: `1px solid ${colors.link}`,
-//           },
-//         }),
-//       }}
-//     >
-//       {label}
-//     </Link>
-//   );
-// };
 
 const SidebarContainer = ({ isDark, className }: { isDark: boolean; className?: string }) => {
   const { pathname } = useLocation();

@@ -11,7 +11,6 @@ const Timers = () => (
     <Route path="timer16_1" element={<TIMER16_1 />} />
     <Route path="timer16_2" element={<TIMER16_2 />} />
     <Route path="rtc" element={<Rtc />} />
-    <Route path="*" element={<p>Work in progress</p>} />
   </Routes>
 );
 

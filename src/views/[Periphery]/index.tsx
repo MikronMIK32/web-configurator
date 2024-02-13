@@ -64,7 +64,6 @@ const SplitPanes = () => {
                 <Route path="analog/*" element={<Analog />} />
                 <Route path="timers/*" element={<Timers />} />
                 <Route path="system/*" element={<System />} />
-                <Route path="*" element={<p>Work in progress</p>} />
               </Routes>
             </Suspense>
           </div>

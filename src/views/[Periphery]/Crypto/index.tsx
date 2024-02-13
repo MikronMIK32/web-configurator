@@ -7,7 +7,6 @@ const Crypto = () => (
   <Routes>
     <Route path="crc" element={<Crc />} />
     <Route path="block" element={<CryptoBlock />} />
-    <Route path="*" element={<p>Work in progress</p>} />
   </Routes>
 );
 
