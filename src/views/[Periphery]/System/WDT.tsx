@@ -9,10 +9,13 @@ import { PeripheryWrapper } from '@components/PeripheryWrapper';
 import FormUnsavedPrompt from '@components/UnsavedPrompt';
 import Checkbox from '@components/controls/Checkbox';
 import Form from '@components/controls/Form';
+import IntegerMaskedInput from '@components/controls/IntegerMaskedInput';
+import Select from '@components/controls/NewSelect';
 import Tabs from '@components/controls/Tabs';
 
 import { RootState } from '@store/index';
 import {
+  CLOCK_SOURCE_OPTIONS,
   WDTState as State,
   wdtInitialState as initialState,
   wdtStateSchema as schema,
@@ -25,7 +28,7 @@ const SHORT_NAME = 'WDT';
 const FULL_NAME = 'WDT';
 const SETTINGS_OF = 'WDT';
 
-const useData = () => useSelector<RootState, State>(state => state.system.pdp);
+const useData = () => useSelector<RootState, State>(state => state.system.wdt);
 
 const Settings = () => {
   const [enabled] = useWatch({
@@ -34,7 +37,28 @@ const Settings = () => {
 
   if (!enabled) return null;
 
-  return <FormUnsavedPrompt />;
+  return (
+    <>
+      <Form.Field name="clockSource" css={{ marginBottom: scale(2), marginTop: scale(2) }}>
+        <Select
+          label={
+            <div css={{ display: 'flex', gap: scale(1) }}>
+              <span>Источник тактирования сторожевого таймера</span>
+              <DetailsTrigger title="Источник тактирования сторожевого таймера" description="Информация. TODO" />
+            </div>
+          }
+          options={CLOCK_SOURCE_OPTIONS}
+        />
+      </Form.Field>
+      <Form.Field name="initialTimerValue" label="Начальное значение таймера" css={{ marginBottom: scale(2) }}>
+        <IntegerMaskedInput />
+      </Form.Field>
+      <Form.Field name="divider" label="Делитель входной частоты" css={{ marginBottom: scale(2) }}>
+        <Select options={[1, 2, 4, 16, 64, 256, 1024, 4096].map(e => ({ key: `${e}`, value: e }))} />
+      </Form.Field>
+      <FormUnsavedPrompt />
+    </>
+  );
 };
 
 const CommonSettings = () => (
