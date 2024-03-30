@@ -1,10 +1,13 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { z } from 'zod';
 
 import { OptionShape } from '@components/controls/NewSelect';
 
-import { pccClockSourceFreq } from '@store/system/pcc';
+import { PCCClockSource, pccClockSourceFreq } from '@store/system/pcc';
 
+import { ChunkIterator } from '@scripts/chunkIterator';
 import { zodStringToNumber } from '@scripts/validations';
 
 import { RootState } from '..';
@@ -27,102 +30,90 @@ const clockSourceTranslations: Record<keyof typeof ClockSource, string> = {
   LSI32K: 'Частота внутреннего осциллятора 32 кГц (LSI32K)',
 };
 
-function binarySearch(fn: (div: number) => number, targetValue: number, maxDifference = 500) {
-  let min = 0;
-  let max = 1024;
-  let guess;
+export const useFreqencyCorrection = (clockSource: ClockSource, freq: number) => {
+  const systemSource = useSelector<RootState>(state => state.system.pcc.systemSource) as PCCClockSource;
+  const divAhb = useSelector<RootState>(state => state.system.pcc.ahb) as number;
 
-  const isIncreasing = fn(max) > fn(min);
+  const [isRunning, setRunning] = useState(false);
+  const [actualFreq, setActualFreq] = useState<number | null>(null);
+  const [actualFreqAt, setActualFreqAt] = useState<number | null>(null);
 
-  while (min <= max) {
-    guess = Math.floor((max + min) / 2);
-    const val = fn(guess);
+  const fSystem = pccClockSourceFreq[systemSource];
 
-    if (Math.abs(val - targetValue) < maxDifference) {
-      return guess;
-    }
+  const workingResults = useRef<{
+    minDifference: number;
+    minDifferenceAt: null | number;
+  }>({
+    minDifference: Infinity,
+    minDifferenceAt: null,
+  });
 
-    if (isIncreasing) {
-      if (val < targetValue) {
-        min = guess + 1;
-      } else {
-        max = guess - 1;
+  const freqRef = useRef(freq);
+  freqRef.current = freq;
+
+  const getValueAtDiv = useCallback(
+    (div: number) => {
+      switch (clockSource) {
+        case ClockSource.SYS_CLK: {
+          return fSystem / (2 * div + 2);
+        }
+
+        case ClockSource.HCLK: {
+          return fSystem / ((divAhb + 1) * (2 * div + 2));
+        }
+
+        case ClockSource.OSC32M:
+        case ClockSource.HSI32M:
+          return 32000000 / (2 * div + 2);
+
+        case ClockSource.OSC32K:
+        case ClockSource.LSI32K:
+          return 32000 / (2 * div + 2);
+
+        default:
+          return null;
       }
-    } else if (val > targetValue) {
-      min = guess + 1;
-    } else {
-      max = guess - 1;
+    },
+    [clockSource, divAhb, fSystem]
+  );
+
+  const valueGetterRef = useRef(getValueAtDiv);
+  valueGetterRef.current = getValueAtDiv;
+
+  const executor = (iteration: number) => {
+    const value = valueGetterRef.current(iteration);
+
+    if (value === null) return;
+
+    const delta = Math.abs(value - Number(freqRef.current));
+
+    if (delta < workingResults.current.minDifference) {
+      workingResults.current.minDifference = delta;
+      workingResults.current.minDifferenceAt = iteration;
     }
-  }
+  };
 
-  return -1;
-}
+  const onFinish = () => {
+    // console.log('result div =', workingResults.current.minDifferenceAt);
 
-export const clockSourceTestCorrectness: Record<
-  keyof typeof ClockSource,
-  (freq: number, state: RootState) => null | [number, number]
-> = {
-  SYS_CLK: (freq, { system }) => {
-    const source = system.pcc.systemSource;
-    const fSystem = pccClockSourceFreq[source];
+    setRunning(false);
+    setActualFreqAt(workingResults.current.minDifferenceAt);
+    setActualFreq(getValueAtDiv(workingResults.current.minDifferenceAt!));
 
-    const fn = (div: number) => fSystem / (2 * div + 2);
-    const closestDiv = binarySearch(fn, freq);
+    workingResults.current.minDifference = Infinity;
+    workingResults.current.minDifferenceAt = null;
+  };
 
-    const actualValue = fn(closestDiv);
+  const chunkIteratorRef = useRef<ChunkIterator>(new ChunkIterator(executor, onFinish, 1024));
 
-    if (actualValue < 0 || actualValue > 100000) return null;
-    return [closestDiv, actualValue];
-  },
-  HCLK: (freq, { system }) => {
-    const source = system.pcc.systemSource;
-    const fSystem = pccClockSourceFreq[source];
-    const divAhb = system.pcc.ahb;
+  useEffect(() => {
+    setRunning(true);
 
-    const fn = (div: number) => fSystem / ((divAhb + 1) * (2 * div + 2));
-    const closestDiv = binarySearch(fn, freq);
+    chunkIteratorRef.current.reset();
+    chunkIteratorRef.current.iterate();
+  }, [clockSource, freq]);
 
-    const actualValue = fn(closestDiv);
-
-    if (actualValue < 0 || actualValue > 100000) return null;
-    return [closestDiv, actualValue];
-  },
-  OSC32M: freq => {
-    const fn = (div: number) => 32000000 / (2 * div + 2);
-    const closestDiv = binarySearch(fn, freq);
-
-    const actualValue = fn(closestDiv);
-
-    if (actualValue < 0 || actualValue > 100000) return null;
-    return [closestDiv, actualValue];
-  },
-  HSI32M: freq => {
-    const fn = (div: number) => 32000000 / (2 * div + 2);
-    const closestDiv = binarySearch(fn, freq);
-
-    const actualValue = fn(closestDiv);
-
-    if (actualValue < 0 || actualValue > 100000) return null;
-    return [closestDiv, actualValue];
-  },
-  OSC32K: freq => {
-    const fn = (div: number) => 32000 / (2 * div + 2);
-    const closestDiv = binarySearch(fn, freq);
-
-    const actualValue = fn(closestDiv);
-
-    if (actualValue < 0 || actualValue > 100000) return null;
-    return [closestDiv, actualValue];
-  },
-  LSI32K: freq => {
-    const fn = (div: number) => 32000 / (2 * div + 2);
-    const closestDiv = binarySearch(fn, freq);
-
-    const actualValue = fn(closestDiv);
-
-    if (actualValue < 0 || actualValue > 100000) return null;
-    return [closestDiv, actualValue];
-  },
+  return { actualFreq, actualFreqAt, isRunning };
 };
 
 export const CLOCK_SOURCE_OPTIONS = (

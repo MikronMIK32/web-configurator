@@ -5,7 +5,7 @@ import { OptionShape } from '@components/controls/NewSelect';
 
 import { zodStringToNumber } from '@scripts/validations';
 
-export enum ClockSource {
+export enum PCCClockSource {
   OSC32M = 'OSC32M',
   OSC32K = 'OSC32K',
   HSI32M = 'HSI32M',
@@ -15,7 +15,7 @@ export enum ClockSource {
 /**
  * Частоты в гц
  */
-export const pccClockSourceFreq: Record<keyof typeof ClockSource, number> = {
+export const pccClockSourceFreq: Record<keyof typeof PCCClockSource, number> = {
   OSC32M: 32 * 1000 * 1000,
   OSC32K: 32 * 1000,
   HSI32M: 32 * 1000 * 1000,
@@ -25,38 +25,38 @@ export const pccClockSourceFreq: Record<keyof typeof ClockSource, number> = {
 export const clockSourceOptions: OptionShape[] = [
   {
     key: 'Включить внешний источник 32мГц (OSC32M)',
-    value: ClockSource.OSC32M,
+    value: PCCClockSource.OSC32M,
   },
   {
     key: 'Включить внешний источник 32кГц (OSC32K)',
-    value: ClockSource.OSC32K,
+    value: PCCClockSource.OSC32K,
   },
   {
     key: 'Включить внутренний источник 32мГц (HSI32M)',
-    value: ClockSource.HSI32M,
+    value: PCCClockSource.HSI32M,
   },
   {
     key: 'Включить внутренний источник 32кГц (LSI32M)',
-    value: ClockSource.LSI32M,
+    value: PCCClockSource.LSI32M,
   },
 ];
 
 export const systemSourceOptions: OptionShape[] = [
   {
     key: 'Внешний источник 32мГц (OSC32M)',
-    value: ClockSource.OSC32M,
+    value: PCCClockSource.OSC32M,
   },
   {
     key: 'Внешний источник 32кГц (OSC32K)',
-    value: ClockSource.OSC32K,
+    value: PCCClockSource.OSC32K,
   },
   {
     key: 'Внутренний источник 32мГц (HSI32M)',
-    value: ClockSource.HSI32M,
+    value: PCCClockSource.HSI32M,
   },
   {
     key: 'Внутренний источник 32кГц (LSI32M)',
-    value: ClockSource.LSI32M,
+    value: PCCClockSource.LSI32M,
   },
 ];
 
@@ -82,8 +82,8 @@ export const monitorClockSourceOptions: OptionShape[] = [
 ];
 
 export const pccStateSchema = z.object({
-  clockSources: z.array(z.nativeEnum(ClockSource)),
-  systemSource: z.nativeEnum(ClockSource),
+  clockSources: z.array(z.nativeEnum(PCCClockSource)),
+  systemSource: z.nativeEnum(PCCClockSource),
   forceSystemSource: z.boolean(),
   monitorSource: z.nativeEnum(MonitorClockSource),
 
@@ -109,8 +109,8 @@ export const pccStateSchema = z.object({
 export type PccState = z.infer<typeof pccStateSchema>;
 
 export const pccInitialState: PccState = {
-  clockSources: [ClockSource.HSI32M, ClockSource.LSI32M, ClockSource.OSC32K, ClockSource.OSC32M],
-  systemSource: ClockSource.OSC32M,
+  clockSources: [PCCClockSource.HSI32M, PCCClockSource.LSI32M, PCCClockSource.OSC32K, PCCClockSource.OSC32M],
+  systemSource: PCCClockSource.OSC32M,
   forceSystemSource: false,
   monitorSource: MonitorClockSource.AUTO,
 

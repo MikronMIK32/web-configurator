@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ReactNode, useMemo } from 'react';
+import { ReactNode } from 'react';
 import { useForm, useFormContext, useWatch } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -14,12 +14,11 @@ import Tabs from '@components/controls/Tabs';
 
 import {
   CLOCK_SOURCE_OPTIONS,
-  ClockSource,
   TempState as State,
-  clockSourceTestCorrectness,
   tempInitialState as initialState,
   tempStateSchema as schema,
   setTemp as setSlice,
+  useFreqencyCorrection,
 } from '@store/analog/temp';
 import { RootState } from '@store/index';
 
@@ -34,14 +33,8 @@ const Settings = () => {
     name: ['enabled', 'clockSource', 'freq'],
   });
 
-  const rootState = useSelector<RootState>(state => state) as RootState;
-
-  const actualFreq = useMemo(() => {
-    const fn = clockSourceTestCorrectness[clockSource as ClockSource];
-
-    if (typeof fn !== 'function') return null;
-    return fn(freq, rootState);
-  }, [clockSource, freq, rootState]);
+  const { actualFreq, actualFreqAt, isRunning } = useFreqencyCorrection(clockSource, freq);
+  // console.log(actualFreq, isRunning);
 
   if (!enabled) return null;
 
@@ -69,7 +62,14 @@ const Settings = () => {
       />
       {actualFreq && (
         <p>
-          В действительности частота составит {Math.floor(actualFreq[1])} Гц при DIV= {actualFreq[0]}
+          В действительности частота составит{' '}
+          {isRunning ? (
+            '...'
+          ) : (
+            <>
+              {Math.floor(actualFreq)} Гц при значении делителя= {actualFreqAt}
+            </>
+          )}
         </p>
       )}
       <FormUnsavedPrompt />
