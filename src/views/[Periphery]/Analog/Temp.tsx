@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ReactNode } from 'react';
+import { ReactNode, useMemo } from 'react';
 import { useForm, useFormContext, useWatch } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -9,10 +9,14 @@ import { PeripheryWrapper } from '@components/PeripheryWrapper';
 import FormUnsavedPrompt from '@components/UnsavedPrompt';
 import Checkbox from '@components/controls/Checkbox';
 import Form from '@components/controls/Form';
+import Select from '@components/controls/NewSelect';
 import Tabs from '@components/controls/Tabs';
 
 import {
+  CLOCK_SOURCE_OPTIONS,
+  ClockSource,
   TempState as State,
+  clockSourceTestCorrectness,
   tempInitialState as initialState,
   tempStateSchema as schema,
   setTemp as setSlice,
@@ -26,13 +30,51 @@ const FULL_NAME = 'Температурный сенсор';
 const SETTINGS_OF = 'температурного сенсора';
 
 const Settings = () => {
-  const [enabled] = useWatch({
-    name: ['enabled'],
+  const [enabled, clockSource, freq] = useWatch({
+    name: ['enabled', 'clockSource', 'freq'],
   });
+
+  const rootState = useSelector<RootState>(state => state) as RootState;
+
+  const actualFreq = useMemo(() => {
+    const fn = clockSourceTestCorrectness[clockSource as ClockSource];
+
+    if (typeof fn !== 'function') return null;
+    return fn(freq, rootState);
+  }, [clockSource, freq, rootState]);
 
   if (!enabled) return null;
 
-  return <FormUnsavedPrompt />;
+  return (
+    <>
+      <Form.Field name="clockSource" css={{ marginBottom: scale(2), marginTop: scale(2) }}>
+        <Select
+          label={
+            <div css={{ display: 'flex', gap: scale(1) }}>
+              <span>Источник тактирования температурного сенсора</span>
+              <DetailsTrigger title="Источник тактирования температурного сенсора" description="Информация. TODO" />
+            </div>
+          }
+          options={CLOCK_SOURCE_OPTIONS}
+        />
+      </Form.Field>
+      <Form.Field
+        name="freq"
+        hint="От 0 до 100 000 Гц"
+        label="Частота сенсора, Гц"
+        css={{ marginBottom: scale(2) }}
+        {...(actualFreq === null && {
+          error: 'Данная частота недостижима',
+        })}
+      />
+      {actualFreq && (
+        <p>
+          В действительности частота составит {Math.floor(actualFreq[1])} Гц при DIV= {actualFreq[0]}
+        </p>
+      )}
+      <FormUnsavedPrompt />
+    </>
+  );
 };
 
 const CommonSettings = () => (

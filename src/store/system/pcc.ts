@@ -12,6 +12,16 @@ export enum ClockSource {
   LSI32M = 'LSI32M',
 }
 
+/**
+ * Частоты в гц
+ */
+export const pccClockSourceFreq: Record<keyof typeof ClockSource, number> = {
+  OSC32M: 32 * 1000 * 1000,
+  OSC32K: 32 * 1000,
+  HSI32M: 32 * 1000 * 1000,
+  LSI32M: 32 * 1000,
+};
+
 export const clockSourceOptions: OptionShape[] = [
   {
     key: 'Включить внешний источник 32мГц (OSC32M)',
