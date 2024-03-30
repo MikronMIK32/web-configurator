@@ -13,10 +13,10 @@ export enum ClockSource {
 }
 
 const clockSourceTranslations: Record<keyof typeof ClockSource, string> = {
-  OSC32M: 'Внешний 32 МГц',
-  HSI32M: 'Внутренний 32 МГц',
-  OSC32K: 'Внешний 32 кГц',
-  HSI32K: 'Внутренний 32 кГц',
+  OSC32M: 'Внешний 32 МГц (OSC32M)',
+  HSI32M: 'Внутренний 32 МГц (HSI32M)',
+  OSC32K: 'Внешний 32 кГц (OSC32K)',
+  HSI32K: 'Внутренний 32 кГц (HSI32K)',
 };
 
 export const CLOCK_SOURCE_OPTIONS = (
@@ -26,20 +26,41 @@ export const CLOCK_SOURCE_OPTIONS = (
   value: ClockSource[e],
 }));
 
-export const wdtStateSchema = z.object({
-  enabled: z.boolean(),
-  clockSource: z.nativeEnum(ClockSource),
-  initialTimerValue: zodStringToNumber(z.number({ required_error: 'Обязательное поле' }).min(0).max(4096)),
-  divider: zodStringToNumber(z.number({ required_error: 'Обязательное поле' })),
-});
+export const wdtStateSchema = z
+  .object({
+    enabled: z.boolean(),
+    clockSource: z.nativeEnum(ClockSource),
+    timeBeforeReload: zodStringToNumber(
+      z.number({ required_error: 'Обязательное поле' }).min(0, 'Значение должно быть больше 0')
+    ),
+  })
+  .refine(
+    val => {
+      switch (val.clockSource) {
+        case ClockSource.HSI32K:
+        case ClockSource.OSC32K:
+          return val.timeBeforeReload <= 511875;
+
+        case ClockSource.HSI32M:
+        case ClockSource.OSC32M:
+          return val.timeBeforeReload <= 524;
+        default:
+          break;
+      }
+    },
+    {
+      path: ['timeBeforeReload'],
+      message:
+        'Значение не должно превышать 524 мс при тактировании от источника 32 Мгц и 511 875 мс при тактировании от источника 32 кГц',
+    }
+  );
 
 export type WDTState = z.infer<typeof wdtStateSchema>;
 
 export const wdtInitialState: WDTState = {
   enabled: false,
   clockSource: ClockSource.OSC32M,
-  initialTimerValue: 0,
-  divider: 1,
+  timeBeforeReload: 0,
 };
 
 export const wdtSlice = createSlice({

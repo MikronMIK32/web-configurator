@@ -9,7 +9,6 @@ import { PeripheryWrapper } from '@components/PeripheryWrapper';
 import FormUnsavedPrompt from '@components/UnsavedPrompt';
 import Checkbox from '@components/controls/Checkbox';
 import Form from '@components/controls/Form';
-import IntegerMaskedInput from '@components/controls/IntegerMaskedInput';
 import Select from '@components/controls/NewSelect';
 import Tabs from '@components/controls/Tabs';
 
@@ -50,12 +49,11 @@ const Settings = () => {
           options={CLOCK_SOURCE_OPTIONS}
         />
       </Form.Field>
-      <Form.Field name="initialTimerValue" label="Начальное значение таймера" css={{ marginBottom: scale(2) }}>
-        <IntegerMaskedInput />
-      </Form.Field>
-      <Form.Field name="divider" label="Делитель входной частоты" css={{ marginBottom: scale(2) }}>
-        <Select options={[1, 2, 4, 16, 64, 256, 1024, 4096].map(e => ({ key: `${e}`, value: e }))} />
-      </Form.Field>
+      <Form.Field
+        name="timeBeforeReload"
+        label="Время до перезагрузки контроллера в миллисекундах"
+        css={{ marginBottom: scale(2) }}
+      />
       <FormUnsavedPrompt />
     </>
   );
