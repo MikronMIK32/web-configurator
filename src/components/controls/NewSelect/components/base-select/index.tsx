@@ -125,7 +125,7 @@ export const BaseSelect = forwardRef(
     );
 
     const useMultipleSelectionProps: UseMultipleSelectionProps<OptionShape> = {
-      itemToString,
+      itemToKey: itemToString,
       onSelectedItemsChange: changes => {
         if (onChange) {
           const { selectedItems = [] } = changes;
@@ -277,12 +277,12 @@ export const BaseSelect = forwardRef(
       if (!isNextFocusInsideList) {
         if (onBlur) onBlur(event);
 
-        inputProps.onBlur(event);
+        inputProps?.onBlur?.(event);
       }
     };
 
     const handleFieldKeyDown = (event: KeyboardEvent<HTMLDivElement | HTMLInputElement>) => {
-      inputProps.onKeyDown(event);
+      inputProps.onKeyDown?.(event);
       if (autocomplete && !open && (event.key.length === 1 || event.key === 'Backspace')) {
         // Для автокомплита - открываем меню при начале ввода
         openMenu();
