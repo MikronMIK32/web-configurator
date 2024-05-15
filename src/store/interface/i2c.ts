@@ -6,7 +6,7 @@ import { zodStringToNumber } from '@scripts/validations';
 
 type OptionShape = { key: string; value: string };
 
-enum ExtraAddressMask {
+export enum ExtraAddressMask {
   NO_MASK = 'no-mask',
   SEVEN_TWO = '7-2',
   SEVEN_THREE = '7-3',
