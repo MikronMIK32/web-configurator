@@ -2,9 +2,9 @@ import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { z } from 'zod';
 
-import { OptionShape } from '@components/controls/NewSelect';
-
 import { zodStringToNumber } from '@scripts/validations';
+
+type OptionShape = { key: string; value: string };
 
 enum ExtraAddressMask {
   NO_MASK = 'no-mask',

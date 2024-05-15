@@ -1,0 +1,38 @@
+{
+  "compilerOptions": {
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "declarationDir": "types-dist",
+    "types": ["vite/client", "@emotion/react/types/css-prop", "node"],
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": "./",
+    "jsx": "preserve",
+    "jsxImportSource": "@emotion/react",
+    "paths": {
+      "@components/*": ["./src/components/*"],
+      "@views/*": ["./src/views/*"],
+      "@store/*": ["./src/store/*"],
+      "@containers/*": ["./src/containers/*"],
+      "@scripts/*": ["./src/scripts/*"],
+      "@hooks/*": ["./src/scripts/hooks/*"],
+      "@controls/*": ["./src/components/controls/*"],
+      "@context/*": ["./src/context/*"],
+      "@icons/*": ["src/icons/*"],
+      "@customTypes/*": ["src/types/*"],
+      "@api/*": ["./src/api/*"]
+    },
+    "typeRoots": ["./src/typings/", "./node_modules/@types/"]
+  },
+  "include": ["src/store", "src/scripts"],
+  "exclude": ["node_modules"],
+  "references": [{ "path": "./tsconfig.node.json" }]
+}

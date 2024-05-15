@@ -1,7 +1,7 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { z } from 'zod';
 
-import { OptionShape } from '@components/controls/NewSelect';
+type OptionShape = { key: string; value: any };
 
 export enum Timer16Mode {
   DISABLED = 'disabled',

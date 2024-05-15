@@ -1,9 +1,9 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { z } from 'zod';
 
-import { OptionShape } from '@components/controls/NewSelect';
-
 import { zodStringToNumber } from '@scripts/validations';
+
+type OptionShape = { key: string; value: any };
 
 export enum ClockSource {
   OSC32M = 'OSC32M',

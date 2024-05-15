@@ -3,14 +3,14 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { z } from 'zod';
 
-import { OptionShape } from '@components/controls/NewSelect';
-
 import { PCCClockSource, pccClockSourceFreq } from '@store/system/pcc';
 
 import { ChunkIterator } from '@scripts/chunkIterator';
 import { zodStringToNumber } from '@scripts/validations';
 
 import { RootState } from '..';
+
+type OptionShape = { key: string; value: string };
 
 export enum ClockSource {
   SYS_CLK = 'SYS_CLK',

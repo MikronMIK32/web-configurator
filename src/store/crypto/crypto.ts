@@ -2,7 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { z } from 'zod';
 
-import { OptionShape } from '@components/controls/NewSelect';
+type OptionShape = { key: string; value: string };
 
 export enum EncryptionAlgo {
   KUZNECHIK = 'KUZNECHIK',
