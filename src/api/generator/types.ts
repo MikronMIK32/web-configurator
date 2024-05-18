@@ -3,7 +3,7 @@ import { CommonResponse } from '@api/common/types';
 import { RootState } from '@store/index';
 
 export type GenerateProjectResponse = CommonResponse<{
-  link: string;
+  url: string;
 }>;
 
-export type GenerateProjectRequest = RootState;
+export type GenerateProjectRequest = { project: RootState };
