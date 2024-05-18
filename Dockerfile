@@ -1,10 +1,10 @@
 # Install dependencies only when needed
-FROM node:18-alpine3.18 AS deps
+FROM oven/bun:1.1.8-alpine as deps
 # Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
 RUN apk add --no-cache libc6-compat
 WORKDIR /var/www
-COPY package.json yarn.lock ./
-RUN yarn install --frozen-lockfile
+COPY package.json bun.lockb ./
+RUN bun i
 
 # Rebuild the source code only when needed
 FROM node:18-alpine3.18 AS builder
