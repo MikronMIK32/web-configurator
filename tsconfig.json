@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "types": ["vite/client", "@emotion/react/types/css-prop"],
+    "types": ["vite/client"],
     "target": "es6",
     "downlevelIteration": true,
     "importHelpers": true,

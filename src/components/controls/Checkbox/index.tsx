@@ -6,7 +6,7 @@ import { ControllerFieldState, ControllerRenderProps } from 'react-hook-form';
 import { colors } from '@scripts/colors';
 import { scale } from '@scripts/helpers';
 
-import { ReactComponent as CheckIcon } from '@icons/small/check.svg';
+import CheckIcon from '@icons/small/check.svg?react';
 
 export interface CheckboxProps extends HTMLProps<HTMLInputElement> {
   /** Active state indeterminate */

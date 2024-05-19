@@ -1,14 +1,15 @@
 import { FC, HTMLProps, ReactNode, useMemo } from 'react';
+
 import { SVGRIcon } from '@customTypes/index';
 
-import { ReactComponent as EditIcon } from '@icons/small/edit.svg';
-import { ReactComponent as ExportIcon } from '@icons/small/share.svg';
-import { ReactComponent as CopyIcon } from '@icons/small/copy.svg';
-import { ReactComponent as TrashIcon } from '@icons/small/delete.svg';
-
-import { scale } from '@scripts/helpers';
 import { colors } from '@scripts/colors';
+import { scale } from '@scripts/helpers';
 import typography from '@scripts/typography';
+
+import CopyIcon from '@icons/small/copy.svg?react';
+import TrashIcon from '@icons/small/delete.svg?react';
+import EditIcon from '@icons/small/edit.svg?react';
+import ExportIcon from '@icons/small/share.svg?react';
 
 export interface ContentBtnProps extends HTMLProps<HTMLButtonElement> {
   type?: 'edit' | 'copy' | 'export' | 'delete';
@@ -16,12 +17,7 @@ export interface ContentBtnProps extends HTMLProps<HTMLButtonElement> {
   Icon?: SVGRIcon;
 }
 
-export const ContentBtn: FC<ContentBtnProps> = ({
-  type,
-  children,
-  Icon,
-  ...props
-}) => {
+export const ContentBtn: FC<ContentBtnProps> = ({ type, children, Icon, ...props }) => {
   const IconComponent = useMemo(() => {
     if (Icon) return Icon;
 

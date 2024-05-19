@@ -1,3 +1,6 @@
+/// <reference types="@emotion/react/types/css-prop" />
+/// <reference types="vite-plugin-svgr/client" />
+
 /* eslint-disable max-classes-per-file */
 /* eslint-disable react/sort-comp */
 /* eslint-disable react/static-property-placement */

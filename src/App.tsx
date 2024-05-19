@@ -7,7 +7,7 @@ import PeripheriesView from '@views/PeripheriesView';
 import GlobalStyles from '@components/GlobalStyles';
 import Tabs from '@components/controls/Tabs';
 
-import { ReactComponent as GraphIcon } from '@icons/large/graph.svg';
+import GraphIcon from '@icons/large/graph.svg?react';
 
 import { RootState } from './store';
 

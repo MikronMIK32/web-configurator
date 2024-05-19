@@ -4,7 +4,7 @@ import { colors } from '@scripts/colors';
 import { scale } from '@scripts/helpers';
 import typography from '@scripts/typography';
 
-import { ReactComponent as CloseIcon } from '@icons/small/close.svg';
+import CloseIcon from '@icons/small/close.svg?react';
 
 export interface TagProps extends HTMLProps<Omit<HTMLButtonElement, 'type'>> {
   onDelete?: () => void;

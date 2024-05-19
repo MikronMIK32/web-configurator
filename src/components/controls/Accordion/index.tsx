@@ -1,7 +1,7 @@
 import { FC, HTMLProps, ReactNode, useMemo } from 'react';
 import { Accordion as ReactAccordion } from 'react-accessible-accordion';
 
-import { ReactComponent as ArrowDownIcon } from '@icons/small/chevronDown.svg';
+import ArrowDownIcon from '@icons/small/chevronDown.svg?react';
 
 import { useThemeCSSPart } from '@scripts/theme';
 import AccordionButton, { AccordionButtonProps } from './Button';

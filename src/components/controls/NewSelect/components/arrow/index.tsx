@@ -1,4 +1,4 @@
-import { ReactComponent as ArrowIcon } from '@icons/small/chevronUp.svg';
+import ArrowIcon from '@icons/small/chevronUp.svg?react';
 import { useSelectTheme } from '../../context';
 
 import { ArrowProps } from '../../types';

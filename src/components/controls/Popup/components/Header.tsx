@@ -3,7 +3,7 @@ import { FC, useContext, useEffect } from 'react';
 
 import { scale } from '@scripts/helpers';
 
-import { ReactComponent as CrossIcon } from '@icons/small/close.svg';
+import CrossIcon from '@icons/small/close.svg?react';
 
 import { BaseModalContext } from '../../BaseModal';
 import { usePopupContext } from '../PopupContext';

@@ -3,7 +3,7 @@ import { combineReducers } from 'redux';
 import { persistReducer, persistStore } from 'redux-persist';
 import autoMergeLevel2 from 'redux-persist/lib/stateReconciler/autoMergeLevel2';
 import storage from 'redux-persist/lib/storage';
-import thunk from 'redux-thunk';
+import { thunk } from 'redux-thunk';
 
 import analogReducer from './analog';
 import apiStorage from './apiStorage';
@@ -40,7 +40,7 @@ const persistedReducer = persistReducer<RootReducer>(
 const store = configureStore({
   reducer: persistedReducer,
   devTools: process.env.NODE_ENV !== 'production',
-  middleware: [thunk],
+  middleware: [thunk as any],
 });
 
 export const persistor = persistStore(store);

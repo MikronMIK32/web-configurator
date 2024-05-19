@@ -1,13 +1,15 @@
 import { CSSObject } from '@emotion/react';
-import { useLocation, Link, To } from 'react-router-dom';
+import { Link, To, useLocation } from 'react-router-dom';
 
-import { ReactComponent as ChevronLeft } from '@icons/small/chevronLeft.svg';
-import { ReactComponent as ChevronRight } from '@icons/small/chevronRight.svg';
-import { colors } from '@scripts/colors';
-import { useQuery } from '@scripts/hooks/useQuery';
-import { scale } from '@scripts/helpers';
-import typography from '@scripts/typography';
 import Button from '@components/controls/Button';
+
+import { colors } from '@scripts/colors';
+import { scale } from '@scripts/helpers';
+import { useQuery } from '@scripts/hooks/useQuery';
+import typography from '@scripts/typography';
+
+import ChevronLeft from '@icons/small/chevronLeft.svg?react';
+import ChevronRight from '@icons/small/chevronRight.svg?react';
 
 export interface PaginationProps {
   /** Number of pages */
@@ -95,11 +97,7 @@ const Pagination = ({
   // Подсчет отображаемых страниц (отображаем либо максимально возможное, либо в зависимости от положения активной страницы)
   const visiblePages =
     // eslint-disable-next-line no-nested-ternary
-    position === 'any'
-      ? pages
-      : position === 'center'
-      ? baseNumberPages
-      : baseNumberPages - 1;
+    position === 'any' ? pages : position === 'center' ? baseNumberPages : baseNumberPages - 1;
 
   // Функция определяет номер страницы для каждого элемента массива (подсчет ведется от 1го)
   const getItem = (pageNumber: number) => {
@@ -109,10 +107,7 @@ const Pagination = ({
 
     if (pageNumber === visiblePages) return pages;
 
-    if (
-      (pageNumber === 2 && position !== 'start') ||
-      (pageNumber === visiblePages - 1 && position !== 'end')
-    ) {
+    if ((pageNumber === 2 && position !== 'start') || (pageNumber === visiblePages - 1 && position !== 'end')) {
       return null;
     }
 
@@ -130,17 +125,12 @@ const Pagination = ({
     return undefined;
   };
 
-  const paginationArray = Array.from({ length: visiblePages }, (_, i) =>
-    getItem(i + 1),
-  );
+  const paginationArray = Array.from({ length: visiblePages }, (_, i) => getItem(i + 1));
 
   if (pages < 2) return null;
 
   return (
-    <ul
-      css={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-      className={className}
-    >
+    <ul css={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }} className={className}>
       <li css={liCSS}>
         {setPage ? (
           <Button

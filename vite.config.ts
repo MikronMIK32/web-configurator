@@ -13,7 +13,11 @@ const ASSET_URL = process.env.ASSET_URL || '';
 export default defineConfig({
   plugins: [
     EnvironmentPlugin(['ASSET_URL', 'BASE_URL', 'USE_LOCAL_STORAGE', 'API_HOST']),
-    svgr(),
+    svgr({
+      svgrOptions: {
+        
+      }
+    }),
     tsconfigPaths(),
     react({
       jsxImportSource: '@emotion/react',

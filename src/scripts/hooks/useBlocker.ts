@@ -6,6 +6,8 @@ export function useBlocker(blocker: Blocker, when = true): void {
   const navigator = React.useContext(UNSAFE_NavigationContext)
     .navigator as History;
 
+  console.log(navigator);
+
   React.useEffect(() => {
     if (!when) return;
 

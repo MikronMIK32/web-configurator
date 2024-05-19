@@ -16,7 +16,7 @@ import { mergeRefs } from 'react-merge-refs';
 
 import FormControl from '@controls/FormControl';
 
-import { ReactComponent as CloseIcon } from '@icons/small/close.svg';
+import CloseIcon from '@icons/small/close.svg?react';
 
 import { scale } from '@scripts/helpers';
 import { useInputCSS } from '@scripts/hooks/useInputCSS';

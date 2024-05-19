@@ -1,6 +1,6 @@
 import { scale } from '@scripts/helpers';
 
-import { ReactComponent as CloseIcon } from '@icons/small/close.svg';
+import CloseIcon from '@icons/small/close.svg?react';
 
 const Clear = ({
   clear,
