@@ -10,7 +10,7 @@ export const useGenerateProject = () => {
   const queryClient = useQueryClient();
 
   return useMutation<GenerateProjectResponse, FetchError, GenerateProjectRequest>(
-    data => apiClient.post('generator/generate', { data }),
+    data => apiClient.post('generate', { data }),
     {
       onSuccess: () => {
         // TODO: invalidate smth
