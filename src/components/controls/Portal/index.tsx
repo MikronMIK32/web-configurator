@@ -1,4 +1,4 @@
-import { ReactNode, forwardRef, useEffect, useState } from 'react';
+import { ReactElement, ReactNode, forwardRef, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 import { getDefaultPortalContainer, setRef } from './utils';
@@ -18,17 +18,8 @@ export type PortalProps = {
   immediateMount?: boolean;
 };
 export const Portal = forwardRef<Element, PortalProps>(
-  (
-    {
-      getPortalContainer = getDefaultPortalContainer,
-      immediateMount = true,
-      children,
-    },
-    ref,
-  ) => {
-    const [mountNode, setMountNode] = useState<Element | null>(() =>
-      immediateMount ? getPortalContainer() : null,
-    );
+  ({ getPortalContainer = getDefaultPortalContainer, immediateMount = true, children }, ref) => {
+    const [mountNode, setMountNode] = useState<Element | null>(() => (immediateMount ? getPortalContainer() : null));
 
     useEffect(() => {
       setMountNode(getPortalContainer());
@@ -44,6 +35,6 @@ export const Portal = forwardRef<Element, PortalProps>(
       return () => null;
     }, [ref, mountNode]);
 
-    return mountNode ? createPortal(children, mountNode) : mountNode;
-  },
+    return mountNode ? (createPortal(children, mountNode) as ReactElement) : (mountNode as never as ReactElement);
+  }
 );

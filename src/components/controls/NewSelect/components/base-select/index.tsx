@@ -468,7 +468,7 @@ export const BaseSelect = forwardRef(
           {name && renderValue()}
 
           <Popover
-            open={open}
+            isOpen={open}
             anchorElement={fieldRef.current as HTMLElement}
             position={popoverPosition}
             preventFlip={preventFlip}

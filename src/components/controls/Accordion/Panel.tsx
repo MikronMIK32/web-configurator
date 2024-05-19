@@ -4,11 +4,13 @@ import {
   AccordionItemPanel as ReactAccordionItemPanel,
   AccordionItemState as ReactAccordionItemState,
 } from 'react-accessible-accordion';
-import { CSSTransition } from 'react-transition-group';
+import { CSSTransition as ReactCSSTransition } from 'react-transition-group';
 import { accordionThemes } from './themes';
 import { AccordionThemeState } from './types';
 
 import useAccordion from './useAccordion';
+
+const CSSTransition = ReactCSSTransition as any;
 
 export interface AccordionPanelProps
   extends Omit<HTMLProps<HTMLDivElement>, 'ref'> {

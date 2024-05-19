@@ -1,11 +1,13 @@
 import { format } from 'date-fns';
-import { LazyLoadImage } from 'react-lazy-load-image-component';
+import { LazyLoadImage as ReactLazyLoadImage } from 'react-lazy-load-image-component';
 import { NavLink as Link } from 'react-router-dom';
 import { FC } from 'react';
 
 import { useLinkCSS } from '@scripts/hooks/useLinkCSS';
 import { scale } from '@scripts/helpers';
 import { colors } from '@scripts/colors';
+
+const LazyLoadImage = ReactLazyLoadImage as any;
 
 export interface CellProps {
   type:
