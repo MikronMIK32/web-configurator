@@ -72,7 +72,7 @@ export const FEEDBACK_CLOCK_OPTIONS = (
   Object.keys(feedbackClockTranslations) as (keyof typeof feedbackClockTranslations)[]
 ).map<OptionShape>(e => ({
   key: feedbackClockTranslations[e],
-  value: FeedbackClock[e as never as keyof typeof FeedbackClock],
+  value: e,
 }));
 
 export const spifiStateSchema = z.object({
