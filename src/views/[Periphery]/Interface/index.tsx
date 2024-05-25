@@ -5,6 +5,7 @@ import Spi1 from './Spi1';
 import I2C0 from './I2C0';
 import I2C1 from './I2C1';
 import Usart from './Usart';
+import Spifi from './Spifi';
 
 const Interface = () => (
   <Routes>
@@ -13,6 +14,7 @@ const Interface = () => (
     <Route path="i2c0" element={<I2C0 />} />
     <Route path="i2c1" element={<I2C1 />} />
     <Route path="usart" element={<Usart />} />
+    <Route path="spifi" element={<Spifi />} />
   </Routes>
 );
 

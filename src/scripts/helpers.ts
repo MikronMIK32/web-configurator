@@ -158,3 +158,6 @@ export const objectDotEntries = <T extends Record<string, any>>(root: T): DotNot
 
   return result;
 };
+
+export const formatNumber = (value: number): string =>
+  new Intl.NumberFormat('ru-RU', { maximumSignificantDigits: 3 }).format(value);
