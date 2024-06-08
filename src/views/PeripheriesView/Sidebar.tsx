@@ -27,6 +27,10 @@ const items: LinkGroup[] = [
         to: '/periphery/system/vcc-monitor',
       },
       {
+        label: 'EEPROM',
+        to: '/periphery/system/eeprom',
+      },
+      {
         label: 'PCC',
         to: '/periphery/system/pcc',
       },
@@ -47,13 +51,13 @@ const items: LinkGroup[] = [
         to: '/periphery/system/wdt',
       },
       {
-        label: "Bus WDT",
+        label: 'Bus WDT',
         to: '/periphery/system/bus-wdt',
       },
       {
         label: 'OTP',
         to: '/periphery/system/otp',
-      }
+      },
     ],
   },
   {
