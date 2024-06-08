@@ -8,6 +8,8 @@ export const EEPROM_MODE_OPTIONS = [
 
 export const eepromStateSchema = z.object({
   enabled: z.boolean(),
+  errorCorrection: z.boolean(),
+  enableInterrupts: z.boolean(),
   mode: z.number(),
 });
 
@@ -15,6 +17,9 @@ export type EEPROMState = z.infer<typeof eepromStateSchema>;
 
 export const eepromInitialState: EEPROMState = {
   enabled: false,
+  errorCorrection: false,
+  enableInterrupts: false,
+
   mode: 0,
 };
 
