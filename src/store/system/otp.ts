@@ -25,6 +25,7 @@ export const otpStateSchema = z.object({
 export type OtpState = z.infer<typeof otpStateSchema>;
 
 export const otpInitialState: OtpState = {
+  enabled: false,
   read_mode: ReadMode.THREE_STEPS,
 };
 
