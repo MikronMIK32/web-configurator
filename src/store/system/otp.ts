@@ -18,6 +18,7 @@ export const readModeOptions = [
 ];
 
 export const otpStateSchema = z.object({
+  enabled: z.boolean(),
   read_mode: z.nativeEnum(ReadMode),
 });
 

@@ -7,6 +7,7 @@ import { DetailsTrigger } from '@components/DetailsTrigger';
 import { FormSticky } from '@components/FormSticky';
 import { PeripheryWrapper } from '@components/PeripheryWrapper';
 import FormUnsavedPrompt from '@components/UnsavedPrompt';
+import Checkbox from '@components/controls/Checkbox';
 import Form from '@components/controls/Form';
 import Select from '@components/controls/NewSelect';
 
@@ -14,6 +15,22 @@ import { RootState } from '@store/index';
 import { OtpState, otpInitialState, otpStateSchema, readModeOptions, setOtp } from '@store/system/otp';
 
 import { scale } from '@scripts/helpers';
+
+const CommonSettings = () => (
+  <div
+    css={{
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: scale(1),
+    }}
+  >
+    <Form.Field name="enabled">
+      <Checkbox>Включить OTP</Checkbox>
+    </Form.Field>
+    <DetailsTrigger title="OTP" description={`Информация об OTP`} />
+  </div>
+);
 
 const OtpForm = ({ children }: { children: ReactNode }) => {
   const dispatch = useDispatch();
@@ -83,6 +100,7 @@ const OtpInner = () => {
 const Otp = () => (
   <OtpForm>
     <PeripheryWrapper title="Настройки OTP">
+      <CommonSettings />
       <Form.Field name="read_mode" css={{ marginBottom: scale(2) }}>
         <Select
           label={
