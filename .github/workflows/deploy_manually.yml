@@ -3,58 +3,60 @@ on:
   workflow_dispatch:
     inputs:
       devopsBranch:
-        description: 'Devops branch with configs. see https://github.com/MikronMIK32/devops'
+        description: 'Values branch of https://github.com/MikronMIK32/devops'
+        default: "main"
         required: true
+env:
+  APP_NAME: configurator-front
+  REGISTRY_URL: cr.mik32.ru
 
 jobs:
   deploy:
-    runs-on: [self-hosted, prod]
+    runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
       - name: Set env.BRANCH
         run: echo "BRANCH=$(echo $GITHUB_REF | cut -d'/' -f 3)" >> $GITHUB_ENV
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           ref: ${{ github.ref }}
-
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v3
       - name: Load devops archive
-        run: |
-          mkdir devops-extracted
-          chmod +w devops-extracted
-          curl -fSL --header "Authorization: Bearer ${{ secrets.PAT_TOKEN }}" https://api.github.com/repos/MikronMIK32/devops/tarball/${{ inputs.devopsBranch }} -o "devops-extracted/archive.tar.gz"
-      - name: Extract devops files, prepare .env
-        run: |
-          tar -xzf ./devops-extracted/archive.tar.gz -C devops-extracted/ --strip-components=1
-          rm ./devops-extracted/archive.tar.gz
-          cp -r devops-extracted/common/* ./
-          cp -r devops-extracted/apps/configurator/front/* ./
-          echo "" > newline.txt
-          cat devops-extracted/common/.env newline.txt devops-extracted/apps/configurator/front/.env newline.txt > .env
-          echo "COMMIT_ID=${{ github.sha }}" >> .env
-          rm -rf ./devops-extracted
-          rm newline.txt
-      - name: Deploy PRODUCTION
+        run: bash .github/scripts/load_values.sh
+        env:
+          PAT_TOKEN: ${{ secrets.PAT_TOKEN_FOR_VALUES }}
+          COMMIT_ID: ${{ github.sha }}
+          DEVOPS_BRANCH: ${{ inputs.devopsBranch }}
+      - name: Build Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          builder: ${{ steps.buildx.outputs.name }}
+          load: true
+          tags: ${{ env.REGISTRY_URL }}/${{ env.APP_NAME }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            BASE_IMAGE=node:20-alpine
+            USER_ID=1001
+            GROUP_ID=1001
+            APP_NAME=${{ env.APP_NAME }}
+            PORT=3000
+      - name: Connect to CR
+        run: docker login -u root -p ${{ secrets.CR_PASSWORD }} https://${{ env.REGISTRY_URL }}
+      - name: Push image to CR
+        run: docker push ${{ env.REGISTRY_URL }}/${{ env.APP_NAME }}:latest
+      - name: Deploy
         env:
           REF: ${{ github.ref }}
           COMMIT_ID: ${{ github.sha }}
-        if: env.BRANCH == 'main'
         run: |
-          rm -rf /var/www/apps/prod-apps/configurator/front/src
-          cp -r ./ /var/www/apps/prod-apps/configurator/front
-          cd /var/www/apps/prod-apps/configurator/front
-          echo "Performing a rolling update of production service configurator..."
-          # chmod +x ./rolling-update.sh
-          # apt install dos2unix
-          # dos2unix rolling-update.sh
-          # ./rolling-update.sh
-          docker compose build
-          (docker compose down && docker compose up -d) || exit 1
-          echo "done"
-      - name: Deploy stage
-        env:
-          REF: ${{ github.ref }}
-          COMMIT_ID: ${{ github.sha }}
-        if: env.BRANCH != 'main'
-        run: |
-          echo "TODO: create docker image build! Branch name is ${{ env.BRANCH }}, sha is $COMMIT_ID"
+          response_code=$(curl -i -H "Accept: application/json" -H "Content-Type: application/json" -X POST -d '{"app":"${{ env.APP_NAME }}","branch": "${{ inputs.devopsBranch }}","is_prod":false,"commit_id":"${{ github.sha }}","repo_name": "FitLab-front"}' -u root:${{ secrets.DEPLOYER_PASSWORD }} https://deployer.mik32.ru/deploy)
+          if [ $response_code -ne 200 ]; then
+            echo "Error: The curl request returned a status code of $response_code"
+            exit 1
+          fi
