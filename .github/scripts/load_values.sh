@@ -5,9 +5,9 @@ mkdir devops-extracted
 chmod +w devops-extracted
 
 # Download and extract files
-echo "Downloading from https://api.github.com/repos/MikronMIK32/devops/tarball/$DEVOPS_BRANCH"
+echo "Downloading from https://github.com/MikronMIK32/devops/archive/refs/heads/$DEVOPS_BRANCH.tar.gz"
 
-curl -fSL --header "Authorization: Bearer $PAT_TOKEN" "https://api.github.com/repos/MikronMIK32/devops/tarball/$DEVOPS_BRANCH" -o "devops-extracted/archive.tar.gz" || exit 1
+curl -fSL --header "Authorization: Bearer $PAT_TOKEN" "https://github.com/MikronMIK32/devops/archive/refs/heads/$DEVOPS_BRANCH.tar.gz" -o "devops-extracted/archive.tar.gz" || exit 1
 echo "Extracting devops files, prepare .env..."
 tar -xzf ./devops-extracted/archive.tar.gz -C devops-extracted/ --strip-components=1
 rm ./devops-extracted/archive.tar.gz
