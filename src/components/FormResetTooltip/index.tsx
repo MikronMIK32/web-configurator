@@ -1,5 +1,5 @@
 import { faRotateBack } from '@fortawesome/free-solid-svg-icons';
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 
 import Button from '@components/controls/Button';
 import Tooltip from '@components/controls/Tooltip';

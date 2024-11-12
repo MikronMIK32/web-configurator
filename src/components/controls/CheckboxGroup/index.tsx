@@ -1,4 +1,4 @@
-import { ChangeEvent, Children, HTMLProps, cloneElement, isValidElement, useMemo, useRef } from 'react';
+import { ChangeEvent, Children, HTMLProps, cloneElement, isValidElement, useRef } from 'react';
 import { ControllerFieldState, ControllerRenderProps } from 'react-hook-form';
 
 import Layout from '@components/Layout';
@@ -41,26 +41,26 @@ export const CheckboxGroup = ({
     ...props,
   };
 
-  const childrenCount = useMemo(() => Children.count(children), [children]);
+  // const childrenCount = useMemo(() => Children.count(children), [children]);
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const isIndeterminate = useMemo(() => {
-    if (!indeterminate) return false;
-    if (!field?.value) return true;
+  // // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // const isIndeterminate = useMemo(() => {
+  //   if (!indeterminate) return false;
+  //   if (!field?.value) return true;
 
-    const valueCount = field.value.length;
-    if (valueCount < 1) return false;
+  //   const valueCount = field.value.length;
+  //   if (valueCount < 1) return false;
 
-    return valueCount < childrenCount;
-  }, [childrenCount, field, indeterminate]);
+  //   return valueCount < childrenCount;
+  // }, [childrenCount, field, indeterminate]);
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const isAll = useMemo(() => {
-    if (!field?.value) return false;
+  // // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // const isAll = useMemo(() => {
+  //   if (!field?.value) return false;
 
-    const valueCount = field.value.length;
-    return valueCount === childrenCount;
-  }, [childrenCount, field]);
+  //   const valueCount = field.value.length;
+  //   return valueCount === childrenCount;
+  // }, [childrenCount, field]);
 
   return (
     <fieldset css={{ display: 'block', position: 'relative', padding: 0 }}>

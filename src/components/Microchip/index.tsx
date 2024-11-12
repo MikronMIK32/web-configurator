@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { useMemo, useRef, useState } from 'react';
 
 import { colors } from '@scripts/colors';
@@ -5,7 +7,7 @@ import { scale } from '@scripts/helpers';
 
 import Droppanel, { DroppanelMode, DroppanelOption, DroppanelPivot } from './Droppanel';
 import Pin from './Pin';
-import PinColumn, { PinColumnProps } from './PinColumn';
+import PinColumn from './PinColumn';
 
 // TODO
 

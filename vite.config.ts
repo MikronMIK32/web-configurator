@@ -1,4 +1,4 @@
-import react from '@vitejs/plugin-react';
+import react from '@vitejs/plugin-react-swc';
 import dotenv from 'dotenv';
 import { defineConfig } from 'vite';
 import EnvironmentPlugin from 'vite-plugin-environment';
@@ -14,16 +14,12 @@ export default defineConfig({
   plugins: [
     EnvironmentPlugin(['ASSET_URL', 'BASE_URL', 'USE_LOCAL_STORAGE', 'API_HOST']),
     svgr({
-      svgrOptions: {
-        
-      }
+      svgrOptions: {},
     }),
     tsconfigPaths(),
     react({
       jsxImportSource: '@emotion/react',
-      babel: {
-        plugins: ['@emotion/babel-plugin'],
-      },
+      plugins: [['@swc/plugin-emotion', {}]],
     }),
   ],
   server: {

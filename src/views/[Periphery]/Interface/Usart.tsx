@@ -9,11 +9,14 @@ import { PeripheryWrapper } from '@components/PeripheryWrapper';
 import FormUnsavedPrompt from '@components/UnsavedPrompt';
 import Checkbox from '@components/controls/Checkbox';
 import Form from '@components/controls/Form';
+import IntegerMaskedInput from '@components/controls/IntegerMaskedInput';
+import Select from '@components/controls/NewSelect';
 import Tabs from '@components/controls/Tabs';
 
 import { RootState } from '@store/index';
 import {
   USARTState as State,
+  USARTState,
   usartInitialState as initialState,
   usartStateSchema as schema,
   setUSART as setSlice,
@@ -27,13 +30,50 @@ const SETTINGS_OF = 'USART';
 const useData = () => useSelector<RootState, State>(state => state.interface.usart);
 
 const Settings = () => {
-  const [enabled] = useWatch({
-    name: ['enabled'],
+  const [enabled, mode] = useWatch<USARTState>({
+    name: ['enabled', 'mode'],
   });
 
   if (!enabled) return null;
 
-  return <FormUnsavedPrompt />;
+  console.log(mode);
+
+  return (
+    <>
+      <Form.Field name="mode" css={{ marginBottom: scale(2) }}>
+        <Select
+          label={
+            <div css={{ display: 'flex', gap: scale(1) }}>
+              <span>Режим работы</span>
+              <DetailsTrigger title="TODO" description="Информация. TODO" />
+            </div>
+          }
+          options={[
+            {
+              key: 'Выключен',
+              value: 'disabled',
+            },
+            {
+              key: 'Асинхронный режим',
+              value: 'async',
+            },
+            {
+              key: 'Синхронный режим',
+              value: 'sync',
+            },
+          ]}
+        />
+      </Form.Field>
+      <Form.Field
+        name="timeout"
+        label="Количество периодов сигнала SCK без чтения данных до завершения команды"
+        css={{ marginBottom: scale(2) }}
+      >
+        <IntegerMaskedInput />
+      </Form.Field>
+      <FormUnsavedPrompt />
+    </>
+  );
 };
 
 const CommonSettings = () => (
@@ -123,9 +163,15 @@ const Periphery = () => (
         <Tabs.Tab title="Настройки" id="0">
           <Settings />
         </Tabs.Tab>
-        <Tabs.Tab title="Прерывания" id="1">
-          Interrupts
+        {/* <Tabs.Tab title="Настройки" id="1">
+          <DMA />
         </Tabs.Tab>
+        <Tabs.Tab title="Прерывания" id="2">
+          <Interrupts />
+        </Tabs.Tab>
+        <Tabs.Tab title="Модем" id="3">
+          <Modem />
+        </Tabs.Tab> */}
       </Tabs>
     </PeripheryWrapper>
     <Inner />
