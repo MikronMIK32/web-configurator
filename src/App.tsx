@@ -1,11 +1,14 @@
-import { Component, useState } from 'react';
+import { Component, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 
 import ExportView from '@views/Export';
+import Pcc from '@views/Pcc';
 import PeripheriesView from '@views/PeripheriesView';
 
 import GlobalStyles from '@components/GlobalStyles';
 import Tabs from '@components/controls/Tabs';
+
+import { colors } from '@scripts/colors';
 
 import GraphIcon from '@icons/large/graph.svg?react';
 
@@ -87,6 +90,10 @@ class ErrorBoundary extends Component<any, { error: any }> {
 function App() {
   const [tab, setTab] = useState('peripheral');
 
+  useEffect(() => {
+    setTab('peripheral');
+  }, []);
+
   const rootState = useSelector<RootState>(state => state);
 
   return (
@@ -111,6 +118,9 @@ function App() {
           }}
         >
           <PeripheriesView />
+        </Tabs.Tab>
+        <Tabs.Tab id="pcc" title="Pcc">
+          <Pcc />
         </Tabs.Tab>
         {/* <Tabs.Tab title="Clock" rightAddons={<ClockIcon />}>
           TODO

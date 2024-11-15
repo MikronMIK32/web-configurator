@@ -4,6 +4,7 @@ export const colors = {
   raspberry: '#e01a3b',
   orange: '#ff731f',
   purpleDark: '#8f0057',
+  purpleLight: '#b5227b',
   disabled: '#ededed',
   warningDark: '#ff8533',
   blueDark: '#4fa6ed',
