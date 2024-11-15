@@ -8,8 +8,6 @@ import PeripheriesView from '@views/PeripheriesView';
 import GlobalStyles from '@components/GlobalStyles';
 import Tabs from '@components/controls/Tabs';
 
-import { colors } from '@scripts/colors';
-
 import GraphIcon from '@icons/large/graph.svg?react';
 
 import { RootState } from './store';
