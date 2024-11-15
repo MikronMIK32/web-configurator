@@ -105,7 +105,6 @@ function App() {
         css={{
           height: 'calc(100% - 48px)',
         }}
-        keepMounted
       >
         <Tabs.Tab
           id="peripheral"
