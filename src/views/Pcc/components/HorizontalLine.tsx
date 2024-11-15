@@ -11,7 +11,7 @@ export default function HorizontalLine({ color, ...props }: HorizontalLineProps)
         '::before': {
           content: '""',
           background: color ?? colors.black,
-          height: 2,
+          height: 3,
           width: '100%',
           position: 'absolute',
         },
