@@ -16,7 +16,7 @@ const ExportView = () => {
   const store = useStore<RootState>();
 
   // eslint-disable-next-line prefer-destructuring
-  const isLoading = generateProject.isLoading;
+  const isLoading = generateProject.isPending;
 
   const [data, setData] = useState<{
     error?: string;

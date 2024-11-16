@@ -13,8 +13,8 @@ export const useGenerateProject = () => {
   // const queryClient = useQueryClient();
 
   return useMutation<GenerateProjectResponse, FetchError, GenerateProjectRequest>(
-    data => apiClient.post('generate', { data }),
     {
+      mutationFn: data => apiClient.post('generate', { data }),
       onSuccess: () => {
         // TODO: invalidate smth
         // queryClient.invalidateQueries([]);

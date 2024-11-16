@@ -40,7 +40,7 @@ const persistedReducer = persistReducer<RootReducer>(
 const store = configureStore({
   reducer: persistedReducer,
   devTools: process.env.NODE_ENV !== 'production',
-  middleware: [thunk as any],
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(thunk as any),
 });
 
 export const persistor = persistStore(store);
