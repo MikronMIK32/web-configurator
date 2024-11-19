@@ -13,6 +13,7 @@ export interface HorizontalLineProps extends Omit<HTMLProps<HTMLDivElement>, 'co
 export type Connection = 'none' | 'line' | 'right' | 'bidirectional' | 'biline';
 
 export interface InputBlockProps {
+  name?: string;
   width: number; // how many cells is the width
   value: string;
   onChange?: (value: string) => void;
@@ -36,6 +37,7 @@ export interface Pin {
 
 export interface MultiplexorProps {
   className?: string;
+  name?: string;
   pins: Pin[];
 }
 export interface VerticalLineProps extends Omit<HTMLProps<HTMLDivElement>, 'color'> {
