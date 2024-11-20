@@ -38,7 +38,15 @@ for (let col = 1; col <= COLS + 1; col++) {
   });
 }
 
-const CodeArea = ({ initialValue, onChange }: { initialValue: string; onChange: (newValue: string) => void }) => {
+const CodeArea = ({
+  initialValue,
+  onChange,
+  className,
+}: {
+  className?: string;
+  initialValue: string;
+  onChange: (newValue: string) => void;
+}) => {
   const [value, setValue] = useState(initialValue);
 
   useEffect(() => {
@@ -52,6 +60,7 @@ const CodeArea = ({ initialValue, onChange }: { initialValue: string; onChange: 
         height: 100,
         overflow: 'auto',
       }}
+      className={className}
       value={value}
       onChange={e => setValue(e.currentTarget.value)}
       onBlur={() => {
@@ -63,8 +72,14 @@ const CodeArea = ({ initialValue, onChange }: { initialValue: string; onChange: 
 
 const Pcc = () => {
   const [code, setCode] = useState(initialSchemaCode);
-  console.log(code);
-  const schema = useMemo(() => JSON.parse(code) as SchemaItem[], [code]);
+  const schema = useMemo(() => {
+    try {
+      const res = JSON.parse(code) as SchemaItem[];
+      return { result: res, error: null };
+    } catch (e) {
+      return { result: null, error: 'Ошибка парсинга JSON' };
+    }
+  }, [code]);
 
   const [showGrid, setShowGrid] = useState(false);
 
@@ -96,7 +111,13 @@ const Pcc = () => {
           }}
         >
           <p>Вставьте сюда новый код</p>
-          <CodeArea initialValue={code} onChange={setCode} />
+          <CodeArea
+            initialValue={code}
+            onChange={setCode}
+            css={{
+              border: '2px solid ' + schema.error ? 'red' : 'transparent',
+            }}
+          />
         </div>
       </div>
       <div
@@ -127,45 +148,47 @@ const Pcc = () => {
           </>
         )}
 
-        {schema.map(({ type, col, row, width, height, ...props }) => {
-          const key = `${type}-${col}-${row}`;
-          if (width === 'cols') width = COLS;
-          if (height === 'rows') height = ROWS;
-          col = normalizeIndex(col, COLS);
-          row = normalizeIndex(row, ROWS);
-          const css = getCellCss(col, row, width, height);
+        {schema.result
+          ? schema.result.map(({ type, col, row, width, height, ...props }) => {
+              const key = `${type}-${col}-${row}`;
+              if (width === 'cols') width = COLS;
+              if (height === 'rows') height = ROWS;
+              col = normalizeIndex(col, COLS);
+              row = normalizeIndex(row, ROWS);
+              const css = getCellCss(col, row, width, height);
 
-          switch (type) {
-            case 'multiplexor':
-              return <Multiplexor key={key} {...(props as MultiplexorProps)} css={css} />;
-            case 'input-block': {
-              const { editable, ...rest } = props as InputBlockProps;
-              return (
-                <InputBlock
-                  key={key}
-                  {...rest}
-                  width={width}
-                  css={css}
-                  onChange={
-                    editable
-                      ? newValue => {
-                          alert(
-                            `Спасибо что попытались ввести сюда ${newValue}. Я не знаю схему данных и валидацию, а так же не знаю опции выпадающие. поэтому увы!`
-                          );
-                        }
-                      : undefined
-                  }
-                />
-              );
-            }
-            case 'vertical-line':
-              return <VerticalLine key={key} {...(props as VerticalLineProps)} css={css} />;
-            case 'horizontal-line':
-              return <HorizontalLine key={key} {...(props as HorizontalLineProps)} css={css} />;
-            default:
-              return null; // Handle unexpected types if necessary
-          }
-        })}
+              switch (type) {
+                case 'multiplexor':
+                  return <Multiplexor key={key} {...(props as MultiplexorProps)} css={css} />;
+                case 'input-block': {
+                  const { editable, ...rest } = props as InputBlockProps;
+                  return (
+                    <InputBlock
+                      key={key}
+                      {...rest}
+                      width={width}
+                      css={css}
+                      onChange={
+                        editable
+                          ? newValue => {
+                              alert(
+                                `Спасибо что попытались ввести сюда ${newValue}. Я не знаю схему данных и валидацию, а так же не знаю опции выпадающие. поэтому увы!`
+                              );
+                            }
+                          : undefined
+                      }
+                    />
+                  );
+                }
+                case 'vertical-line':
+                  return <VerticalLine key={key} {...(props as VerticalLineProps)} css={css} />;
+                case 'horizontal-line':
+                  return <HorizontalLine key={key} {...(props as HorizontalLineProps)} css={css} />;
+                default:
+                  return null; // Handle unexpected types if necessary
+              }
+            })
+          : null}
       </div>
     </div>
   );

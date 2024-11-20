@@ -6,6 +6,7 @@ export const COLS = 44;
 
 export const initialSchemaCode = `[
     {
+        "name": "m_1",
         "type": "multiplexor",
         "col": 20,
         "row": 1,
@@ -46,6 +47,7 @@ export const initialSchemaCode = `[
     },
     {
         "type": "input-block",
+        "name": "freq_in",
         "col": 1,
         "row": 4,
         "width": 4,
@@ -61,6 +63,7 @@ export const initialSchemaCode = `[
         "type": "input-block",
         "col": 6,
         "row": 4,
+        "name": "osc32m",
         "width": 4,
         "height": 2,
         "value": "OSC32M",
@@ -73,6 +76,7 @@ export const initialSchemaCode = `[
         "type": "input-block",
         "col": 6,
         "row": 7,
+        "name": "hsi",
         "width": 4,
         "height": 2,
         "value": "32",
@@ -87,6 +91,7 @@ export const initialSchemaCode = `[
     {
         "type": "input-block",
         "col": 6,
+        "name": "lsi",
         "row": 10,
         "width": 4,
         "height": 2,
