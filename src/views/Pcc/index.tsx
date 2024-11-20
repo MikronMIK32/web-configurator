@@ -115,7 +115,7 @@ const Pcc = () => {
             initialValue={code}
             onChange={setCode}
             css={{
-              border: '2px solid ' + schema.error ? 'red' : 'transparent',
+              border: '2px solid ' + (schema.error ? 'red' : 'transparent'),
             }}
           />
         </div>
@@ -188,7 +188,7 @@ const Pcc = () => {
                   return null; // Handle unexpected types if necessary
               }
             })
-          : null}
+          : <p>Укажите валидную схему для отображения</p>}
       </div>
     </div>
   );
