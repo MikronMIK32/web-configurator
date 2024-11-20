@@ -18,6 +18,6 @@ FROM nginx:latest
 
 COPY --from=builder /var/www/public /usr/share/nginx/html/public
 COPY --from=builder /var/www/dist/ /usr/share/nginx/html
-COPY nginx.conf /etc/nginx
+# COPY nginx.conf /etc/nginx
 
 EXPOSE 3000
