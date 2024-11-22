@@ -204,7 +204,7 @@ const SidebarContainer = ({ isDark, className }: { isDark: boolean; className?: 
       <Sidebar.Nav
         preExpanded={preExpanded}
         animationType="fadeIn"
-        allowMultipleExpanded={false}
+        allowMultipleExpanded
         allowZeroExpanded
         variant={isDark ? 'dark' : 'primary'}
         isIconVertical
