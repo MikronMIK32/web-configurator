@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+
 import { colors } from '@scripts/colors';
 import typography from '@scripts/typography';
 
@@ -135,7 +137,11 @@ const InputBlock = ({
   connectionRight,
   ...props
 }: InputBlockProps) => {
-  const { dims, onMeasure } = useCellDims();
+  const { dims, onMeasure, updateLast } = useCellDims();
+
+  useEffect(() => {
+    updateLast();
+  }, [updateLast, cellWidth, connectionLeft, connectionRight]);
 
   return (
     <div

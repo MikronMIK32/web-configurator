@@ -3,6 +3,7 @@ import typography from '@scripts/typography';
 
 import { MultiplexorProps, Pin } from '../types';
 import useCellDims from '../useCellDims';
+import { useEffect } from 'react';
 
 interface TrapezoidProps {
   height: number;
@@ -107,7 +108,11 @@ const PinComponent = ({ isActive, name, arrowWidth }: Pin & { index: number; arr
 );
 
 const Multiplexor = ({ className, pins }: MultiplexorProps) => {
-  const { dims, onMeasure } = useCellDims();
+  const { dims, onMeasure, updateLast } = useCellDims();
+
+  useEffect(() => {
+    updateLast();
+  }, [pins, updateLast]);
 
   return (
     <div

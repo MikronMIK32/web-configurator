@@ -18,13 +18,12 @@ const GlobalStyles = () => (
           background: 'rgb(250,250,250)',
         },
         html: {
-          height: '-webkit-fill-available',
-          minHeight: '100vh',
+          height: '100vh',
           padding: 0,
           margin: 0,
         },
         '#root': {
-          height: '-webkit-fill-available',
+          height: '100vh',
         },
         'p,h1,h2,h3,h4,h5,h6': {
           margin: 0,
@@ -69,8 +68,6 @@ const GlobalStyles = () => (
           border: 'none',
         },
         body: {
-          height: '-webkit-fill-available',
-          minHeight: '-webkit-fill-available',
           padding: 0,
           margin: 0,
           fontFamily: 'Calibri,Verdana,sans-serif',

@@ -4,25 +4,32 @@ export default function useCellDims() {
   const [dims, setDims] = useState({ w: 128, h: 128 });
   const isMeasuredRef = useRef(false);
 
+  const ref = useRef<HTMLDivElement>();
+
+  const fn = (node: HTMLDivElement) => {
+    isMeasuredRef.current = true;
+    const { height, width } = node.getBoundingClientRect();
+    setDims({ w: width, h: height });
+  };
+
   const onMeasure = useCallback((node: HTMLDivElement | null) => {
     if (isMeasuredRef.current || !node) return;
-
-    const fn = () => {
-      isMeasuredRef.current = true;
-      const { height, width } = node.getBoundingClientRect();
-      setDims({ w: width, h: height });
-    };
+    ref.current = node;
 
     if (node?.isConnected) {
-      fn();
+      fn(node);
     } else {
       queueMicrotask(() => {
         if (node?.isConnected) {
-          fn();
+          fn(node);
         }
       });
     }
   }, []);
 
-  return { onMeasure, dims };
+  const updateLast = useCallback(() => {
+    if (ref.current) fn(ref.current)
+  }, []);
+
+  return { onMeasure, dims, updateLast };
 }

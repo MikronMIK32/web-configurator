@@ -76,12 +76,12 @@ const Pcc = () => {
     try {
       const res = JSON.parse(code) as SchemaItem[];
       return { result: res, error: null };
-    } catch (e) {
-      return { result: null, error: 'Ошибка парсинга JSON' };
+    } catch (e: any) {
+      return { result: null, error: e?.message };
     }
   }, [code]);
 
-  const [showGrid, setShowGrid] = useState(false);
+  const [showGrid, setShowGrid] = useState(true);
 
   return (
     <div
@@ -91,6 +91,9 @@ const Pcc = () => {
         display: 'flex',
         gap: 16,
         flexDirection: 'column',
+
+        // Uncomment to allow page scroll
+        height: '100%',
       }}
     >
       <div
@@ -118,14 +121,33 @@ const Pcc = () => {
               border: '2px solid ' + (schema.error ? 'red' : 'transparent'),
             }}
           />
+          {schema.error && (
+            <code
+              css={{
+                display: 'block',
+                fontSize: '0.875rem',
+                background: 'red',
+                color: 'white',
+                padding: 4,
+                borderRadius: 2,
+              }}
+            >
+              {JSON.stringify(schema.error)}
+            </code>
+          )}
         </div>
       </div>
+
       <div
         css={{
           display: 'grid',
           gridTemplateColumns: `repeat(${COLS}, ${CELL_SIZE}px)`,
           gridTemplateRows: `repeat(${ROWS}, ${CELL_SIZE}px)`,
           gap: 0,
+          overflow: 'auto',
+          // Если захотим поведение шоб вся страница скроллилась
+          // overflowX: 'auto',
+          // overflowY: 'clip',
         }}
       >
         {showGrid && (
@@ -188,7 +210,7 @@ const Pcc = () => {
                   return null; // Handle unexpected types if necessary
               }
             })
-          : <p>Укажите валидную схему для отображения</p>}
+          : null}
       </div>
     </div>
   );

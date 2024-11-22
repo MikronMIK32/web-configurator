@@ -102,8 +102,13 @@ function App() {
         onChange={(_, { selectedId }) => {
           setTab(selectedId);
         }}
+        containerCSS={{
+          flexShrink: 0,
+        }}
         css={{
-          height: 'calc(100% - 48px)',
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
         }}
       >
         <Tabs.Tab
@@ -116,7 +121,13 @@ function App() {
         >
           <PeripheriesView />
         </Tabs.Tab>
-        <Tabs.Tab id="pcc" title="Pcc">
+        <Tabs.Tab
+          id="pcc"
+          title="Pcc"
+          css={{
+            height: 'calc(100vh - 48px)',
+          }}
+        >
           <Pcc />
         </Tabs.Tab>
         {/* <Tabs.Tab title="Clock" rightAddons={<ClockIcon />}>
