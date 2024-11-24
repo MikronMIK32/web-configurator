@@ -251,10 +251,17 @@ export const initialSchemaCode = `[
         "name": "hline_4",
         "col": 40,
         "row": 44,
-        "width": 2,
+        "width": 8,
         "height": 1,
         "connectionLeft": false,
         "connectionRight": true
+    },
+    {
+        "type": "intersection",
+        "col": 43,
+        "row": 44,
+        "width": 1,
+        "height": 1      
     },
     {
         "type": "horizontal-line",
