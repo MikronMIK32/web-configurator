@@ -164,7 +164,7 @@ const Pcc = () => {
                 case 'vertical-line':
                   return <VerticalLine key={key} {...(props as VerticalLineProps)} css={css} />;
                 case 'horizontal-line':
-                  return <HorizontalLine key={key} {...(props as HorizontalLineProps)} css={css} />;
+                  return <HorizontalLine key={key} {...(props as HorizontalLineProps)} css={css} totalWidth={width * CELL_SIZE} />;
               }
             })}
           </>
@@ -205,7 +205,14 @@ const Pcc = () => {
                 case 'vertical-line':
                   return <VerticalLine key={key} {...(props as VerticalLineProps)} css={css} />;
                 case 'horizontal-line':
-                  return <HorizontalLine key={key} {...(props as HorizontalLineProps)} css={css} />;
+                  return (
+                    <HorizontalLine
+                      key={key}
+                      {...(props as HorizontalLineProps)}
+                      css={css}
+                      totalWidth={width * CELL_SIZE}
+                    />
+                  );
                 default:
                   return null; // Handle unexpected types if necessary
               }

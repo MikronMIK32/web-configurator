@@ -8,6 +8,7 @@ export type GridCellProps = {
 };
 export interface HorizontalLineProps extends Omit<HTMLProps<HTMLDivElement>, 'color'> {
   color?: string;
+  totalWidth?: number;
 }
 
 export type Connection = 'none' | 'line' | 'right' | 'bidirectional' | 'biline';

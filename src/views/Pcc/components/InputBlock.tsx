@@ -92,13 +92,20 @@ const ConnectionComponent = ({
 }) => {
   switch (connection) {
     case 'line':
-      return <Line {...props} />;
+      return (
+        <Line
+          {...props}
+          css={{
+            top: '26px',
+          }}
+        />
+      );
     case 'right':
       return (
         <ArrowRight
           {...props}
           css={{
-            top: 26,
+            top: 27,
           }}
         />
       );
