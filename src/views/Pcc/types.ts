@@ -6,16 +6,22 @@ export type GridCellProps = {
   width: number | 'cols';
   height: number | 'rows';
 };
+
+export interface IntersectionProps extends Omit<HTMLProps<HTMLDivElement>, 'color'> {}
+
 export interface HorizontalLineProps extends Omit<HTMLProps<HTMLDivElement>, 'color'> {
   color?: string;
-  totalWidth?: number;
+  totalWidth: number;
+
+  connectionRight?: boolean;
+  connectionLeft?: boolean;
 }
 
 export type Connection = 'none' | 'line' | 'right' | 'bidirectional' | 'biline';
 
 export interface InputBlockProps {
   name?: string;
-  width: number; // how many cells is the width
+  totalWidth: number;
   value: string;
   onChange?: (value: string) => void;
   prefix?: string;
@@ -44,10 +50,15 @@ export interface MultiplexorProps {
 }
 export interface VerticalLineProps extends Omit<HTMLProps<HTMLDivElement>, 'color'> {
   color?: string;
+  totalHeight: number;
+
+  connectionTop?: boolean;
+  connectionBottom?: boolean;
 }
 
 export type SchemaItem =
   | ({ type: 'multiplexor' } & MultiplexorProps & GridCellProps)
   | ({ type: 'input-block' } & InputBlockProps & GridCellProps)
   | ({ type: 'vertical-line' } & VerticalLineProps & GridCellProps)
-  | ({ type: 'horizontal-line' } & HorizontalLineProps & GridCellProps);
+  | ({ type: 'horizontal-line' } & HorizontalLineProps & GridCellProps)
+  | ({ type: 'intersection' } & IntersectionProps & GridCellProps);

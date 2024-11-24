@@ -4,11 +4,19 @@ import Button from '@components/controls/Button';
 
 import HorizontalLine from './components/HorizontalLine';
 import InputBlock from './components/InputBlock';
+import Intersection from './components/Intersection';
 import Multiplexor from './components/Multiplexor';
 import VerticalLine from './components/VerticalLine';
 import { CELL_SIZE, COLS, ROWS, initialSchemaCode } from './constants';
 import getCellCss from './getCellCss';
-import { HorizontalLineProps, InputBlockProps, MultiplexorProps, SchemaItem, VerticalLineProps } from './types';
+import {
+  HorizontalLineProps,
+  InputBlockProps,
+  IntersectionProps,
+  MultiplexorProps,
+  SchemaItem,
+  VerticalLineProps,
+} from './types';
 
 function normalizeIndex(index: number, max: number) {
   return index < 0 ? max + index : index;
@@ -24,7 +32,7 @@ for (let row = 1; row <= ROWS + 1; row++) {
     row,
     height: 1,
     color: 'rgba(255, 0, 0, 0.1)',
-  });
+  } as any);
 }
 
 for (let col = 1; col <= COLS + 1; col++) {
@@ -35,7 +43,7 @@ for (let col = 1; col <= COLS + 1; col++) {
     row: 1,
     height: 'rows',
     color: 'rgba(255, 0, 0, 0.1)',
-  });
+  } as any);
 }
 
 const CodeArea = ({
@@ -162,9 +170,23 @@ const Pcc = () => {
 
               switch (type) {
                 case 'vertical-line':
-                  return <VerticalLine key={key} {...(props as VerticalLineProps)} css={css} />;
+                  return (
+                    <VerticalLine
+                      key={key}
+                      {...(props as VerticalLineProps)}
+                      css={css}
+                      totalHeight={height * CELL_SIZE}
+                    />
+                  );
                 case 'horizontal-line':
-                  return <HorizontalLine key={key} {...(props as HorizontalLineProps)} css={css} totalWidth={width * CELL_SIZE} />;
+                  return (
+                    <HorizontalLine
+                      key={key}
+                      {...(props as HorizontalLineProps)}
+                      css={css}
+                      totalWidth={width * CELL_SIZE}
+                    />
+                  );
               }
             })}
           </>
@@ -180,6 +202,8 @@ const Pcc = () => {
               const css = getCellCss(col, row, width, height);
 
               switch (type) {
+                case 'intersection':
+                  return <Intersection key={key} {...(props as IntersectionProps)} css={css} />;
                 case 'multiplexor':
                   return <Multiplexor key={key} {...(props as MultiplexorProps)} css={css} cellSize={CELL_SIZE} />;
                 case 'input-block': {
@@ -188,7 +212,7 @@ const Pcc = () => {
                     <InputBlock
                       key={key}
                       {...rest}
-                      width={width}
+                      totalWidth={width * CELL_SIZE}
                       css={css}
                       onChange={
                         editable
@@ -203,7 +227,14 @@ const Pcc = () => {
                   );
                 }
                 case 'vertical-line':
-                  return <VerticalLine key={key} {...(props as VerticalLineProps)} css={css} />;
+                  return (
+                    <VerticalLine
+                      key={key}
+                      {...(props as VerticalLineProps)}
+                      css={css}
+                      totalHeight={height * CELL_SIZE}
+                    />
+                  );
                 case 'horizontal-line':
                   return (
                     <HorizontalLine

@@ -77,7 +77,7 @@ const PinComponent = ({ isActive, name, arrowWidth }: Pin & { index: number; arr
       }}
       style={{
         ...(isActive && {
-          border: '3px solid ' + activeColor,
+          border: '2px solid ' + activeColor,
         }),
       }}
       title="Переключить"
@@ -143,10 +143,10 @@ const Multiplexor = ({ className, pins, cellSize }: MultiplexorProps) => {
       <div
         css={{
           display: 'grid',
-          gridTemplateRows: pins.map(() => cellSize + 'px').join(' '),
+          gridTemplateRows: pins.map(() => 2*cellSize + 'px').join(' '),
           gap: 0,
-          paddingTop: cellSize / 2,
-          paddingBottom: cellSize / 2,
+          paddingTop: cellSize,
+          paddingBottom: cellSize,
           width: 32,
           position: 'absolute',
           right: 0,

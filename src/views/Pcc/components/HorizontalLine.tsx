@@ -1,8 +1,11 @@
 import { colors } from '@scripts/colors';
 
+import { CELL_SIZE } from '../constants';
 import { HorizontalLineProps } from '../types';
 
 export default function HorizontalLine({ color = colors.black, totalWidth, ...props }: HorizontalLineProps) {
+  const height = 1 * CELL_SIZE; // New height for the SVG
+
   return (
     <div
       {...props}
@@ -11,15 +14,22 @@ export default function HorizontalLine({ color = colors.black, totalWidth, ...pr
       }}
     >
       <svg
-        width={totalWidth}
-        height="12"
-        viewBox={`0 0 ${totalWidth} 12`}
+        width={totalWidth + 2}
+        height={height} // Updated height
+        viewBox={`0 0 ${totalWidth} ${height}`} // Updated viewBox
         css={{
           position: 'absolute',
-          top: -6,
+          top: -height / 2, // Adjusted top shift
         }}
       >
-        <line x1="0" y1="6" x2={totalWidth} y2="6" stroke={color} strokeWidth="2" />
+        <line
+          x1={-1}
+          y1={height / 2} // Adjusted y1 for new height
+          x2={totalWidth + 1}
+          y2={height / 2} // Adjusted y2 for new height
+          stroke={color}
+          strokeWidth="2"
+        />
       </svg>
     </div>
   );
