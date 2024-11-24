@@ -1,10 +1,9 @@
 import { colors } from '@scripts/colors';
 
-import { CELL_SIZE } from '../constants';
 import { HorizontalLineProps } from '../types';
 
 export default function HorizontalLine({ color = colors.black, totalWidth, ...props }: HorizontalLineProps) {
-  const height = 1 * CELL_SIZE; // New height for the SVG
+  const height = 2; 
 
   return (
     <div

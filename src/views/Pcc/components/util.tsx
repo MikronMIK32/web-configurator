@@ -7,34 +7,48 @@ const STROKE_WIDTH = 2;
 
 export const Line = ({ className, width = 96, height }: { className?: string; width?: number; height: number }) => {
   return (
-    <svg data-type="line" width={width} height={height} viewBox={`0 0 ${width} ${height}`} className={className}>
-      <line x1={0} y1={height / 2} x2={width} y2={height / 2} stroke={colors.black} strokeWidth={STROKE_WIDTH} />
+    <svg
+      data-type="line"
+      width={width}
+      height={2}
+      viewBox={`0 0 ${width} ${2}`}
+      className={className}
+      css={{
+        marginTop: (height - 2) / 2,
+      }}
+    >
+      <line x1={0} y1={1} x2={width} y2={1} stroke={colors.black} strokeWidth={STROKE_WIDTH} />
     </svg>
   );
 };
 
 export const BiLine = ({ className, width = 96, height }: { className?: string; width?: number; height: number }) => {
   const half = height / 2;
+  const selfHeight = 2 * CELL_SIZE + 2;
 
   return (
-    <svg data-type="biline" width={width} height={height} viewBox={`0 0 ${width} ${height}`} className={className}>
-      <line
-        x1={0}
-        y1={half - CELL_SIZE}
-        x2={width}
-        y2={half - CELL_SIZE}
-        stroke={colors.black}
-        strokeWidth={STROKE_WIDTH}
-      />
-      <line
-        x1={0}
-        y1={half + CELL_SIZE}
-        x2={width}
-        y2={half + CELL_SIZE}
-        stroke={colors.black}
-        strokeWidth={STROKE_WIDTH}
-      />
-    </svg>
+    <>
+      <svg
+        data-type="biline"
+        width={width}
+        height={selfHeight}
+        viewBox={`0 0 ${width} ${selfHeight}`}
+        className={className}
+        css={{
+          marginTop: (height - selfHeight) / 2
+        }}
+      >
+        <line x1={0} y1={1} x2={width} y2={1} stroke={colors.black} strokeWidth={STROKE_WIDTH} />
+        <line
+          x1={0}
+          y1={selfHeight - 1}
+          x2={width}
+          y2={selfHeight - 1}
+          stroke={colors.black}
+          strokeWidth={STROKE_WIDTH}
+        />
+      </svg>
+    </>
   );
 };
 
@@ -118,7 +132,14 @@ export const ConnectionComponent = ({
     case 'right':
       return <ArrowRight {...props} />;
     case 'biline':
-      return <BiLine {...props} />;
+      return (
+        <BiLine
+          {...props}
+          css={{
+            imageRendering: 'pixelated',
+          }}
+        />
+      );
     case 'bidirectional':
       return <ArrowBiDirectional {...props} />;
     default:

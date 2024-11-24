@@ -1,10 +1,9 @@
 import { colors } from '@scripts/colors';
 
-import { CELL_SIZE } from '../constants';
 import { VerticalLineProps } from '../types';
 
 export default function VerticalLine({ color = colors.black, totalHeight, ...props }: VerticalLineProps) {
-  const width = 1 * CELL_SIZE; // New width for the SVG
+  const width = 2; // New width for the SVG
 
   return (
     <div
