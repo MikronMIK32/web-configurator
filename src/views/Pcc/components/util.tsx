@@ -23,7 +23,7 @@ export const Line = ({ className, width = 96, height }: { className?: string; wi
 };
 
 export const BiLine = ({ className, width = 96, height }: { className?: string; width?: number; height: number }) => {
-  const half = height / 2;
+  // const half = height / 2;
   const selfHeight = 2 * CELL_SIZE + 2;
 
   return (
