@@ -39,6 +39,7 @@ export interface MultiplexorProps {
   className?: string;
   name?: string;
   pins: Pin[];
+  cellSize: number;
 }
 export interface VerticalLineProps extends Omit<HTMLProps<HTMLDivElement>, 'color'> {
   color?: string;

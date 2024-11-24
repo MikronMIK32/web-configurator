@@ -181,7 +181,7 @@ const Pcc = () => {
 
               switch (type) {
                 case 'multiplexor':
-                  return <Multiplexor key={key} {...(props as MultiplexorProps)} css={css} />;
+                  return <Multiplexor key={key} {...(props as MultiplexorProps)} css={css} cellSize={CELL_SIZE} />;
                 case 'input-block': {
                   const { editable, ...rest } = props as InputBlockProps;
                   return (

@@ -1,9 +1,10 @@
+import { useEffect } from 'react';
+
 import { colors } from '@scripts/colors';
 import typography from '@scripts/typography';
 
 import { MultiplexorProps, Pin } from '../types';
 import useCellDims from '../useCellDims';
-import { useEffect } from 'react';
 
 interface TrapezoidProps {
   height: number;
@@ -51,63 +52,74 @@ const ArrowRight = ({ className, width = 96 }: { className?: string; width?: num
 };
 
 const PinComponent = ({ isActive, name, arrowWidth }: Pin & { index: number; arrowWidth: number }) => (
-  <button
-    type="button"
+  <div
     css={{
-      width: 16,
-      height: 16,
-      borderRadius: '100%',
-      background: '#fff',
-      border: '2px solid ' + colors.black,
-      display: 'block',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
       position: 'relative',
-
-      '::after': {
-        display: 'var(--after-display)',
-        content: '""',
-        background: activeColor,
-        width: 8,
-        height: 8,
-        marginLeft: 1.5,
-        borderRadius: '100%',
-      },
-    }}
-    style={{
-      ...(isActive && {
-        border: '3px solid ' + activeColor,
-      }),
-      ...{
-        '--after-display': isActive ? 'block' : 'none',
-      },
+      height: '100%',
+      width: '100%',
     }}
   >
-    <ArrowRight
+    <button
+      type="button"
       css={{
-        position: 'absolute',
-        left: -arrowWidth - 8,
-        top: 0,
-        pointerEvents: 'none',
+        width: 16,
+        height: 16,
+        borderRadius: '100%',
+        background: '#fff',
+        border: '2px solid ' + colors.black,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        position: 'relative',
       }}
-      width={arrowWidth}
-    />
-    <span
-      css={{
-        pointerEvents: 'none',
-        position: 'absolute',
-        ...typography('paragraphSmall'),
-        left: -arrowWidth - 8,
-        top: -14,
-        paddingRight: 16,
-        textAlign: 'right',
+      style={{
+        ...(isActive && {
+          border: '3px solid ' + activeColor,
+        }),
       }}
-      style={{ width: arrowWidth }}
+      title="Переключить"
     >
-      {name}
-    </span>
-  </button>
+      <span
+        style={{
+          display: isActive ? 'block' : 'none',
+          background: activeColor,
+          width: 8,
+          height: 8,
+          borderRadius: '100%',
+        }}
+      />
+
+      <ArrowRight
+        css={{
+          position: 'absolute',
+          left: -arrowWidth - 8,
+          top: 1.5,
+          pointerEvents: 'none',
+        }}
+        width={arrowWidth}
+      />
+      <span
+        css={{
+          pointerEvents: 'none',
+          position: 'absolute',
+          ...typography('paragraphSmall'),
+          left: -arrowWidth - 8,
+          top: -14,
+          paddingRight: 16,
+          textAlign: 'right',
+        }}
+        style={{ width: arrowWidth }}
+      >
+        {name}
+      </span>
+    </button>
+  </div>
 );
 
-const Multiplexor = ({ className, pins }: MultiplexorProps) => {
+const Multiplexor = ({ className, pins, cellSize }: MultiplexorProps) => {
   const { dims, onMeasure, updateLast } = useCellDims();
 
   useEffect(() => {
@@ -131,11 +143,11 @@ const Multiplexor = ({ className, pins }: MultiplexorProps) => {
       />
       <div
         css={{
-          display: 'flex',
-          gap: 12,
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
+          display: 'grid',
+          gridTemplateRows: pins.map(() => cellSize + 'px').join(' '),
+          gap: 0,
+          paddingTop: cellSize / 2,
+          paddingBottom: cellSize / 2,
           width: 32,
           position: 'absolute',
           right: 0,

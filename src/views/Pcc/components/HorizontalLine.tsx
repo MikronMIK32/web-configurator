@@ -12,6 +12,7 @@ export default function HorizontalLine({ color, ...props }: HorizontalLineProps)
           content: '""',
           background: color ?? colors.black,
           height: 3,
+          transform: 'translateY(calc(-50% + 0.5px))',
           width: '100%',
           position: 'absolute',
         },
