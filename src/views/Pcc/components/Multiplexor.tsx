@@ -96,7 +96,6 @@ const PinComponent = ({ isActive, name, arrowWidth }: Pin & { index: number; arr
         css={{
           position: 'absolute',
           left: -arrowWidth - 10.5,
-          top: -0.5,
           pointerEvents: 'none',
         }}
         width={arrowWidth}
