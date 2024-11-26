@@ -16,8 +16,6 @@ const blockCSS = css({
   alignItems: 'center',
   justifyContent: 'center',
   textAlign: 'center',
-  background: colors.black,
-  color: colors.white,
   ...typography('labelMedium'),
 });
 
@@ -58,8 +56,8 @@ const InputBlock = ({
   const blockStyle: CSSProperties = {
     height: inputHeight,
     width: inputWidth,
-    color,
-    backgroundColor,
+    color: color || colors.white,
+    backgroundColor: backgroundColor || (onChange ? colors.purpleLight : colors.black),
   };
 
   return (
