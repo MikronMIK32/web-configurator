@@ -1,4 +1,5 @@
-import { useEffect } from 'react';
+import { css } from '@emotion/react';
+import { CSSProperties, useEffect } from 'react';
 
 import { colors } from '@scripts/colors';
 import typography from '@scripts/typography';
@@ -7,6 +8,18 @@ import { CELL_SIZE } from '../constants';
 import { InputBlockProps } from '../types';
 import useCellDims from '../useCellDims';
 import { ConnectionComponent } from './util';
+
+const blockCSS = css({
+  outline: 'none!important',
+  border: '2px solid ' + colors.black,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  textAlign: 'center',
+  background: colors.black,
+  color: colors.white,
+  ...typography('labelMedium'),
+});
 
 const InputBlock = ({
   totalWidth,
@@ -18,8 +31,13 @@ const InputBlock = ({
   postfixAlign = 'left',
   connectionLeft = 'none',
   connectionRight = 'none',
+  backgroundColor,
+  color,
+  name,
   ...props
 }: InputBlockProps) => {
+  delete props.editable;
+
   const { dims, onMeasure, updateLast } = useCellDims();
 
   useEffect(() => {
@@ -36,6 +54,13 @@ const InputBlock = ({
   if (connectionRight !== 'none') connections += 1;
 
   const connectionWidth = widthForBothConnections / connections;
+
+  const blockStyle: CSSProperties = {
+    height: inputHeight,
+    width: inputWidth,
+    color,
+    backgroundColor,
+  };
 
   return (
     <div
@@ -96,37 +121,15 @@ const InputBlock = ({
           <input
             type="text"
             value={value}
+            name={name}
             onChange={e => {
               onChange(e.currentTarget.value);
             }}
-            css={{
-              outline: 'none!important',
-              border: '2px solid ' + colors.black,
-              height: inputHeight,
-              width: inputWidth,
-              display: 'flex',
-              textAlign: 'center',
-              background: colors.purpleLight,
-              color: colors.white,
-              ...typography('labelMedium'),
-            }}
+            css={blockCSS}
+            style={blockStyle}
           />
         ) : (
-          <p
-            css={{
-              outline: 'none!important',
-              border: '2px solid ' + colors.black,
-              height: inputHeight,
-              width: inputWidth,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              textAlign: 'center',
-              background: colors.black,
-              color: colors.white,
-              ...typography('labelMedium'),
-            }}
-          >
+          <p style={blockStyle} css={blockCSS}>
             {value}
           </p>
         )}

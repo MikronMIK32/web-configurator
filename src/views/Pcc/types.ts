@@ -7,7 +7,7 @@ export type GridCellProps = {
   height: number | 'rows';
 };
 
-export interface IntersectionProps extends Omit<HTMLProps<HTMLDivElement>, 'color'> {}
+export interface IntersectionProps extends Omit<HTMLProps<HTMLDivElement>, 'color'> { }
 
 export interface HorizontalLineProps extends Omit<HTMLProps<HTMLDivElement>, 'color'> {
   color?: string;
@@ -17,7 +17,7 @@ export interface HorizontalLineProps extends Omit<HTMLProps<HTMLDivElement>, 'co
   connectionLeft?: boolean;
 }
 
-export type Connection = 'none' | 'line' | 'right' | 'bidirectional' | 'biline';
+export type Connection = 'none' | 'line' | 'left' | 'right' | 'bidirectional' | 'biline';
 
 export interface InputBlockProps {
   name?: string;
@@ -31,6 +31,9 @@ export interface InputBlockProps {
   className?: string;
 
   editable?: boolean;
+
+  color?: string;
+  backgroundColor?: string;
 
   connectionRight?: Connection;
   connectionLeft?: Connection;
@@ -47,6 +50,8 @@ export interface MultiplexorProps {
   name?: string;
   pins: Pin[];
   cellSize: number;
+  prefix?: string;
+  prefixAlign?: 'left' | 'right' | 'center';
 }
 export interface VerticalLineProps extends Omit<HTMLProps<HTMLDivElement>, 'color'> {
   color?: string;

@@ -35,7 +35,7 @@ export const BiLine = ({ className, width = 96, height }: { className?: string; 
         viewBox={`0 0 ${width} ${selfHeight}`}
         className={className}
         css={{
-          marginTop: (height - selfHeight) / 2
+          marginTop: (height - selfHeight) / 2,
         }}
       >
         <line x1={0} y1={1} x2={width} y2={1} stroke={colors.black} strokeWidth={STROKE_WIDTH} />
@@ -117,6 +117,14 @@ export const ArrowRight = ({ height, className, width }: { className?: string; w
   );
 };
 
+export const ArrowLeft = ({ height, className, width }: { className?: string; width: number; height: number }) => {
+  return (
+    <svg data-type="left" width={width} height={height} viewBox={`0 0 ${width} ${height}`} className={className}>
+      <Arrow dir="left" totalWidth={width} top={height / 2} />
+    </svg>
+  );
+};
+
 export const ConnectionComponent = ({
   connection,
   ...props
@@ -129,6 +137,8 @@ export const ConnectionComponent = ({
   switch (connection) {
     case 'line':
       return <Line {...props} />;
+    case 'left':
+      return <ArrowLeft {...props} />;
     case 'right':
       return <ArrowRight {...props} />;
     case 'biline':

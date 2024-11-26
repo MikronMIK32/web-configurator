@@ -118,7 +118,7 @@ const PinComponent = ({ isActive, name, arrowWidth }: Pin & { index: number; arr
   </div>
 );
 
-const Multiplexor = ({ className, pins, cellSize }: MultiplexorProps) => {
+const Multiplexor = ({ className, pins, cellSize, prefix, prefixAlign = 'left' }: MultiplexorProps) => {
   const { dims, onMeasure, updateLast } = useCellDims();
 
   useEffect(() => {
@@ -133,6 +133,22 @@ const Multiplexor = ({ className, pins, cellSize }: MultiplexorProps) => {
         onMeasure(node);
       }}
     >
+      {prefix && (
+        <p
+          css={{
+            ...typography('labelSmall'),
+            whiteSpace: 'nowrap',
+            position: 'absolute',
+            transform: 'translateY(-100%)',
+            top: 0,
+          }}
+          style={{
+            textAlign: prefixAlign,
+          }}
+        >
+          {prefix}
+        </p>
+      )}
       <Trapezoid
         height={dims.h}
         width={32}
@@ -143,7 +159,7 @@ const Multiplexor = ({ className, pins, cellSize }: MultiplexorProps) => {
       <div
         css={{
           display: 'grid',
-          gridTemplateRows: pins.map(() => 2*cellSize + 'px').join(' '),
+          gridTemplateRows: pins.map(() => 2 * cellSize + 'px').join(' '),
           gap: 0,
           paddingTop: cellSize,
           paddingBottom: cellSize,
