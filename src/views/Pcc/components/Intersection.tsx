@@ -4,7 +4,7 @@ import { createComponent } from './util';
 
 export interface IntersectionProps extends GridCellProps {}
 
-function SvgIntersection({ col, row, width, height }: IntersectionProps) {
+function SvgIntersection({ col, row }: IntersectionProps) {
   return (
     <circle
       cx={col * CELL_SIZE - CELL_SIZE}

@@ -10,7 +10,7 @@ export interface WireProps extends GridCellProps {
   points: Array<{ col: number; row: number }>;
 }
 
-function WireSvg({ col, row, height, points: propsPoints, width, color, name }: WireProps) {
+function WireSvg({ points: propsPoints, color, name }: WireProps) {
   const points = useMemo(
     () =>
       propsPoints.map(point => ({

@@ -1,5 +1,5 @@
 import { ReactElement } from 'react';
-import { CELL_SIZE, STROKE_COLOR, STROKE_WIDTH } from '../constants';
+import { CELL_SIZE, STROKE_COLOR } from '../constants';
 import { Connection, GridCellProps, IComponent } from '../types';
 
 export const Arrow = ({ dir, top, totalWidth }: { dir: 'left' | 'right'; top: number; totalWidth: number }) => {
@@ -18,7 +18,7 @@ export const Arrow = ({ dir, top, totalWidth }: { dir: 'left' | 'right'; top: nu
           [totalWidth + 1, top],
         ];
 
-  const xOffset = dir === 'left' ? headWidth : 0;
+  // const xOffset = dir === 'left' ? headWidth : 0;
 
   return (
     <>

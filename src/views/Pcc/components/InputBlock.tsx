@@ -213,7 +213,7 @@ const NativeInputBlock = ({
           }}
           style={{
             textAlign: prefixAlign,
-              width: INPUT_WIDTH,
+            width: INPUT_WIDTH,
           }}
         >
           {prefix}
@@ -230,7 +230,7 @@ const NativeInputBlock = ({
           }}
           style={{
             textAlign: postfixAlign,
-              width: INPUT_WIDTH,
+            width: INPUT_WIDTH,
           }}
         >
           {postfix}
