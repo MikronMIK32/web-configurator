@@ -1,5 +1,3 @@
-// import { SchemaItem } from './types';
-
 export const CELL_SIZE = 16;
 export const ROWS = 112;
 export const COLS = 88;

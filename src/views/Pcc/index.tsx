@@ -4,13 +4,22 @@ import Button from '@components/controls/Button';
 
 import { colors } from '@scripts/colors';
 
-import InputBlock from './components/InputBlock';
-import Intersection from './components/Intersection';
-import Multiplexor from './components/Multiplexor';
-import Wires from './components/Wires';
+import InputBlock, { InputBlockProps } from './components/InputBlock';
+import Intersection, { IntersectionProps } from './components/Intersection';
+import Multiplexor, { MultiplexorProps } from './components/Multiplexor';
+import Wire, { WireProps } from './components/Wire';
 import { CELL_SIZE, COLS, ROWS, initialSchemaCode } from './constants';
 import getCellCss from './getCellCss';
-import { InputBlockProps, IntersectionProps, MultiplexorProps, SchemaItem } from './types';
+import { IComponent } from './types';
+
+type ExtractSchemaItem<TComp extends IComponent<any, any>> =
+  TComp extends IComponent<infer TProps, infer TName> ? { type: TName } & TProps : never;
+
+export type SchemaItem =
+  | ExtractSchemaItem<typeof InputBlock>
+  | ExtractSchemaItem<typeof Intersection>
+  | ExtractSchemaItem<typeof Multiplexor>
+  | ExtractSchemaItem<typeof Wire>;
 
 function normalizeIndex(index: number, max: number) {
   return index < 0 ? max + index : index;
@@ -58,16 +67,9 @@ const Pcc = () => {
       return { result: null, error: e?.message };
     }
   }, [code]);
+  console.log(schema.result);
 
   const [showGrid, setShowGrid] = useState(true);
-
-  const wires = useMemo(() => {
-    if (!schema.result) return [];
-
-    return schema.result.filter(e => {
-      return e.type === 'wire';
-    });
-  }, []);
 
   return (
     <div
@@ -137,62 +139,84 @@ const Pcc = () => {
           // overflowY: 'clip',
         }}
       >
-        {showGrid && (
-          <svg
-            width="100%"
-            height="100%"
-            css={{
-              ...getCellCss(1, 1, COLS, ROWS),
-              opacity: 0.4,
-              pointerEvents: 'none',
-            }}
-          >
-            <defs>
-              <pattern id="smallGrid" width={CELL_SIZE} height={CELL_SIZE} patternUnits="userSpaceOnUse">
-                <path d={`M ${CELL_SIZE} 0 L 0 0 0 ${CELL_SIZE}`} fill="none" stroke={colors.black} strokeWidth="0.5" />
-              </pattern>
-              <pattern id="grid" width={CELL_SIZE * 10} height={CELL_SIZE * 10} patternUnits="userSpaceOnUse">
-                <rect width={CELL_SIZE * 10} height={CELL_SIZE * 10} fill="url(#smallGrid)" />
-                <path
-                  d={`M ${CELL_SIZE * 10} 0 L 0 0 0 ${CELL_SIZE * 10}`}
-                  fill="none"
-                  stroke={colors.black}
-                  strokeWidth="1"
-                />
-              </pattern>
-            </defs>
-            <rect width="100%" height="100%" fill="url(#grid)" />
-          </svg>
-        )}
-        <Wires
-          wires={wires}
+        <svg
+          width="100%"
+          height="100%"
           css={{
             ...getCellCss(1, 1, COLS, ROWS),
           }}
-        />
+        >
+          <defs>
+            <pattern id="smallGrid" width={CELL_SIZE} height={CELL_SIZE} patternUnits="userSpaceOnUse">
+              <path d={`M ${CELL_SIZE} 0 L 0 0 0 ${CELL_SIZE}`} fill="none" stroke={colors.black} strokeWidth="0.5" />
+            </pattern>
+            <pattern id="grid" width={CELL_SIZE * 10} height={CELL_SIZE * 10} patternUnits="userSpaceOnUse">
+              <rect width={CELL_SIZE * 10} height={CELL_SIZE * 10} fill="url(#smallGrid)" />
+              <path
+                d={`M ${CELL_SIZE * 10} 0 L 0 0 0 ${CELL_SIZE * 10}`}
+                fill="none"
+                stroke={colors.black}
+                strokeWidth="1"
+              />
+            </pattern>
+          </defs>
+          {showGrid && (
+            <rect
+              width="100%"
+              height="100%"
+              fill="url(#grid)"
+              css={{
+                opacity: 0.4,
+                pointerEvents: 'none',
+              }}
+            />
+          )}
+
+          {schema.result
+            ? schema.result.map(({ type, ...props }) => {
+                const key = props.name || `${type}-${props.col}-${props.row}-${props.width}-${props.height}`;
+
+                if ((props.width as any) === 'cols') props.width = COLS;
+                if ((props.height as any) === 'rows') props.height = ROWS;
+
+                props.col = normalizeIndex(props.col, COLS);
+                props.row = normalizeIndex(props.row, ROWS);
+
+                switch (type) {
+                  case 'input-block':
+                    return <InputBlock.AtlasComponent key={key} {...(props as InputBlockProps)} />;
+                  case 'multiplexor':
+                    return <Multiplexor.AtlasComponent key={key} {...(props as MultiplexorProps)} />;
+                  case 'intersection':
+                    return <Intersection.AtlasComponent key={key} {...(props as IntersectionProps)} />;
+                  case 'wire':
+                    return <Wire.AtlasComponent key={key} {...(props as WireProps)} />;
+                  default:
+                    return null; // Handle unexpected types if necessary
+                }
+              })
+            : null}
+        </svg>
 
         {schema.result
-          ? schema.result.map(({ type, col, row, width, height, ...props }) => {
-              const key = `${type}-${col}-${row}`;
-              if (width === 'cols') width = COLS;
-              if (height === 'rows') height = ROWS;
-              col = normalizeIndex(col, COLS);
-              row = normalizeIndex(row, ROWS);
-              const css = getCellCss(col, row, width, height);
+          ? schema.result.map(({ type, ...props }) => {
+              const key = props.name || `${type}-${props.col}-${props.row}-${props.width}-${props.height}`;
+
+              if ((props.width as any) === 'cols') props.width = COLS;
+              if ((props.height as any) === 'rows') props.height = ROWS;
+
+              props.col = normalizeIndex(props.col, COLS);
+              props.row = normalizeIndex(props.row, ROWS);
 
               switch (type) {
-                case 'intersection':
-                  return <Intersection key={key} {...(props as IntersectionProps)} css={css} />;
                 case 'multiplexor':
-                  return <Multiplexor key={key} {...(props as MultiplexorProps)} css={css} cellSize={CELL_SIZE} />;
+                  return <Multiplexor.NativeComponent key={key} {...(props as MultiplexorProps)} />;
                 case 'input-block': {
                   const { editable, ...rest } = props as InputBlockProps;
                   return (
-                    <InputBlock
+                    <InputBlock.NativeComponent
                       key={key}
                       {...rest}
-                      totalWidth={width * CELL_SIZE}
-                      css={css}
                       onChange={
                         editable
                           ? newValue => {

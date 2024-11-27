@@ -1,27 +1,20 @@
-import { colors } from '@scripts/colors';
+import { CELL_SIZE, STROKE_COLOR } from '../constants';
+import { GridCellProps } from '../types';
+import { createComponent } from './util';
 
-import { CELL_SIZE } from '../constants';
-import { IntersectionProps } from '../types';
+export interface IntersectionProps extends GridCellProps {}
 
-const size = 0.75 * CELL_SIZE;
-
-export default function Intersection(props: IntersectionProps) {
+function SvgIntersection({ col, row, width, height }: IntersectionProps) {
   return (
-    <div
-      {...props}
-      css={{
-        position: 'relative',
-        '::after': {
-          position: 'absolute',
-          content: '""',
-          width: size,
-          height: size,
-          borderRadius: '50%',
-          background: colors.black,
-          top: -size/2,
-          left: -size/2,
-        },
-      }}
+    <circle
+      cx={col * CELL_SIZE - CELL_SIZE}
+      cy={row * CELL_SIZE - CELL_SIZE}
+      r={CELL_SIZE * 0.333}
+      fill={STROKE_COLOR}
     />
   );
 }
+
+export default createComponent('intersection', {
+  AtlasComponent: SvgIntersection,
+});

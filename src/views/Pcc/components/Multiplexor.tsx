@@ -3,9 +3,24 @@ import { useEffect } from 'react';
 import { colors } from '@scripts/colors';
 import typography from '@scripts/typography';
 
-import { MultiplexorProps, Pin } from '../types';
 import useCellDims from '../useCellDims';
-import { ArrowRight } from './util';
+import { ArrowRight, createComponent } from './util';
+import { GridCellProps } from '../types';
+import { CELL_SIZE, STROKE_COLOR } from '../constants';
+import getCellCss from '../getCellCss';
+
+export interface Pin {
+  name: string;
+  code: string;
+  isActive: boolean;
+}
+
+export interface MultiplexorProps extends GridCellProps {
+  className?: string;
+  pins: Pin[];
+  prefix?: string;
+  prefixAlign?: 'left' | 'right' | 'center';
+}
 
 interface TrapezoidProps {
   height: number;
@@ -35,8 +50,7 @@ const Trapezoid = ({ width = 30, height, className }: TrapezoidProps) => {
 
 const activeColor = colors.backgroundPurple;
 
-
-const PinComponent = ({ isActive, name, arrowWidth, height }: Pin & { index: number; arrowWidth: number; height: number }) => (
+const PinComponent = ({ isActive, name, arrowWidth, height }: Pin & { arrowWidth: number; height: number }) => (
   <div
     css={{
       display: 'flex',
@@ -47,8 +61,8 @@ const PinComponent = ({ isActive, name, arrowWidth, height }: Pin & { index: num
       width: '100%',
     }}
   >
-    <button
-      type="button"
+    <label
+      htmlFor={'radio_' + name}
       css={{
         width: 16,
         height: 16,
@@ -100,20 +114,25 @@ const PinComponent = ({ isActive, name, arrowWidth, height }: Pin & { index: num
       >
         {name}
       </span>
-    </button>
+      <input type="radio" name={name} id={'radio_' + name} css={{ position: 'absolute', clip: 'rect(0, 0, 0, 0)' }} />
+    </label>
   </div>
 );
 
-const Multiplexor = ({ className, pins, cellSize, prefix, prefixAlign = 'left' }: MultiplexorProps) => {
+const Native = ({ className, pins, prefix, prefixAlign = 'left', col, row, height, width }: MultiplexorProps) => {
   const { dims, onMeasure, updateLast } = useCellDims();
 
   useEffect(() => {
     updateLast();
-  }, [pins, updateLast]);
+  }, [pins, col, row, width, height, updateLast]);
 
   return (
     <div
-      css={{ position: 'relative', display: 'flex' }}
+      css={{
+        ...getCellCss(col, row, width, height),
+        position: 'relative',
+        display: 'flex',
+      }}
       className={className}
       ref={node => {
         onMeasure(node);
@@ -135,6 +154,7 @@ const Multiplexor = ({ className, pins, cellSize, prefix, prefixAlign = 'left' }
           {prefix}
         </p>
       )}
+      {/* TODO: move it to atlas! */}
       <Trapezoid
         height={dims.h}
         width={32}
@@ -145,10 +165,10 @@ const Multiplexor = ({ className, pins, cellSize, prefix, prefixAlign = 'left' }
       <div
         css={{
           display: 'grid',
-          gridTemplateRows: pins.map(() => 2 * cellSize + 'px').join(' '),
+          gridTemplateRows: pins.map(() => 2 * CELL_SIZE + 'px').join(' '),
           gap: 0,
-          paddingTop: cellSize,
-          paddingBottom: cellSize,
+          paddingTop: CELL_SIZE,
+          paddingBottom: CELL_SIZE,
           width: 32,
           position: 'absolute',
           right: 0,
@@ -156,12 +176,39 @@ const Multiplexor = ({ className, pins, cellSize, prefix, prefixAlign = 'left' }
           top: 0,
         }}
       >
-        {pins.map((pin, index) => (
-          <PinComponent key={pin.code} height={dims.h} {...pin} index={index} arrowWidth={dims.w - 32} />
+        {pins.map(pin => (
+          <PinComponent key={pin.code} {...pin} height={dims.h} arrowWidth={dims.w - 32} />
         ))}
       </div>
     </div>
   );
 };
 
-export default Multiplexor;
+function Atlas({ col, row, width, pins }: MultiplexorProps) {
+  const paddingTop = 2 * CELL_SIZE;
+  const gap = 2 * CELL_SIZE;
+
+  const x = col * CELL_SIZE - CELL_SIZE;
+  const y = row * CELL_SIZE - CELL_SIZE + paddingTop;
+
+  return (
+    <>
+      {pins.map((_, index) => (
+        <line
+          x1={x}
+          y1={y + gap * index}
+          x2={x + width * CELL_SIZE}
+          y2={y + gap * index}
+          stroke={STROKE_COLOR}
+          strokeWidth={1}
+          shapeRendering="crispEdges"
+        />
+      ))}
+    </>
+  );
+}
+
+export default createComponent('multiplexor', {
+  NativeComponent: Native,
+  AtlasComponent: Atlas,
+});
