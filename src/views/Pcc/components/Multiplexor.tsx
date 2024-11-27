@@ -202,6 +202,7 @@ function Atlas({ col, row, width, pins }: MultiplexorProps) {
           stroke={STROKE_COLOR}
           strokeWidth={1}
           shapeRendering="crispEdges"
+          vectorEffect="non-scaling-stroke"
         />
       ))}
     </>

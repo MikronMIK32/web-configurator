@@ -72,6 +72,7 @@ function Atlas({ col, row, width, height, connectionLeft, connectionRight }: Inp
         stroke={STROKE_COLOR}
         fill="none"
         shapeRendering="crispEdges"
+        vectorEffect="non-scaling-stroke"
       />
     );
   };

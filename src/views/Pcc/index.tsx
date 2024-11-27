@@ -144,6 +144,8 @@ const Pcc = () => {
           css={{
             ...getCellCss(1, 1, COLS, ROWS),
           }}
+          // shapeRendering="crispEdges"
+          vectorEffect="non-scaling-stroke"
         >
           <defs>
             <pattern id="smallGrid" width={CELL_SIZE} height={CELL_SIZE} patternUnits="userSpaceOnUse">

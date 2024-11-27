@@ -29,6 +29,7 @@ function WireSvg({ points: propsPoints, color, name }: WireProps) {
       stroke={color || STROKE_COLOR}
       strokeWidth={STROKE_WIDTH}
       shapeRendering="crispEdges"
+      vectorEffect="non-scaling-stroke"
     />
   );
 }
