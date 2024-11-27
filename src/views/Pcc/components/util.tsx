@@ -1,9 +1,5 @@
-import { colors } from '@scripts/colors';
-
-import { CELL_SIZE } from '../constants';
+import { CELL_SIZE, STROKE_COLOR, STROKE_WIDTH } from '../constants';
 import { Connection } from '../types';
-
-const STROKE_WIDTH =1 ;
 
 export const Line = ({ className, width = 96, height }: { className?: string; width?: number; height: number }) => {
   return (
@@ -17,7 +13,15 @@ export const Line = ({ className, width = 96, height }: { className?: string; wi
         marginTop: (height - 2) / 2,
       }}
     >
-      <line x1={0} y1={1} x2={width} y2={1} stroke={colors.black} strokeWidth={STROKE_WIDTH} />
+      <line
+        x1={0}
+        y1={1}
+        x2={width}
+        y2={1}
+        stroke={STROKE_COLOR}
+        strokeWidth={STROKE_WIDTH*2}
+        shapeRendering="crispEdges"
+      />
     </svg>
   );
 };
@@ -38,14 +42,23 @@ export const BiLine = ({ className, width = 96, height }: { className?: string; 
           marginTop: (height - selfHeight) / 2,
         }}
       >
-        <line x1={0} y1={1} x2={width} y2={1} stroke={colors.black} strokeWidth={STROKE_WIDTH} />
+        <line
+          x1={0}
+          y1={1}
+          x2={width}
+          y2={1}
+          stroke={STROKE_COLOR}
+          strokeWidth={STROKE_WIDTH * 2}
+          shapeRendering="crispEdges"
+        />
         <line
           x1={0}
           y1={selfHeight - 1}
           x2={width}
           y2={selfHeight - 1}
-          stroke={colors.black}
-          strokeWidth={STROKE_WIDTH}
+          stroke={STROKE_COLOR}
+          strokeWidth={STROKE_WIDTH * 2}
+          shapeRendering="crispEdges"
         />
       </svg>
     </>
@@ -78,10 +91,11 @@ export const Arrow = ({ dir, top, totalWidth }: { dir: 'left' | 'right'; top: nu
         y1={yOffset}
         x2={xOffset + totalWidth - headWidth + (dir === 'left' ? 0 : 1)}
         y2={yOffset}
-        stroke={colors.black}
-        strokeWidth={STROKE_WIDTH}
+        stroke={STROKE_COLOR}
+        strokeWidth={1}
+        shapeRendering="crispEdges"
       />
-      <polygon points={points.map(e => e.join(',')).join(' ')} fill={colors.black} />
+      <polygon points={points.map(e => e.join(',')).join(' ')} fill={STROKE_COLOR} opacity={1} />
     </>
   );
 };
@@ -142,14 +156,7 @@ export const ConnectionComponent = ({
     case 'right':
       return <ArrowRight {...props} />;
     case 'biline':
-      return (
-        <BiLine
-          {...props}
-          css={{
-            imageRendering: 'pixelated',
-          }}
-        />
-      );
+      return <BiLine {...props} />;
     case 'bidirectional':
       return <ArrowBiDirectional {...props} />;
     default:

@@ -4,6 +4,9 @@ export const CELL_SIZE = 16;
 export const ROWS = 112;
 export const COLS = 88;
 
+export const STROKE_WIDTH = 1;
+export const STROKE_COLOR = '#000';
+
 export const initialSchemaCode = `[
     {
         "name": "multiplexor_sys_clk",
@@ -157,120 +160,146 @@ export const initialSchemaCode = `[
         "postfixAlign": "center"
     },
     {
-        "type": "vertical-line",
+        "type": "wire",
         "name": "vline_1",
-        "col": 10,
-        "row": 4,
-        "width": 2,
-        "height": 64,
-        "connectionLeft": false,
-        "connectionRight": false
+        "points": [
+            {
+                "col": 10,
+                "row": 4
+            },
+            {
+                "col": 10,
+                "row": 68
+            }
+        ]
     },
     {
-        "type": "vertical-line",
+        "type": "wire",
         "name": "vline_2",
-        "col": 48,
-        "row": 30,
-        "width": 1,
-        "height": 8,
-        "connectionLeft": false,
-        "connectionRight": true
+        "points": [
+            {
+                "col": 48,
+                "row": 30
+            },
+            {
+                "col": 48,
+                "row": 38
+            }
+        ]
     },
     {
-        "type": "vertical-line",
-        "name": "vline_3",
-        "col": 20,
-        "row": 42,
-        "width": 1,
-        "height": 8,
-        "connectionLeft": true,
-        "connectionRight": false
+        "type": "wire",
+        "name": "line_3",
+        "points": [
+            {
+                "col": 20,
+                "row": 42
+            },
+            {
+                "col": 20,
+                "row": 50
+            },
+            {
+                "col": 20,
+                "row": 42
+            },
+            {
+                "col": 44,
+                "row": 42
+            }
+        ]
     },
     {
-        "type": "vertical-line",
-        "name": "vline_4",
-        "col": 40,
-        "row": 44,
-        "width": 1,
-        "height": 16,
-        "connectionLeft": false,
-        "connectionRight": false
-    },
-    {
-        "type": "vertical-line",
+        "type": "wire",
         "name": "vline_5",
-        "col": 20,
-        "row": 50,
-        "width": 2,
-        "height": 4,
-        "connectionLeft": false,
-        "connectionRight": false
+        "points": [
+            {
+                "col": 20,
+                "row": 50
+            },
+            {
+                "col": 20,
+                "row": 54
+            }
+        ]
     },
     {
-        "type": "vertical-line",
+        "type": "wire",
         "name": "vline_6",
-        "col": 20,
-        "row": 56,
-        "width": 2,
-        "height": 4,
-        "connectionLeft": false,
-        "connectionRight": true
+        "points": [
+            {
+                "col": 20,
+                "row": 56
+            },
+            {
+                "col": 20,
+                "row": 60
+            }
+        ]
     },
     {
-        "type": "horizontal-line",
+        "type": "wire",
         "name": "hline_1",
-        "col": 20,
-        "row": 30,
-        "width": 28,
-        "height": 1,
-        "connectionLeft": false,
-        "connectionRight": false
+        "points": [
+            {
+                "col": 20,
+                "row": 30
+            },
+            {
+                "col": 48,
+                "row": 30
+            }
+        ]
     },
     {
-        "type": "horizontal-line",
+        "type": "wire",
         "name": "hline_2",
-        "col": 20,
-        "row": 40,
-        "width": 26,
-        "height": 1,
-        "connectionLeft": false,
-        "connectionRight": true
+        "points": [
+            {
+                "col": 20,
+                "row": 40
+            },
+            {
+                "col": 46,
+                "row": 40
+            }
+        ]
     },
     {
-        "type": "horizontal-line",
-        "name": "hline_3",
-        "col": 20,
-        "row": 42,
-        "width": 24,
-        "height": 1,
-        "connectionLeft": false,
-        "connectionRight": true
-    },
-    {
-        "type": "horizontal-line",
+        "type": "wire",
         "name": "hline_4",
-        "col": 40,
-        "row": 44,
-        "width": 8,
-        "height": 1,
-        "connectionLeft": false,
-        "connectionRight": true
+        "points": [
+            {
+                "col": 40,
+                "row": 44
+            },
+            {
+                "col": 48,
+                "row": 44
+            },
+            {
+                "col": 40,
+                "row": 44
+            },
+            {
+                "col": 40,
+                "row": 60
+            },
+            {
+                "col": 20,
+                "row": 60
+            },
+            {
+                "col": 40,
+                "row": 60
+            }
+        ]
     },
     {
         "type": "intersection",
         "col": 43,
         "row": 44,
         "width": 1,
-        "height": 1      
-    },
-    {
-        "type": "horizontal-line",
-        "name": "hline_5",
-        "col": 20,
-        "row": 60,
-        "width": 20,
-        "height": 1,
-        "connectionLeft": false,
-        "connectionRight": false
+        "height": 1
     }
 ]`;

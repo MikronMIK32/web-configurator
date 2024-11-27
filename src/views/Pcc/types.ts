@@ -7,15 +7,7 @@ export type GridCellProps = {
   height: number | 'rows';
 };
 
-export interface IntersectionProps extends Omit<HTMLProps<HTMLDivElement>, 'color'> { }
-
-export interface HorizontalLineProps extends Omit<HTMLProps<HTMLDivElement>, 'color'> {
-  color?: string;
-  totalWidth: number;
-
-  connectionRight?: boolean;
-  connectionLeft?: boolean;
-}
+export interface IntersectionProps extends Omit<HTMLProps<HTMLDivElement>, 'color'> {}
 
 export type Connection = 'none' | 'line' | 'left' | 'right' | 'bidirectional' | 'biline';
 
@@ -53,17 +45,15 @@ export interface MultiplexorProps {
   prefix?: string;
   prefixAlign?: 'left' | 'right' | 'center';
 }
-export interface VerticalLineProps extends Omit<HTMLProps<HTMLDivElement>, 'color'> {
-  color?: string;
-  totalHeight: number;
 
-  connectionTop?: boolean;
-  connectionBottom?: boolean;
+export interface WireProps {
+  name?: string;
+  color?: string;
+  points: Array<{ col: number; row: number }>;
 }
 
 export type SchemaItem =
   | ({ type: 'multiplexor' } & MultiplexorProps & GridCellProps)
   | ({ type: 'input-block' } & InputBlockProps & GridCellProps)
-  | ({ type: 'vertical-line' } & VerticalLineProps & GridCellProps)
-  | ({ type: 'horizontal-line' } & HorizontalLineProps & GridCellProps)
+  | ({ type: 'wire' } & WireProps & GridCellProps)
   | ({ type: 'intersection' } & IntersectionProps & GridCellProps);

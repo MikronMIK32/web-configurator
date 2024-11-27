@@ -2,47 +2,18 @@ import { useEffect, useMemo, useState } from 'react';
 
 import Button from '@components/controls/Button';
 
+import { colors } from '@scripts/colors';
+
 import InputBlock from './components/InputBlock';
 import Intersection from './components/Intersection';
 import Multiplexor from './components/Multiplexor';
-import Wires, { Line } from './components/Wires';
+import Wires from './components/Wires';
 import { CELL_SIZE, COLS, ROWS, initialSchemaCode } from './constants';
 import getCellCss from './getCellCss';
-import {
-  HorizontalLineProps,
-  InputBlockProps,
-  IntersectionProps,
-  MultiplexorProps,
-  SchemaItem,
-  VerticalLineProps,
-} from './types';
+import { InputBlockProps, IntersectionProps, MultiplexorProps, SchemaItem } from './types';
 
 function normalizeIndex(index: number, max: number) {
   return index < 0 ? max + index : index;
-}
-
-const gridLines: SchemaItem[] = [];
-
-for (let row = 1; row <= ROWS + 1; row++) {
-  gridLines.push({
-    type: 'horizontal-line',
-    col: 1,
-    width: 'cols',
-    row,
-    height: 1,
-    color: 'rgba(255, 0, 0, 0.1)',
-  } as any);
-}
-
-for (let col = 1; col <= COLS + 1; col++) {
-  gridLines.push({
-    type: 'vertical-line',
-    col,
-    width: 1,
-    row: 1,
-    height: 'rows',
-    color: 'rgba(255, 0, 0, 0.1)',
-  } as any);
 }
 
 const CodeArea = ({
@@ -93,39 +64,10 @@ const Pcc = () => {
   const wires = useMemo(() => {
     if (!schema.result) return [];
 
-    return schema.result
-      .filter(item => {
-        return item.type === 'horizontal-line' || item.type === 'vertical-line';
-      })
-      .map<Line>(e => {
-        const x0 = (normalizeIndex(e.col, COLS) - 1) * CELL_SIZE;
-        const y0 = (normalizeIndex(e.row, ROWS) - 1) * CELL_SIZE;
-
-        if (e.type === 'vertical-line') {
-          return {
-            p0: {
-              x: x0,
-              y: y0,
-            },
-            p1: {
-              x: x0,
-              y: y0 + (e.height === 'rows' ? ROWS : e.height) * CELL_SIZE,
-            },
-          };
-        }
-
-        return {
-          p0: {
-            x: x0,
-            y: y0,
-          },
-          p1: {
-            x: x0 + (e.width === 'cols' ? COLS : e.width) * CELL_SIZE,
-            y: y0,
-          },
-        };
-      });
-  }, [schema.result]);
+    return schema.result.filter(e => {
+      return e.type === 'wire';
+    });
+  }, []);
 
   return (
     <div
@@ -195,45 +137,39 @@ const Pcc = () => {
           // overflowY: 'clip',
         }}
       >
+        {showGrid && (
+          <svg
+            width="100%"
+            height="100%"
+            css={{
+              ...getCellCss(1, 1, COLS, ROWS),
+              opacity: 0.4,
+              pointerEvents: 'none',
+            }}
+          >
+            <defs>
+              <pattern id="smallGrid" width={CELL_SIZE} height={CELL_SIZE} patternUnits="userSpaceOnUse">
+                <path d={`M ${CELL_SIZE} 0 L 0 0 0 ${CELL_SIZE}`} fill="none" stroke={colors.black} strokeWidth="0.5" />
+              </pattern>
+              <pattern id="grid" width={CELL_SIZE * 10} height={CELL_SIZE * 10} patternUnits="userSpaceOnUse">
+                <rect width={CELL_SIZE * 10} height={CELL_SIZE * 10} fill="url(#smallGrid)" />
+                <path
+                  d={`M ${CELL_SIZE * 10} 0 L 0 0 0 ${CELL_SIZE * 10}`}
+                  fill="none"
+                  stroke={colors.black}
+                  strokeWidth="1"
+                />
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#grid)" />
+          </svg>
+        )}
         <Wires
-          lines={wires}
+          wires={wires}
           css={{
             ...getCellCss(1, 1, COLS, ROWS),
           }}
         />
-        {/* {showGrid && (
-          <>
-            {gridLines.map(({ type, col, row, width, height, ...props }) => {
-              const key = `${type}-${col}-${row}`;
-              if (width === 'cols') width = COLS;
-              if (height === 'rows') height = ROWS;
-              col = normalizeIndex(col, COLS);
-              row = normalizeIndex(row, ROWS);
-              const css = getCellCss(col, row, width, height);
-
-              switch (type) {
-                case 'vertical-line':
-                  return (
-                    <VerticalLine
-                      key={key}
-                      {...(props as VerticalLineProps)}
-                      css={css}
-                      totalHeight={height * CELL_SIZE}
-                    />
-                  );
-                case 'horizontal-line':
-                  return (
-                    <HorizontalLine
-                      key={key}
-                      {...(props as HorizontalLineProps)}
-                      css={css}
-                      totalWidth={width * CELL_SIZE}
-                    />
-                  );
-              }
-            })}
-          </>
-        )} */}
 
         {schema.result
           ? schema.result.map(({ type, col, row, width, height, ...props }) => {

@@ -5,6 +5,7 @@ import typography from '@scripts/typography';
 
 import { MultiplexorProps, Pin } from '../types';
 import useCellDims from '../useCellDims';
+import { ArrowRight } from './util';
 
 interface TrapezoidProps {
   height: number;
@@ -34,24 +35,8 @@ const Trapezoid = ({ width = 30, height, className }: TrapezoidProps) => {
 
 const activeColor = colors.backgroundPurple;
 
-const ArrowRight = ({ className, width = 96 }: { className?: string; width?: number }) => {
-  const headWidth = 12;
-  const headHeight = 12;
-  const points = [
-    [width - headWidth, 6 - headHeight / 2],
-    [width - headWidth, 6 + headHeight / 2],
-    [width, 6],
-  ];
 
-  return (
-    <svg width={width > 0 ? width : 32} height="12" viewBox={`0 0 ${width > 0 ? width : 30} 12`} className={className}>
-      <line x1="0" y1="6" x2={width - headWidth} y2="6" stroke={colors.black} strokeWidth="2" />
-      <polygon points={points.map(e => e.join(',')).join(' ')} fill={colors.black} />
-    </svg>
-  );
-};
-
-const PinComponent = ({ isActive, name, arrowWidth }: Pin & { index: number; arrowWidth: number }) => (
+const PinComponent = ({ isActive, name, arrowWidth, height }: Pin & { index: number; arrowWidth: number; height: number }) => (
   <div
     css={{
       display: 'flex',
@@ -99,6 +84,7 @@ const PinComponent = ({ isActive, name, arrowWidth }: Pin & { index: number; arr
           pointerEvents: 'none',
         }}
         width={arrowWidth}
+        height={height}
       />
       <span
         css={{
@@ -171,7 +157,7 @@ const Multiplexor = ({ className, pins, cellSize, prefix, prefixAlign = 'left' }
         }}
       >
         {pins.map((pin, index) => (
-          <PinComponent key={pin.code} {...pin} index={index} arrowWidth={dims.w - 32} />
+          <PinComponent key={pin.code} height={dims.h} {...pin} index={index} arrowWidth={dims.w - 32} />
         ))}
       </div>
     </div>
