@@ -67,7 +67,6 @@ const Pcc = () => {
       return { result: null, error: e?.message };
     }
   }, [code]);
-  console.log(schema.result);
 
   const [showGrid, setShowGrid] = useState(true);
 
