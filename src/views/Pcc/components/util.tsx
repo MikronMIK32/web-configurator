@@ -3,7 +3,7 @@ import { colors } from '@scripts/colors';
 import { CELL_SIZE } from '../constants';
 import { Connection } from '../types';
 
-const STROKE_WIDTH = 2;
+const STROKE_WIDTH =1 ;
 
 export const Line = ({ className, width = 96, height }: { className?: string; width?: number; height: number }) => {
   return (

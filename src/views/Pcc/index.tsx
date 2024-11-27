@@ -2,11 +2,10 @@ import { useEffect, useMemo, useState } from 'react';
 
 import Button from '@components/controls/Button';
 
-import HorizontalLine from './components/HorizontalLine';
 import InputBlock from './components/InputBlock';
 import Intersection from './components/Intersection';
 import Multiplexor from './components/Multiplexor';
-import VerticalLine from './components/VerticalLine';
+import Wires, { Line } from './components/Wires';
 import { CELL_SIZE, COLS, ROWS, initialSchemaCode } from './constants';
 import getCellCss from './getCellCss';
 import {
@@ -91,6 +90,43 @@ const Pcc = () => {
 
   const [showGrid, setShowGrid] = useState(true);
 
+  const wires = useMemo(() => {
+    if (!schema.result) return [];
+
+    return schema.result
+      .filter(item => {
+        return item.type === 'horizontal-line' || item.type === 'vertical-line';
+      })
+      .map<Line>(e => {
+        const x0 = (normalizeIndex(e.col, COLS) - 1) * CELL_SIZE;
+        const y0 = (normalizeIndex(e.row, ROWS) - 1) * CELL_SIZE;
+
+        if (e.type === 'vertical-line') {
+          return {
+            p0: {
+              x: x0,
+              y: y0,
+            },
+            p1: {
+              x: x0,
+              y: y0 + (e.height === 'rows' ? ROWS : e.height) * CELL_SIZE,
+            },
+          };
+        }
+
+        return {
+          p0: {
+            x: x0,
+            y: y0,
+          },
+          p1: {
+            x: x0 + (e.width === 'cols' ? COLS : e.width) * CELL_SIZE,
+            y: y0,
+          },
+        };
+      });
+  }, [schema.result]);
+
   return (
     <div
       css={{
@@ -153,12 +189,19 @@ const Pcc = () => {
           gridTemplateRows: `repeat(${ROWS}, ${CELL_SIZE}px)`,
           gap: 0,
           overflow: 'auto',
+          position: 'relative',
           // Если захотим поведение шоб вся страница скроллилась
           // overflowX: 'auto',
           // overflowY: 'clip',
         }}
       >
-        {showGrid && (
+        <Wires
+          lines={wires}
+          css={{
+            ...getCellCss(1, 1, COLS, ROWS),
+          }}
+        />
+        {/* {showGrid && (
           <>
             {gridLines.map(({ type, col, row, width, height, ...props }) => {
               const key = `${type}-${col}-${row}`;
@@ -190,7 +233,7 @@ const Pcc = () => {
               }
             })}
           </>
-        )}
+        )} */}
 
         {schema.result
           ? schema.result.map(({ type, col, row, width, height, ...props }) => {
@@ -226,24 +269,6 @@ const Pcc = () => {
                     />
                   );
                 }
-                case 'vertical-line':
-                  return (
-                    <VerticalLine
-                      key={key}
-                      {...(props as VerticalLineProps)}
-                      css={css}
-                      totalHeight={height * CELL_SIZE}
-                    />
-                  );
-                case 'horizontal-line':
-                  return (
-                    <HorizontalLine
-                      key={key}
-                      {...(props as HorizontalLineProps)}
-                      css={css}
-                      totalWidth={width * CELL_SIZE}
-                    />
-                  );
                 default:
                   return null; // Handle unexpected types if necessary
               }
