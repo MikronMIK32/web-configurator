@@ -12,8 +12,9 @@ import { CELL_SIZE, COLS, ROWS, initialSchemaCode } from './constants';
 import getCellCss from './getCellCss';
 import { IComponent } from './types';
 
-type ExtractSchemaItem<TComp extends IComponent<any, any>> =
-  TComp extends IComponent<infer TProps, infer TName> ? { type: TName } & TProps : never;
+type ExtractSchemaItem<TComp extends IComponent<any, any>> = TComp extends IComponent<infer TProps, infer TName>
+  ? { type: TName } & TProps
+  : never;
 
 export type SchemaItem =
   | ExtractSchemaItem<typeof InputBlock>
@@ -135,12 +136,14 @@ const Pcc = () => {
           // Если захотим поведение шоб вся страница скроллилась
           // overflowX: 'auto',
           // overflowY: 'clip',
+          width: COLS * CELL_SIZE,
+          height: ROWS * CELL_SIZE,
         }}
       >
         <svg
-          width={COLS*CELL_SIZE}
-          height={ROWS*CELL_SIZE}
-          viewBox={`0 0 ${COLS*CELL_SIZE} ${ROWS*CELL_SIZE}`}
+          width={COLS * CELL_SIZE}
+          height={ROWS * CELL_SIZE}
+          viewBox={`0 0 ${COLS * CELL_SIZE} ${ROWS * CELL_SIZE}`}
           css={{
             ...getCellCss(1, 1, COLS, ROWS),
           }}
