@@ -139,8 +139,9 @@ const Pcc = () => {
         }}
       >
         <svg
-          width="100%"
-          height="100%"
+          width={COLS*CELL_SIZE}
+          height={ROWS*CELL_SIZE}
+          viewBox={`0 0 ${COLS*CELL_SIZE} ${ROWS*CELL_SIZE}`}
           css={{
             ...getCellCss(1, 1, COLS, ROWS),
           }}
