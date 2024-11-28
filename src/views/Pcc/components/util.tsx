@@ -28,7 +28,7 @@ export const Arrow = ({ dir, top, totalWidth }: { dir: 'left' | 'right'; top: nu
         x2={xOffset + totalWidth - headWidth + (dir === 'left' ? 0 : 1)}
         y2={top}
         stroke={STROKE_COLOR}
-        strokeWidth={1}
+        strokeWidth={STROKE_WIDTH}
         shapeRendering="crispEdges"
       /> */}
       <polygon points={points.map(e => e.join(',')).join(' ')} fill={STROKE_COLOR} opacity={1} />

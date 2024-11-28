@@ -6,7 +6,7 @@ import typography from '@scripts/typography';
 import useCellDims from '../useCellDims';
 import { ArrowRight, createComponent } from './util';
 import { GridCellProps } from '../types';
-import { CELL_SIZE, STROKE_COLOR } from '../constants';
+import { CELL_SIZE, STROKE_COLOR, STROKE_WIDTH } from '../constants';
 import getCellCss from '../getCellCss';
 
 export interface Pin {
@@ -41,7 +41,7 @@ const Trapezoid = ({ width = 30, height, className }: TrapezoidProps) => {
               1,0
             `}
         fill={colors.grey200}
-        strokeWidth="2"
+        strokeWidth={STROKE_WIDTH}
         stroke={colors.black}
       />
     </svg>
@@ -200,7 +200,7 @@ function Atlas({ col, row, width, pins }: MultiplexorProps) {
           x2={x + width * CELL_SIZE}
           y2={y + gap * index}
           stroke={STROKE_COLOR}
-          strokeWidth={1}
+          strokeWidth={STROKE_WIDTH}
           shapeRendering="crispEdges"
           vectorEffect="non-scaling-stroke"
         />
