@@ -2,7 +2,7 @@ export const CELL_SIZE = 16;
 export const ROWS = 112;
 export const COLS = 88;
 
-export const STROKE_WIDTH = 1;
+export const STROKE_WIDTH = 2;
 export const STROKE_COLOR = '#000';
 
 export const initialSchemaCode = `[
