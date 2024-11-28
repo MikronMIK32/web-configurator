@@ -131,7 +131,6 @@ const Pcc = () => {
           gridTemplateColumns: `repeat(${COLS}, ${CELL_SIZE}px)`,
           gridTemplateRows: `repeat(${ROWS}, ${CELL_SIZE}px)`,
           gap: 0,
-          overflow: 'auto',
           position: 'relative',
           // Если захотим поведение шоб вся страница скроллилась
           // overflowX: 'auto',
