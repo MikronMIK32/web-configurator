@@ -41,7 +41,7 @@ export const initialSchemaCode = `[
         "name": "multiplexor_rtc_clk",
         "type": "multiplexor",
         "col": 20,
-        "row": 52,
+        "row": 50,
         "width": 8,
         "height": 6,
         "prefix": "Мультиплексор частоты RTC",
@@ -55,6 +55,58 @@ export const initialSchemaCode = `[
                 "code": "2",
                 "isActive": false,
                 "name": "HSI"
+            }
+        ]
+    },
+    {
+        "name": "multiplexor_rtc_clk",
+        "type": "multiplexor",
+        "col": 48,
+        "row": 50,
+        "width": 8,
+        "height": 6,
+        "prefix": "Мультиплексор монитора частоты",
+        "pins": [
+            {
+                "code": "1",
+                "isActive": true,
+                "name": "LSI"
+            },
+            {
+                "code": "2",
+                "isActive": false,
+                "name": "HSI"
+            }
+        ]
+    },
+    {
+        "name": "multiplexor_sys_clk",
+        "type": "multiplexor",
+        "col": 48,
+        "row": 60,
+        "width": 8,
+        "height": 10,
+        "prefix": "Мультиплексор частоты WDT",
+        "pins": [
+            {
+                "code": "1",
+                "isActive": true,
+                "name": "OSC32M"
+            },
+            {
+                "code": "2",
+                "isActive": false,
+                "name": "HSI"
+            },
+            {
+                "code": "3",
+                "isActive": false,
+                "name": "LSI"
+            },
+            {
+                "code": "4",
+                "isActive": true,
+                "name": "OSC32K"
             }
         ]
     },
@@ -105,7 +157,7 @@ export const initialSchemaCode = `[
         "type": "input-block",
         "name": "lsi",
         "col": 12,
-        "row": 48,
+        "row": 46,
         "width": 8,
         "height": 4,
         "value": "32",
@@ -121,34 +173,34 @@ export const initialSchemaCode = `[
         "type": "input-block",
         "name": "osc32k",
         "col": 10,
-        "row": 58,
+        "row": 56,
         "width": 10,
         "height": 4,
         "value": "OSC32K",
         "connectionLeft": "biline",
         "connectionRight": "line",
-        "postfix": "32 МГц",
+        "postfix": "32 кГц",
         "postfixAlign": "center"
     },
     {
         "type": "input-block",
         "name": "osc32k_freq_in",
         "col": 2,
-        "row": 58,
+        "row": 56,
         "width": 8,
         "height": 4,
         "value": "32.768",
         "connectionLeft": "none",
         "connectionRight": "bidirectional",
         "prefix": "Входная частота",
-        "postfix": "до 32 МГц",
+        "postfix": "до 32 кГц",
         "editable": true
     },
     {
         "type": "input-block",
         "name": "rtc_freq",
         "col": 28,
-        "row": 53,
+        "row": 51,
         "width": 8,
         "height": 4,
         "value": "32",
