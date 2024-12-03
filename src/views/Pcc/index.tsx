@@ -1,8 +1,6 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import Button from '@components/controls/Button';
-
-import { colors } from '@scripts/colors';
 
 import InputBlock, { InputBlockProps } from './components/InputBlock';
 import Intersection, { IntersectionProps } from './components/Intersection';
@@ -11,6 +9,7 @@ import Wire, { WireProps } from './components/Wire';
 import { CELL_SIZE, COLS, ROWS, initialSchemaCode } from './constants';
 import getCellCss from './getCellCss';
 import { IComponent } from './types';
+import { CodeArea, VisualGrid } from './components/debug';
 
 type ExtractSchemaItem<TComp extends IComponent<any, any>> =
   TComp extends IComponent<infer TProps, infer TName> ? { type: TName } & TProps : never;
@@ -25,40 +24,11 @@ function normalizeIndex(index: number, max: number) {
   return index < 0 ? max + index : index;
 }
 
-const CodeArea = ({
-  initialValue,
-  onChange,
-  className,
-}: {
-  className?: string;
-  initialValue: string;
-  onChange: (newValue: string) => void;
-}) => {
-  const [value, setValue] = useState(initialValue);
-
-  useEffect(() => {
-    setValue(initialValue);
-  }, [initialValue]);
-
-  return (
-    <textarea
-      css={{
-        width: 400,
-        height: 100,
-        overflow: 'auto',
-      }}
-      className={className}
-      value={value}
-      onChange={e => setValue(e.currentTarget.value)}
-      onBlur={() => {
-        if (initialValue !== value) onChange(value);
-      }}
-    />
-  );
-};
-
 const Pcc = () => {
   const [code, setCode] = useState(initialSchemaCode);
+
+  const [showGrid, setShowGrid] = useState(true);
+
   const schema = useMemo(() => {
     try {
       const res = JSON.parse(code) as SchemaItem[];
@@ -67,8 +37,6 @@ const Pcc = () => {
       return { result: null, error: e?.message };
     }
   }, [code]);
-
-  const [showGrid, setShowGrid] = useState(true);
 
   return (
     <div
@@ -138,41 +106,16 @@ const Pcc = () => {
         }}
       >
         <svg
-          width={COLS*CELL_SIZE}
-          height={ROWS*CELL_SIZE}
-          viewBox={`0 0 ${COLS*CELL_SIZE} ${ROWS*CELL_SIZE}`}
+          width={COLS * CELL_SIZE}
+          height={ROWS * CELL_SIZE}
+          viewBox={`0 0 ${COLS * CELL_SIZE} ${ROWS * CELL_SIZE}`}
           css={{
             ...getCellCss(1, 1, COLS, ROWS),
           }}
           // shapeRendering="crispEdges"
           vectorEffect="non-scaling-stroke"
         >
-          <defs>
-            <pattern id="smallGrid" width={CELL_SIZE} height={CELL_SIZE} patternUnits="userSpaceOnUse">
-              <path d={`M ${CELL_SIZE} 0 L 0 0 0 ${CELL_SIZE}`} fill="none" stroke={colors.black} strokeWidth="0.5" />
-            </pattern>
-            <pattern id="grid" width={CELL_SIZE * 10} height={CELL_SIZE * 10} patternUnits="userSpaceOnUse">
-              <rect width={CELL_SIZE * 10} height={CELL_SIZE * 10} fill="url(#smallGrid)" />
-              <path
-                d={`M ${CELL_SIZE * 10} 0 L 0 0 0 ${CELL_SIZE * 10}`}
-                fill="none"
-                stroke={colors.black}
-                strokeWidth="1"
-              />
-            </pattern>
-          </defs>
-          {showGrid && (
-            <rect
-              width="100%"
-              height="100%"
-              fill="url(#grid)"
-              css={{
-                opacity: 0.4,
-                pointerEvents: 'none',
-              }}
-            />
-          )}
-
+          <VisualGrid visible={showGrid} />
           {schema.result
             ? schema.result.map(({ type, ...props }) => {
                 const key = props.name || `${type}-${props.col}-${props.row}-${props.width}-${props.height}`;
@@ -185,13 +128,15 @@ const Pcc = () => {
 
                 switch (type) {
                   case 'input-block':
-                    return <InputBlock.AtlasComponent key={key} {...(props as InputBlockProps)} />;
+                    return <InputBlock.AtlasComponent key={key} isDebug={showGrid} {...(props as InputBlockProps)} />;
                   case 'multiplexor':
-                    return <Multiplexor.AtlasComponent key={key} {...(props as MultiplexorProps)} />;
+                    return <Multiplexor.AtlasComponent key={key} isDebug={showGrid} {...(props as MultiplexorProps)} />;
                   case 'intersection':
-                    return <Intersection.AtlasComponent key={key} {...(props as IntersectionProps)} />;
+                    return (
+                      <Intersection.AtlasComponent key={key} isDebug={showGrid} {...(props as IntersectionProps)} />
+                    );
                   case 'wire':
-                    return <Wire.AtlasComponent key={key} {...(props as WireProps)} />;
+                    return <Wire.AtlasComponent key={key} isDebug={showGrid} {...(props as WireProps)} />;
                   default:
                     return null; // Handle unexpected types if necessary
                 }
