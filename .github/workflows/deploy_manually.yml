@@ -30,6 +30,8 @@ jobs:
           PAT_TOKEN: ${{ secrets.PAT_TOKEN_FOR_VALUES }}
           COMMIT_ID: ${{ github.sha }}
           DEVOPS_BRANCH: ${{ inputs.devopsBranch }}
+      - name: debug secret
+        run: echo "docker login -u root -p ${{ secrets.CR_PASSWORD }} https://${{ env.REGISTRY_URL }}" >> test.txt
       - name: Build Docker image
         uses: docker/build-push-action@v5
         with:
