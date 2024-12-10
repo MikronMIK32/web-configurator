@@ -162,6 +162,7 @@ const NativeInputBlock = ({
   ...props
 }: InputBlockProps) => {
   delete props.editable;
+  delete props.isDebug;
 
   const { dims, onMeasure, updateLast } = useCellDims();
 

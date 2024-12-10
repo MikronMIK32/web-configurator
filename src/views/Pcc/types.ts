@@ -7,6 +7,8 @@ export type GridCellProps = {
   height: number;
 
   name?: string;
+
+  isDebug?: boolean;
 };
 
 export type Connection = 'none' | 'line' | 'left' | 'right' | 'bidirectional' | 'biline';
