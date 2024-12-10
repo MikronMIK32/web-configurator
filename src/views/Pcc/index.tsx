@@ -10,6 +10,7 @@ import { CELL_SIZE, COLS, ROWS, initialSchemaCode } from './constants';
 import getCellCss from './getCellCss';
 import { IComponent } from './types';
 import { CodeArea, VisualGrid } from './components/debug';
+import { useLocalStorage } from 'usehooks-ts';
 
 type ExtractSchemaItem<TComp extends IComponent<any, any>> =
   TComp extends IComponent<infer TProps, infer TName> ? { type: TName } & TProps : never;
@@ -25,7 +26,7 @@ function normalizeIndex(index: number, max: number) {
 }
 
 const Pcc = () => {
-  const [code, setCode] = useState(initialSchemaCode);
+  const [code, setCode] = useLocalStorage('test-key', initialSchemaCode);
 
   const [showGrid, setShowGrid] = useState(true);
 
@@ -58,9 +59,29 @@ const Pcc = () => {
           alignItems: 'center',
         }}
       >
-        <Button size="sm" onClick={() => setShowGrid(old => !old)}>
-          Переключить визуализацию сетки
-        </Button>
+        <div
+          css={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+          }}
+        >
+          <Button size="sm" onClick={() => setShowGrid(old => !old)}>
+            Переключить визуализацию сетки
+          </Button>
+          <Button size="sm" onClick={() => {
+            const confirmed = window.confirm("Текущее содержимое localstorage будет заменено. Продолжить?");
+            if (confirmed) {
+              console.log("Update confirmed!");
+              setCode(initialSchemaCode);
+            } else {
+              console.log("Update canceled.");
+            }
+
+          }}>
+            Обновить схему в Localstorage
+          </Button>
+        </div>
         <div
           css={{
             display: 'flex',
@@ -118,34 +139,6 @@ const Pcc = () => {
           <VisualGrid visible={showGrid} />
           {schema.result
             ? schema.result.map(({ type, ...props }) => {
-                const key = props.name || `${type}-${props.col}-${props.row}-${props.width}-${props.height}`;
-
-                if ((props.width as any) === 'cols') props.width = COLS;
-                if ((props.height as any) === 'rows') props.height = ROWS;
-
-                props.col = normalizeIndex(props.col, COLS);
-                props.row = normalizeIndex(props.row, ROWS);
-
-                switch (type) {
-                  case 'input-block':
-                    return <InputBlock.AtlasComponent key={key} isDebug={showGrid} {...(props as InputBlockProps)} />;
-                  case 'multiplexor':
-                    return <Multiplexor.AtlasComponent key={key} isDebug={showGrid} {...(props as MultiplexorProps)} />;
-                  case 'intersection':
-                    return (
-                      <Intersection.AtlasComponent key={key} isDebug={showGrid} {...(props as IntersectionProps)} />
-                    );
-                  case 'wire':
-                    return <Wire.AtlasComponent key={key} isDebug={showGrid} {...(props as WireProps)} />;
-                  default:
-                    return null; // Handle unexpected types if necessary
-                }
-              })
-            : null}
-        </svg>
-
-        {schema.result
-          ? schema.result.map(({ type, ...props }) => {
               const key = props.name || `${type}-${props.col}-${props.row}-${props.width}-${props.height}`;
 
               if ((props.width as any) === 'cols') props.width = COLS;
@@ -155,30 +148,58 @@ const Pcc = () => {
               props.row = normalizeIndex(props.row, ROWS);
 
               switch (type) {
+                case 'input-block':
+                  return <InputBlock.AtlasComponent key={key} isDebug={showGrid} {...(props as InputBlockProps)} />;
                 case 'multiplexor':
-                  return <Multiplexor.NativeComponent key={key} {...(props as MultiplexorProps)} />;
-                case 'input-block': {
-                  const { editable, ...rest } = props as InputBlockProps;
+                  return <Multiplexor.AtlasComponent key={key} isDebug={showGrid} {...(props as MultiplexorProps)} />;
+                case 'intersection':
                   return (
-                    <InputBlock.NativeComponent
-                      key={key}
-                      {...rest}
-                      onChange={
-                        editable
-                          ? newValue => {
-                              alert(
-                                `Спасибо что попытались ввести сюда ${newValue}. Я не знаю схему данных и валидацию, а так же не знаю опции выпадающие. поэтому увы!`
-                              );
-                            }
-                          : undefined
-                      }
-                    />
+                    <Intersection.AtlasComponent key={key} isDebug={showGrid} {...(props as IntersectionProps)} />
                   );
-                }
+                case 'wire':
+                  return <Wire.AtlasComponent key={key} isDebug={showGrid} {...(props as WireProps)} />;
                 default:
                   return null; // Handle unexpected types if necessary
               }
             })
+            : null}
+        </svg>
+
+        {schema.result
+          ? schema.result.map(({ type, ...props }) => {
+            const key = props.name || `${type}-${props.col}-${props.row}-${props.width}-${props.height}`;
+
+            if ((props.width as any) === 'cols') props.width = COLS;
+            if ((props.height as any) === 'rows') props.height = ROWS;
+
+            props.col = normalizeIndex(props.col, COLS);
+            props.row = normalizeIndex(props.row, ROWS);
+
+            switch (type) {
+              case 'multiplexor':
+                return <Multiplexor.NativeComponent key={key} {...(props as MultiplexorProps)} />;
+              case 'input-block': {
+                const { editable, ...rest } = props as InputBlockProps;
+                return (
+                  <InputBlock.NativeComponent
+                    key={key}
+                    {...rest}
+                    onChange={
+                      editable
+                        ? newValue => {
+                          alert(
+                            `Спасибо что попытались ввести сюда ${newValue}. Я не знаю схему данных и валидацию, а так же не знаю опции выпадающие. поэтому увы!`
+                          );
+                        }
+                        : undefined
+                    }
+                  />
+                );
+              }
+              default:
+                return null; // Handle unexpected types if necessary
+            }
+          })
           : null}
       </div>
     </div>
