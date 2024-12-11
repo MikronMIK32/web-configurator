@@ -59,7 +59,7 @@ export const initialSchemaCode = `[
         ]
     },
     {
-        "name": "multiplexor_rtc_clk",
+        "name": "multiplexor_mon_clk",
         "type": "multiplexor",
         "col": 48,
         "row": 50,
@@ -80,7 +80,7 @@ export const initialSchemaCode = `[
         ]
     },
     {
-        "name": "multiplexor_sys_clk",
+        "name": "multiplexor_wdt_clk",
         "type": "multiplexor",
         "col": 48,
         "row": 60,
