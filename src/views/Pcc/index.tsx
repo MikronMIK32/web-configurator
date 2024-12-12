@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import Button from '@components/controls/Button';
 
@@ -27,6 +27,47 @@ function normalizeIndex(index: number, max: number) {
 
 const Pcc = () => {
   const [code, setCode] = useLocalStorage('test-key', initialSchemaCode);
+
+  const [coord, setCoord] = useState({ x: 0, y: 0 });
+  const [gridOffset, setGridOffset] = useState({ x: 0, y: 0 });
+  const [debugWirePoints, setDebugWirePoints] = useState([] as Array<{ col: number; row: number }>);
+  
+  const coordRef = useRef(coord);
+  useEffect(() => {
+    coordRef.current = coord;
+  }, [coord]);
+
+  const debugWirePointsRef = useRef(debugWirePoints);
+  useEffect(() => {
+    debugWirePointsRef.current = debugWirePoints;
+  }, [debugWirePoints]);
+
+  const handleKeyPress = (e: KeyboardEvent) => {
+    if (e.key === 'a') {
+      setDebugWirePoints(prev => [...prev, { col: coordRef.current.x + 1, row: coordRef.current.y + 1 }]);
+    }
+    if (e.key === 'Backspace') {
+      setDebugWirePoints(prev => prev.slice(0, -1));
+    }
+    if (e.key === 'Enter') {
+      const jsonString = JSON.stringify(
+        {
+          type: 'wire',
+          name: 'wire',
+          points: debugWirePointsRef.current,
+        }, null, 4); 
+      navigator.clipboard.writeText(jsonString);
+      setDebugWirePoints([]);
+    }
+    if (e.key === 'Escape') {
+      setDebugWirePoints([]);
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, []);
 
   const [showGrid, setShowGrid] = useState(true);
 
@@ -112,8 +153,29 @@ const Pcc = () => {
             </code>
           )}
         </div>
+        <label
+          css={{
+            position: 'absolute',
+            pointerEvents: 'none',
+            left: (coord.x + 1) * CELL_SIZE + gridOffset.x,
+            top: (coord.y - 2) * CELL_SIZE + gridOffset.y,
+            visibility: showGrid ? 'visible' : 'hidden',
+          }}
+        >col = {coord.x + 1}, row = {coord.y + 1}</label>
+        <div
+          css={{
+            width: CELL_SIZE / 4,
+            height: CELL_SIZE / 4,
+            position: 'absolute',
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            borderRadius: 4,
+            padding: 4,
+            left: coord.x * CELL_SIZE + gridOffset.x - (CELL_SIZE / 4),
+            top: coord.y * CELL_SIZE + gridOffset.y - (CELL_SIZE / 4),
+            visibility: showGrid ? 'visible' : 'hidden',
+          }}
+        />
       </div>
-
       <div
         css={{
           display: 'grid',
@@ -124,6 +186,15 @@ const Pcc = () => {
           // Если захотим поведение шоб вся страница скроллилась
           // overflowX: 'auto',
           // overflowY: 'clip',
+        }}
+        onMouseMove={(event) => {
+          const { clientX, clientY } = event;
+          const { left, top } = event.currentTarget.getBoundingClientRect();
+          setGridOffset({ x: left, y: top });
+          setCoord({
+            x: Math.round((clientX - gridOffset.x) / CELL_SIZE),
+            y: Math.round((clientY - gridOffset.y) / CELL_SIZE)
+          });
         }}
       >
         <svg
@@ -163,6 +234,11 @@ const Pcc = () => {
               }
             })
             : null}
+          <Wire.AtlasComponent key='debugWire' isDebug={showGrid && debugWirePoints.length > 0} {...({
+            name: 'debugWire',
+            color: 'green',
+            points: debugWirePoints,
+          } as WireProps)} />
         </svg>
 
         {schema.result
@@ -202,7 +278,7 @@ const Pcc = () => {
           })
           : null}
       </div>
-    </div>
+    </div >
   );
 };
 
