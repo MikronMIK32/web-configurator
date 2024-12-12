@@ -65,10 +65,6 @@ const Pcc = () => {
   };
 
   useEffect(() => {
-    console.log('Текущие точки:', debugWirePoints);
-  }, [debugWirePoints]);
-
-  useEffect(() => {
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
   }, []);
@@ -238,7 +234,7 @@ const Pcc = () => {
               }
             })
             : null}
-          <Wire.AtlasComponent key='debugWire' isDebug={showGrid} {...({
+          <Wire.AtlasComponent key='debugWire' isDebug={showGrid && debugWirePoints.length > 0} {...({
             name: 'debugWire',
             color: 'green',
             points: debugWirePoints,
