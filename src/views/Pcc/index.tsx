@@ -56,7 +56,8 @@ const Pcc = () => {
           name: 'wire',
           points: debugWirePointsRef.current,
         }, null, 4);
-      navigator.clipboard.writeText(jsonString);
+      const finalJsonString = jsonString.replace('\r\n','\r\n    ').concat(',\r\n');
+      navigator.clipboard.writeText(finalJsonString);
       setDebugWirePoints([]);
     }
     if (e.key === 'Escape') {
