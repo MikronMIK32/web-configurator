@@ -31,7 +31,7 @@ const Pcc = () => {
   const [coord, setCoord] = useState({ x: 0, y: 0 });
   const [gridOffset, setGridOffset] = useState({ x: 0, y: 0 });
   const [debugWirePoints, setDebugWirePoints] = useState([] as Array<{ col: number; row: number }>);
-  
+
   const coordRef = useRef(coord);
   useEffect(() => {
     coordRef.current = coord;
@@ -55,7 +55,7 @@ const Pcc = () => {
           type: 'wire',
           name: 'wire',
           points: debugWirePointsRef.current,
-        }, null, 4); 
+        }, null, 4);
       navigator.clipboard.writeText(jsonString);
       setDebugWirePoints([]);
     }
@@ -160,6 +160,8 @@ const Pcc = () => {
             left: (coord.x + 1) * CELL_SIZE + gridOffset.x,
             top: (coord.y - 2) * CELL_SIZE + gridOffset.y,
             visibility: showGrid ? 'visible' : 'hidden',
+            backgroundColor: 'rgba(255, 255, 255, 0.75)',
+            zIndex: 999,
           }}
         >col = {coord.x + 1}, row = {coord.y + 1}</label>
         <div
@@ -234,7 +236,7 @@ const Pcc = () => {
               }
             })
             : null}
-          <Wire.AtlasComponent key='debugWire' isDebug={showGrid && debugWirePoints.length > 0} {...({
+          <Wire.AtlasComponent key='debugWire' isDebug={showGrid && (debugWirePoints.length > 0)} {...({
             name: 'debugWire',
             color: 'green',
             points: debugWirePoints,
@@ -253,13 +255,14 @@ const Pcc = () => {
 
             switch (type) {
               case 'multiplexor':
-                return <Multiplexor.NativeComponent key={key} {...(props as MultiplexorProps)} />;
+                return <Multiplexor.NativeComponent key={key} isDebug={showGrid} {...(props as MultiplexorProps)} />;
               case 'input-block': {
                 const { editable, ...rest } = props as InputBlockProps;
                 return (
                   <InputBlock.NativeComponent
                     key={key}
                     {...rest}
+                    isDebug={showGrid}
                     onChange={
                       editable
                         ? newValue => {

@@ -96,15 +96,15 @@ function Atlas({ col, row, width, height, connectionLeft, connectionRight }: Inp
     const points =
       dir === 'left'
         ? [
-            [x1 + headWidth, cy - headHeight / 2 + yOffset],
-            [x1 + headWidth, cy + headHeight / 2 + yOffset],
-            [x1, cy + yOffset],
-          ]
+          [x1 + headWidth, cy - headHeight / 2 + yOffset],
+          [x1 + headWidth, cy + headHeight / 2 + yOffset],
+          [x1, cy + yOffset],
+        ]
         : [
-            [x1 + lineWidth - headWidth + 1, cy - headHeight / 2 + yOffset],
-            [x1 + lineWidth - headWidth + 1, cy + headHeight / 2 + yOffset],
-            [x1 + lineWidth + 1, cy + yOffset],
-          ];
+          [x1 + lineWidth - headWidth + 1, cy - headHeight / 2 + yOffset],
+          [x1 + lineWidth - headWidth + 1, cy + headHeight / 2 + yOffset],
+          [x1 + lineWidth + 1, cy + yOffset],
+        ];
 
     return (
       <>
@@ -159,10 +159,11 @@ const NativeInputBlock = ({
   backgroundColor,
   color,
   name,
+  isDebug,
   ...props
 }: InputBlockProps) => {
   delete props.editable;
-  delete props.isDebug;
+  // delete props.isDebug;
 
   const { dims, onMeasure, updateLast } = useCellDims();
 
@@ -188,74 +189,95 @@ const NativeInputBlock = ({
   }
 
   return (
-    <div
-      {...props}
-      data-dims-w={dims.w}
-      css={{
-        ...getCellCss(col, row, width, height),
-        width: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        position: 'relative',
-        gap: 0,
-      }}
-      style={{
-        alignItems,
-      }}
-      ref={onMeasure}
-    >
-      {prefix && (
-        <p
-          css={{
-            ...typography('labelSmall'),
-            whiteSpace: 'nowrap',
-            position: 'absolute',
-            transform: 'translateY(-100%)',
-            top: -CELL_SIZE / 4,
-          }}
-          style={{
-            textAlign: prefixAlign,
-            width: INPUT_WIDTH,
-          }}
-        >
-          {prefix}
-        </p>
-      )}
+    <>
+      <div
+        {...props}
+        data-dims-w={dims.w}
+        css={{
+          ...getCellCss(col, row, width, height),
+          width: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          position: 'relative',
+          gap: 0,
+        }}
+        style={{
+          alignItems,
+        }}
+        ref={onMeasure}
+      >
+        {isDebug && name && (
+          <p
+            // stroke="#999"
+            css={{
+              top: -CELL_SIZE * (prefix ? 1 : 0.05),
+              zIndex: 999,
+              fontSize: '1rem',
+              pointerEvents: 'all',
+              position: 'absolute',
+              transform: 'translateY(-100%)',
+            }}
+            style={{
+              textAlign: prefixAlign,
+              width: INPUT_WIDTH,
+            }}
+          >
+            {name}
+          </p>
+        )}
+        {prefix && (
+          <p
+            css={{
+              ...typography('labelSmall'),
+              whiteSpace: 'nowrap',
+              position: 'absolute',
+              transform: 'translateY(-100%)',
+              top: -CELL_SIZE / 4,
+            }}
+            style={{
+              textAlign: prefixAlign,
+              width: INPUT_WIDTH,
+            }}
+          >
+            {prefix}
+          </p>
+        )}
 
-      {postfix && (
-        <p
-          css={{
-            ...typography('paragraphSmall'),
-            whiteSpace: 'nowrap',
-            position: 'absolute',
-            top: INPUT_HEIGHT + CELL_SIZE / 4,
-          }}
-          style={{
-            textAlign: postfixAlign,
-            width: INPUT_WIDTH,
-          }}
-        >
-          {postfix}
-        </p>
-      )}
+        {postfix && (
+          <p
+            css={{
+              ...typography('paragraphSmall'),
+              whiteSpace: 'nowrap',
+              position: 'absolute',
+              top: INPUT_HEIGHT + CELL_SIZE / 4,
+            }}
+            style={{
+              textAlign: postfixAlign,
+              width: INPUT_WIDTH,
+            }}
+          >
+            {postfix}
+          </p>
+        )}
 
-      {onChange ? (
-        <input
-          type="text"
-          value={value}
-          name={name}
-          onChange={e => {
-            onChange(e.currentTarget.value);
-          }}
-          css={blockCSS}
-          style={blockStyle}
-        />
-      ) : (
-        <p style={blockStyle} css={blockCSS}>
-          {value}
-        </p>
-      )}
-    </div>
+        {onChange ? (
+          <input
+            type="text"
+            value={value}
+            name={name}
+            onChange={e => {
+              onChange(e.currentTarget.value);
+            }}
+            css={blockCSS}
+            style={blockStyle}
+          />
+        ) : (
+          <p style={blockStyle} css={blockCSS}>
+            {value}
+          </p>
+        )}
+      </div>
+    </>
   );
 };
 
