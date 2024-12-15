@@ -16,6 +16,22 @@ import { NavLink, useParams } from 'react-router-dom';
 import { TabList } from '@components/controls/Tabs/components/TabList';
 import Button from '@components/controls/Button';
 
+const Debug = () => {
+  const rootState = useSelector<RootState>(state => state);
+  return (
+    <div css={{ position: 'relative' }}>
+      <pre
+        css={{
+          display: 'inline-block',
+        }}
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(rootState, undefined, 2),
+        }}
+      />
+    </div>
+  );
+};
+
 export default function ProjectView() {
   const { id } = useParams(); // Accesses the dynamic segment from the URL
 
@@ -24,8 +40,6 @@ export default function ProjectView() {
   useEffect(() => {
     setTab('peripheral');
   }, []);
-
-  const rootState = useSelector<RootState>(state => state);
 
   return (
     <Tabs
@@ -87,16 +101,7 @@ export default function ProjectView() {
           TODO
         </Tabs.Tab> */}
       <Tabs.Tab id="debug" title="Отладочная структура проекта">
-        <div css={{ position: 'relative' }}>
-          <pre
-            css={{
-              display: 'inline-block',
-            }}
-            dangerouslySetInnerHTML={{
-              __html: JSON.stringify(rootState, undefined, 2),
-            }}
-          />
-        </div>
+        <Debug />
       </Tabs.Tab>
       <Tabs.Tab id="export" title="Экспорт">
         <ExportView />

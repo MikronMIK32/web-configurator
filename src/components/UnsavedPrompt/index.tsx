@@ -17,58 +17,66 @@ export const UnsavedPrompt = ({
   isOpen?: boolean;
   cancelNavigation: () => void;
   confirmNavigation: () => void;
-}) =>
-  isOpen ? (
-    <div
-      css={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        background: 'rgba(0, 0, 0, 0.5)',
-        zIndex: 999999,
-        width: '100vw',
-        height: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        backdropFilter: 'blur(10px)',
-      }}
-    >
-      <p
+}) => (
+  <>
+    {isOpen && (
+      <div
         css={{
-          marginBottom: scale(3),
-          color: colors.white,
-          ...typography('labelLarge'),
+          position: 'fixed',
+          zIndex: 999999,
+          inset: 0,
+          background: 'rgba(0, 0, 0, 0.5)',
+        }}
+      />
+    )}
+    {isOpen ? (
+      <div
+        css={{
+          position: 'fixed',
+          zIndex: 999999,
+          left: '50%',
+          top: '50%',
+          transform: 'translate(-50%, -50%)',
+          display: 'flex',
+          background: 'rgba(255,255,255,.2)',
+          padding: scale(5),
+          borderRadius: scale(2),
+          overflow: 'hidden',
+          alignItems: 'center',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          backdropFilter: 'blur(2px)',
         }}
       >
-        У вас есть несохраненные данные. Вы уверены, что хотите покинуть раздел?
-      </p>
+        <p
+          css={{
+            marginBottom: scale(3),
+            color: colors.white,
+            ...typography('labelLarge'),
+          }}
+        >
+          У вас есть несохраненные данные. Вы уверены, что хотите покинуть раздел?
+        </p>
 
-      <div css={{ display: 'flex', flexDirection: 'row', gap: scale(2) }}>
-        <Button onClick={cancelNavigation}>Остаться на странице</Button>
+        <div css={{ display: 'flex', flexDirection: 'row', gap: scale(2) }}>
+          <Button onClick={cancelNavigation}>Остаться на странице</Button>
 
-        <Button onClick={confirmNavigation} variant="danger">
-          Не сохранять данные
-        </Button>
+          <Button onClick={confirmNavigation} variant="danger">
+            Не сохранять данные
+          </Button>
+        </div>
       </div>
-    </div>
-  ) : null;
+    ) : null}
+  </>
+);
 
 const FormUnsavedPrompt = () => {
   const { isDirty } = useFormState();
 
-  const [showPrompt, confirmNavigation, cancelNavigation] =
-    useCallbackPrompt(isDirty);
+  const [showPrompt, confirmNavigation, cancelNavigation] = useCallbackPrompt(isDirty);
 
   return (
-    <UnsavedPrompt
-      isOpen={showPrompt}
-      cancelNavigation={cancelNavigation}
-      confirmNavigation={confirmNavigation}
-    />
+    <UnsavedPrompt isOpen={showPrompt} cancelNavigation={cancelNavigation} confirmNavigation={confirmNavigation} />
   );
 };
 
