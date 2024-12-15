@@ -1,11 +1,4 @@
-export const CELL_SIZE = 16;
-export const ROWS = 112;
-export const COLS = 88;
-
-export const STROKE_WIDTH = 2;
-export const STROKE_COLOR = '#000';
-
-export const initialSchemaCode = `[
+[
     {
         "type": "input-block",
         "name": "input_osc32m",
@@ -526,4 +519,4 @@ export const initialSchemaCode = `[
         "width": 1,
         "height": 1
     }
-]`;
+]

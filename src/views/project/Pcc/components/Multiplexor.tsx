@@ -119,7 +119,7 @@ const PinComponent = ({ isActive, name, arrowWidth, height }: Pin & { arrowWidth
   </div>
 );
 
-const Native = ({ className, pins, prefix, prefixAlign = 'left', col, row, height, width }: MultiplexorProps) => {
+const Native = ({ className, pins, prefix, prefixAlign = 'left', col, row, height, width, isDebug, name }: MultiplexorProps) => {
   const { dims, onMeasure, updateLast } = useCellDims();
 
   useEffect(() => {
@@ -138,6 +138,23 @@ const Native = ({ className, pins, prefix, prefixAlign = 'left', col, row, heigh
         onMeasure(node);
       }}
     >
+      {isDebug && name && (
+        <p
+          css={{
+            top: -CELL_SIZE * (prefix ? 0.7 : 0.05),
+            zIndex: 999,
+            fontSize: '1rem',
+            pointerEvents: 'all',
+            position: 'absolute',
+            transform: 'translateY(-100%)',
+          }}
+          style={{
+            textAlign: prefixAlign,
+          }}
+        >
+          {name}
+        </p>
+      )}
       {prefix && (
         <p
           css={{
