@@ -10,6 +10,8 @@ export enum ButtonVariants {
   primary = 'primary',
   ghost = 'ghost',
   danger = 'danger',
+  secondary = 'secondary',
+  inverse = 'inverse',
   // TODO: secondary, success, warning, danger
 }
 

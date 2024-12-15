@@ -280,6 +280,8 @@ export type TabListProps = Pick<
   breakpoint?: number;
 
   ShowMoreButton?: FC<ShowMoreButtonProps>;
+
+  children?: ReactElement;
 };
 
 export type UseTabsProps = TabListProps;
