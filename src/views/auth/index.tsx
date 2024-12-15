@@ -1,6 +1,5 @@
 import Button from '@components/controls/Button';
 import Form from '@components/controls/Form';
-import Input from '@components/controls/Input';
 import { css } from '@emotion/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { colors } from '@scripts/colors';
