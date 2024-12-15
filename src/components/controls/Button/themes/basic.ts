@@ -7,24 +7,24 @@ import deepmerge from 'deepmerge';
 import { ButtonTheme } from '../types';
 
 export const basicTheme: ButtonTheme = {
-  button: (state) => {
-    let padding = `${scale(2)}px`;
+  button: state => {
+    let padding = `8px 12px`;
     let font: TypographyName = 'labelSmall';
-    let height = scale(5);
+    let height = scale(4);
     let borderRadius = 12;
 
     switch (state.size) {
-      case 'md':
-        padding = `${scale(3, true)}px 18px`;
-        font = 'labelMedium';
-        height = scale(6);
-        borderRadius = 16;
-        break;
       case 'lg':
-        padding = `${scale(4, true)}px ${scale(5, true)}px`;
+        padding = `16px 20px`;
         font = 'labelLarge';
         height = scale(7);
         borderRadius = 18;
+        break;
+      case 'md':
+        padding = `12px 18px`;
+        font = 'labelMedium';
+        height = scale(6);
+        borderRadius = 16;
         break;
       case 'sm':
       default:
@@ -38,7 +38,7 @@ export const basicTheme: ButtonTheme = {
       alignItems: 'center',
       ...typography(font),
       padding,
-      height,
+      minHeight: height,
       ...(state.rounded && {
         borderRadius,
       }),
@@ -61,6 +61,40 @@ export const basicTheme: ButtonTheme = {
     let variantCSS: CSSObject = {};
 
     switch (state.variant) {
+      case 'inverse': {
+        variantCSS = {
+          borderColor: 'transparent',
+          background: colors.grey200,
+          color: colors.black,
+          ':hover': {
+            background: colors.grey300,
+          },
+          ':active': {
+            background: colors.grey500,
+          },
+          ':disabled': {
+            background: `${colors.grey400}!important`,
+          },
+        };
+        break;
+      }
+      case 'secondary': {
+        variantCSS = {
+          borderColor: 'transparent',
+          background: colors.grey600,
+          color: colors.white,
+          ':hover': {
+            background: colors.grey500,
+          },
+          ':active': {
+            background: colors.grey600,
+          },
+          ':disabled': {
+            background: `${colors.grey400}!important`,
+          },
+        };
+        break;
+      }
       case 'primary': {
         variantCSS = {
           borderColor: 'transparent',
@@ -102,8 +136,8 @@ export const basicTheme: ButtonTheme = {
           background: colors.negative,
           color: colors.white,
           ':hover': {
-            background: colors.errorDark
-          }
+            background: colors.errorDark,
+          },
         };
         break;
       }
@@ -113,17 +147,16 @@ export const basicTheme: ButtonTheme = {
 
     return deepmerge.all([base, variantCSS]) as CSSObject;
   },
-  icon: (state) => {
+  icon: state => {
     const marginRule = `margin${!state.iconAfter ? 'Right' : 'Left'}`;
     const invMarginRule = `margin${state.iconAfter ? 'Right' : 'Left'}`;
     const iconCSS = {
-      [marginRule]: !state.hidden
-        ? (state.hasChildren ? 1 : -1) * scale(1, true)
-        : undefined,
       [invMarginRule]: !state.hidden ? -scale(1, true) : undefined,
       width: scale(3, true),
       height: scale(3, true),
     };
+
+    let marginFromText = scale(1, true);
 
     switch (state.size) {
       case 'md':
@@ -135,9 +168,13 @@ export const basicTheme: ButtonTheme = {
         iconCSS.height = scale(5, true);
         break;
       case 'sm':
+        marginFromText = scale(1, true) + 1;
+        break;
       default:
         break;
     }
+
+    iconCSS[marginRule] = !state.hidden ? (state.hasChildren ? 1 : -1) * marginFromText : undefined;
 
     return { ...iconCSS, fill: 'currentcolor' };
   },

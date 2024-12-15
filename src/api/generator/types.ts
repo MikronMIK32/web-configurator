@@ -1,9 +1,8 @@
 import { CommonResponse } from '@api/common/types';
-
-import { RootState } from '@store/index';
+import { ProjectState } from '@store/project';
 
 export type GenerateProjectResponse = CommonResponse<{
   url: string;
 }>;
 
-export type GenerateProjectRequest = { project: RootState };
+export type GenerateProjectRequest = { project: ProjectState };
