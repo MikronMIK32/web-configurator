@@ -6,14 +6,13 @@ import { useGenerateProject } from '@api/generator';
 import Button from '@components/controls/Button';
 import Loader from '@components/controls/Loader';
 
-import { ProjectState } from '@store/project/index';
-
 import { colors } from '@scripts/colors';
 import { scale } from '@scripts/helpers';
+import { RootState } from '@store/index';
 
 const ExportView = () => {
   const generateProject = useGenerateProject();
-  const store = useStore<ProjectState>();
+  const store = useStore<RootState>();
 
   // eslint-disable-next-line prefer-destructuring
   const isLoading = generateProject.isPending;
@@ -76,7 +75,7 @@ const ExportView = () => {
         onClick={async () => {
           try {
             const result = await generateProject.mutateAsync({
-              project: store.getState(),
+              project: store.getState().project,
             });
 
             setData({
