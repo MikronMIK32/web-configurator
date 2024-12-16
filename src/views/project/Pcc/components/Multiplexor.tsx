@@ -119,7 +119,7 @@ const PinComponent = ({ isActive, name, arrowWidth, height }: Pin & { arrowWidth
   </div>
 );
 
-const Native = ({ className, pins, prefix, prefixAlign = 'left', col, row, height, width, isDebug, name }: MultiplexorProps) => {
+const Native = ({ className, pins, prefix, prefixAlign = 'center', col, row, height, width, isDebug, name }: MultiplexorProps) => {
   const { dims, onMeasure, updateLast } = useCellDims();
 
   useEffect(() => {
@@ -138,31 +138,14 @@ const Native = ({ className, pins, prefix, prefixAlign = 'left', col, row, heigh
         onMeasure(node);
       }}
     >
-      {isDebug && name && (
-        <p
-          css={{
-            top: -CELL_SIZE * (prefix ? 0.7 : 0.05),
-            zIndex: 999,
-            fontSize: '1rem',
-            pointerEvents: 'all',
-            position: 'absolute',
-            transform: 'translateY(-100%)',
-          }}
-          style={{
-            textAlign: prefixAlign,
-          }}
-        >
-          {name}
-        </p>
-      )}
       {prefix && (
         <p
           css={{
             ...typography('labelSmall'),
-            whiteSpace: 'nowrap',
             position: 'absolute',
             transform: 'translateY(-100%)',
             top: 0,
+            translate: CELL_SIZE * width * 0.25,
           }}
           style={{
             textAlign: prefixAlign,
@@ -197,6 +180,24 @@ const Native = ({ className, pins, prefix, prefixAlign = 'left', col, row, heigh
           <PinComponent key={pin.code} {...pin} height={dims.h} arrowWidth={dims.w - 32} />
         ))}
       </div>
+      {isDebug && name && (
+        <p
+          css={{
+            top: CELL_SIZE * (height + 1.5),
+            zIndex: 999,
+            fontSize: '1rem',
+            pointerEvents: 'all',
+            position: 'absolute',
+            transform: 'translateY(-100%)',
+            translate: CELL_SIZE * width * 0.5,
+          }}
+          style={{
+            textAlign: prefixAlign,
+          }}
+        >
+          {name}
+        </p>
+      )}
     </div>
   );
 };
@@ -214,7 +215,7 @@ function Atlas({ col, row, width, pins }: MultiplexorProps) {
         <line
           x1={x}
           y1={y + gap * index}
-          x2={x + width * CELL_SIZE}
+          x2={x + (width - 2) * CELL_SIZE}
           y2={y + gap * index}
           stroke={STROKE_COLOR}
           strokeWidth={STROKE_WIDTH}

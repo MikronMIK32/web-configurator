@@ -150,10 +150,10 @@ const NativeInputBlock = ({
   height,
   onChange,
   prefix,
-  prefixAlign = 'left',
+  prefixAlign = 'center',
   value,
   postfix,
-  postfixAlign = 'left',
+  postfixAlign = 'center',
   connectionLeft = 'none',
   connectionRight = 'none',
   backgroundColor,
@@ -229,10 +229,10 @@ const NativeInputBlock = ({
           <p
             css={{
               ...typography('labelSmall'),
-              whiteSpace: 'nowrap',
               position: 'absolute',
               transform: 'translateY(-100%)',
               top: -CELL_SIZE / 4,
+              wordBreak: 'break-word'
             }}
             style={{
               textAlign: prefixAlign,
@@ -247,9 +247,9 @@ const NativeInputBlock = ({
           <p
             css={{
               ...typography('paragraphSmall'),
-              whiteSpace: 'nowrap',
               position: 'absolute',
               top: INPUT_HEIGHT + CELL_SIZE / 4,
+              wordBreak: 'break-word'
             }}
             style={{
               textAlign: postfixAlign,
