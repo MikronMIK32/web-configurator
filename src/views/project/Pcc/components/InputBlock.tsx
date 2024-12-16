@@ -40,7 +40,7 @@ const blockCSS = css({
 });
 
 const INPUT_HEIGHT = CELL_SIZE * 4;
-const INPUT_WIDTH = CELL_SIZE * 6;
+const INPUT_WIDTH = CELL_SIZE * 4;
 
 function Atlas({ col, row, width, height, connectionLeft, connectionRight }: InputBlockProps) {
   const top = (row - 1) * CELL_SIZE;
@@ -80,8 +80,8 @@ function Atlas({ col, row, width, height, connectionLeft, connectionRight }: Inp
   const renderBiline = (isLeft: boolean) => {
     return (
       <>
-        {renderLine(isLeft, -CELL_SIZE)}
-        {renderLine(isLeft, +CELL_SIZE)}
+        {renderLine(isLeft, -height * CELL_SIZE * 0.25)}
+        {renderLine(isLeft, +height * CELL_SIZE * 0.25)}
       </>
     );
   };
@@ -117,8 +117,8 @@ function Atlas({ col, row, width, height, connectionLeft, connectionRight }: Inp
   const renderBiDir = (isLeft: boolean) => {
     return (
       <>
-        {renderArrow('right', isLeft, -CELL_SIZE)}
-        {renderArrow('left', isLeft, +CELL_SIZE)}
+        {renderArrow('right', isLeft, -height * CELL_SIZE * 0.25)}
+        {renderArrow('left', isLeft, +height * CELL_SIZE * 0.25)}
       </>
     );
   };

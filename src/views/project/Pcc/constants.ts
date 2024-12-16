@@ -11,13 +11,13 @@ export const initialSchemaCode = `[
         "name": "input_osc32m",
         "col": 2,
         "row": 6,
-        "width": 8,
-        "height": 4,
+        "width": 6,
+        "height": 2,
         "value": "32",
         "connectionLeft": "none",
         "connectionRight": "bidirectional",
         "prefix": "Входная частота",
-        "postfix": "до 32 МГц",
+        "postfix": "МГц",
         "editable": true
     },
     {
@@ -25,26 +25,26 @@ export const initialSchemaCode = `[
         "name": "osc32m",
         "col": 10,
         "row": 6,
-        "width": 10,
-        "height": 4,
+        "width": 8,
+        "height": 2,
         "value": "OSC32M",
         "connectionLeft": "biline",
         "connectionRight": "line",
-        "postfix": "32 МГц",
+        "postfix": "МГц",
         "postfixAlign": "center"
     },
     {
         "type": "input-block",
         "name": "hsi",
         "col": 12,
-        "row": 16,
-        "width": 8,
-        "height": 4,
+        "row": 18,
+        "width": 6,
+        "height": 2,
         "value": "32",
         "connectionLeft": "none",
         "connectionRight": "line",
         "prefix": "HSI",
-        "postfix": "32 МГц",
+        "postfix": "МГц",
         "prefixAlign": "center",
         "postfixAlign": "center",
         "editable": true
@@ -53,14 +53,14 @@ export const initialSchemaCode = `[
         "type": "input-block",
         "name": "lsi",
         "col": 12,
-        "row": 24,
-        "width": 8,
-        "height": 4,
+        "row": 26,
+        "width": 6,
+        "height": 2,
         "value": "32",
         "connectionLeft": "none",
         "connectionRight": "line",
         "prefix": "LSI",
-        "postfix": "32 кГц",
+        "postfix": "кГц",
         "prefixAlign": "center",
         "postfixAlign": "center",
         "editable": true
@@ -69,27 +69,27 @@ export const initialSchemaCode = `[
         "type": "input-block",
         "name": "osc32k",
         "col": 10,
-        "row": 34,
-        "width": 10,
-        "height": 4,
+        "row": 38,
+        "width": 8,
+        "height": 2,
         "value": "OSC32K",
         "connectionLeft": "biline",
         "connectionRight": "line",
-        "postfix": "32 кГц",
+        "postfix": "кГц",
         "postfixAlign": "center"
     },
     {
         "type": "input-block",
         "name": "osc32k_freq_in",
         "col": 2,
-        "row": 34,
-        "width": 8,
-        "height": 4,
+        "row": 38,
+        "width": 6,
+        "height": 2,
         "value": "32.768",
         "connectionLeft": "none",
         "connectionRight": "bidirectional",
         "prefix": "Входная частота",
-        "postfix": "до 32 кГц",
+        "postfix": "кГц",
         "editable": true
     },
     {
@@ -97,8 +97,8 @@ export const initialSchemaCode = `[
         "name": "rtc_freq",
         "col": 32,
         "row": 25,
-        "width": 8,
-        "height": 4,
+        "width": 6,
+        "height": 2,
         "value": "32",
         "connectionLeft": "right",
         "connectionRight": "none",
@@ -109,9 +109,9 @@ export const initialSchemaCode = `[
         "type": "input-block",
         "name": "mon_freq",
         "col": 32,
-        "row": 33,
-        "width": 8,
-        "height": 4,
+        "row": 38,
+        "width": 6,
+        "height": 2,
         "value": "32",
         "connectionLeft": "right",
         "connectionRight": "none",
@@ -153,7 +153,7 @@ export const initialSchemaCode = `[
         "name": "mux_rtc_clk",
         "type": "multiplexor",
         "col": 24,
-        "row": 24,
+        "row": 26,
         "width": 8,
         "height": 6,
         "prefix": "Мультиплексор частоты RTC",
@@ -174,7 +174,7 @@ export const initialSchemaCode = `[
         "name": "mux_mon_clk",
         "type": "multiplexor",
         "col": 24,
-        "row": 32,
+        "row": 36,
         "width": 8,
         "height": 6,
         "prefix": "Мультиплексор монитора частоты",
@@ -264,11 +264,11 @@ export const initialSchemaCode = `[
             },
             {
                 "col": 22,
-                "row": 40
+                "row": 44
             },
             {
                 "col": 46,
-                "row": 40
+                "row": 44
             },
             {
                 "col": 46,
@@ -426,11 +426,11 @@ export const initialSchemaCode = `[
         "points": [
             {
                 "col": 18,
-                "row": 36
+                "row": 40
             },
             {
                 "col": 22,
-                "row": 36
+                "row": 40
             },
             {
                 "col": 22,
