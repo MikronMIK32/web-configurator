@@ -18,11 +18,12 @@ import {
   tempInitialState as initialState,
   tempStateSchema as schema,
   setTemp as setSlice,
-  useFreqencyCorrection,
+  useFtSens,
 } from '@store/project/analog/temp';
 import { RootState } from '@store/index';
 
 import { scale } from '@scripts/helpers';
+import { DecimalMaskInput } from '@controls/DecimalMaskInput';
 
 const SHORT_NAME = 'Темп. сенсор';
 const FULL_NAME = 'Температурный сенсор';
@@ -33,8 +34,9 @@ const Settings = () => {
     name: ['enabled', 'clockSource', 'freq'],
   });
 
-  const { actualFreq, actualFreqAt, isRunning } = useFreqencyCorrection(clockSource, freq);
-  // console.log(actualFreq, isRunning);
+  const isFreqInBounds = freq >= 32_000 && freq <= 100_000;
+
+  const { actualFreq, actualFreqAt } = useFtSens(clockSource, freq);
 
   if (!enabled) return null;
 
@@ -53,23 +55,18 @@ const Settings = () => {
       </Form.Field>
       <Form.Field
         name="freq"
-        hint="От 0 до 100 000 Гц"
+        hint="От 32 000 до 100 000 Гц"
         label="Частота сенсора, Гц"
         css={{ marginBottom: scale(2) }}
         {...(actualFreq === null && {
           error: 'Данная частота недостижима',
         })}
-      />
-      {actualFreq && (
+      >
+        <DecimalMaskInput block />
+      </Form.Field>
+      {isFreqInBounds && actualFreq && (
         <p>
-          В действительности частота составит{' '}
-          {isRunning ? (
-            '...'
-          ) : (
-            <>
-              {Math.floor(actualFreq)} Гц при значении делителя= {actualFreqAt}
-            </>
-          )}
+          В действительности частота составит {Math.floor(actualFreq)} Гц при значении делителя= {actualFreqAt}
         </p>
       )}
       <FormUnsavedPrompt />

@@ -1,11 +1,10 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { z } from 'zod';
 
 import { PCCClockSource, pccClockSourceFreq } from '@store/project/system/pcc';
 
-import { ChunkIterator } from '@scripts/chunkIterator';
 import { zodStringToNumber } from '@scripts/validations';
 
 import { RootState } from '@store/index';
@@ -30,90 +29,102 @@ const clockSourceTranslations: Record<keyof typeof ClockSource, string> = {
   LSI32K: 'Частота внутреннего осциллятора 32 кГц (LSI32K)',
 };
 
-export const useFreqencyCorrection = (clockSource: ClockSource, freq: number) => {
-  const systemSource = useSelector<RootState>(state => state.project.system.pcc.systemSource) as PCCClockSource;
-  const divAhb = useSelector<RootState>(state => state.project.system.pcc.ahb) as number;
-
-  const [isRunning, setRunning] = useState(false);
-  const [actualFreq, setActualFreq] = useState<number | null>(null);
-  const [actualFreqAt, setActualFreqAt] = useState<number | null>(null);
-
+function calculateOptimalDivider(
+  clockSource: ClockSource,
+  systemSource: PCCClockSource,
+  divAhb: number,
+  targetFreq: number
+): { actualFreq: number; actualFreqAt: number } | null {
   const fSystem = pccClockSourceFreq[systemSource];
 
-  const workingResults = useRef<{
-    minDifference: number;
-    minDifferenceAt: null | number;
-  }>({
-    minDifference: Infinity,
-    minDifferenceAt: null,
-  });
+  // Function to calculate the frequency at a given divider
+  const getValueAtDiv = (div: number): number => {
+    switch (clockSource) {
+      case ClockSource.SYS_CLK:
+        return fSystem / (2 * (div + 1));
 
-  const freqRef = useRef(freq);
-  freqRef.current = freq;
+      case ClockSource.HCLK:
+        return fSystem / ((divAhb + 1) * (2 * div + 2));
 
-  const getValueAtDiv = useCallback(
-    (div: number) => {
-      switch (clockSource) {
-        case ClockSource.SYS_CLK: {
-          return fSystem / (2 * div + 2);
-        }
+      case ClockSource.OSC32M:
+      case ClockSource.HSI32M:
+        return 32000000 / (2 * div + 2);
 
-        case ClockSource.HCLK: {
-          return fSystem / ((divAhb + 1) * (2 * div + 2));
-        }
+      case ClockSource.OSC32K:
+      case ClockSource.LSI32K:
+        return 32000 / (2 * div + 2);
 
-        case ClockSource.OSC32M:
-        case ClockSource.HSI32M:
-          return 32000000 / (2 * div + 2);
-
-        case ClockSource.OSC32K:
-        case ClockSource.LSI32K:
-          return 32000 / (2 * div + 2);
-
-        default:
-          return null;
-      }
-    },
-    [clockSource, divAhb, fSystem]
-  );
-
-  const valueGetterRef = useRef(getValueAtDiv);
-  valueGetterRef.current = getValueAtDiv;
-
-  const executor = (iteration: number) => {
-    const value = valueGetterRef.current(iteration);
-
-    if (value === null) return;
-
-    const delta = Math.abs(value - Number(freqRef.current));
-
-    if (delta < workingResults.current.minDifference) {
-      workingResults.current.minDifference = delta;
-      workingResults.current.minDifferenceAt = iteration;
+      default:
+        throw new Error('Invalid clock source');
     }
   };
 
-  const onFinish = () => {
-    // console.log('result div =', workingResults.current.minDifferenceAt);
+  const MIN_FREQ = 32_000;
+  const MAX_FREQ = 100_000;
 
-    setRunning(false);
-    setActualFreqAt(workingResults.current.minDifferenceAt);
-    setActualFreq(getValueAtDiv(workingResults.current.minDifferenceAt!));
+  // Binary search bounds for the divider
+  let low = 0;
+  let high = 1_000_000; // Arbitrarily large upper bound for dividers
 
-    workingResults.current.minDifference = Infinity;
-    workingResults.current.minDifferenceAt = null;
-  };
+  let bestDiv = -1;
+  let bestFreq = -1;
+  let smallestDelta = Infinity;
 
-  const chunkIteratorRef = useRef<ChunkIterator>(new ChunkIterator(executor, onFinish, 1024));
+  while (low <= high) {
+    const mid = Math.floor((low + high) / 2);
+    const freq = getValueAtDiv(mid);
 
-  useEffect(() => {
-    setRunning(true);
+    if (freq > MAX_FREQ) {
+      // If the frequency is too high, increase the divider
+      low = mid + 1;
+    } else if (freq < MIN_FREQ) {
+      // If the frequency is too low, decrease the divider
+      high = mid - 1;
+    } else {
+      // Frequency is within bounds, check how close it is to the target
+      const delta = Math.abs(freq - targetFreq);
 
-    chunkIteratorRef.current.reset();
-    chunkIteratorRef.current.iterate();
-  }, [clockSource, freq]);
+      if (delta < smallestDelta) {
+        // Update the best match
+        smallestDelta = delta;
+        bestDiv = mid;
+        bestFreq = freq;
+      }
 
-  return { actualFreq, actualFreqAt, isRunning };
+      if (delta === 0) {
+        // Exact match found, no need to continue
+        break;
+      } else if (freq > targetFreq) {
+        // If the current frequency is higher than the target, increase the divider
+        low = mid + 1;
+      } else {
+        // If the current frequency is lower than the target, decrease the divider
+        high = mid - 1;
+      }
+    }
+  }
+
+  // Return the best result found
+  if (bestDiv !== -1 && bestFreq !== -1) {
+    return { actualFreq: bestFreq, actualFreqAt: bestDiv };
+  }
+
+  return null;
+}
+
+export const useFtSens = (clockSource: ClockSource, freq: number) => {
+  // Redux selectors
+  const systemSource = useSelector<RootState>(state => state.project.system.pcc.systemSource) as PCCClockSource;
+  const divAhb = useSelector<RootState>(state => state.project.system.pcc.ahb) as number;
+
+  return useMemo(
+    () =>
+      calculateOptimalDivider(clockSource, systemSource, divAhb, freq) || {
+        actualFreq: null,
+        actualFreqAt: null,
+      },
+    [freq, clockSource, systemSource, divAhb]
+  );
 };
 
 export const CLOCK_SOURCE_OPTIONS = (
@@ -129,8 +140,8 @@ export const tempStateSchema = z.object({
   freq: zodStringToNumber(
     z
       .number({ required_error: 'Обязательное поле' })
-      .min(0)
-      .max(100 * 1000)
+      .min(0, 'Число должно быть положительным')
+      .max(100 * 1000, 'Число должно быть менее 100 000')
   ),
 });
 
